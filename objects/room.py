@@ -1,16 +1,20 @@
-from ev import Room
-import ev
-
+from ev import search_script
 import re
 
-class LatitudeRoom(Room):
+from ev import Room
+from game.gamesrc.latitude.objects.object import LatitudeObject
+
+class LatitudeRoom(LatitudeObject, Room):
+    def return_appearance(self, looker):
+        return ('%cn%ch%cw' + self.key + '\n' + super(LatitudeRoom, self).return_appearance(looker))
+
     def generate_map(self):
         if not (self.db.area_id != None and self.db.area_map_num != None):
 	    return None
 
         try:
 	    # Grab the map
-	    area = ev.search_script('area_' + str(self.db.area_id))[0]
+	    area = search_script('area_' + str(self.db.area_id))[0]
 	    map_data = area.get_attribute('maps')[self.db.area_map_num]['map_data']
 
             # Add in the X (clearing and rebuilding the map)
@@ -63,7 +67,7 @@ class LatitudeRoom(Room):
 		    y += 1
 	    
 	    # Return the map
-	    return map_data
+	    return map_data.rstrip('\n')
 	except Exception as e:
 	    # Looks like we blew it.
 	    return '%cr[Error displaying map: ' + str(e) + ']%cn'

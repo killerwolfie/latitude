@@ -1,7 +1,7 @@
 from ev import default_cmds
 from ev import utils
 
-class MapCommand(default_cmds.MuxCommand):
+class CmdMap(default_cmds.MuxCommand):
     """
     This sets up the basis for a Evennia's 'MUX-like' command
     style. The idea is that most other Mux-related commands should

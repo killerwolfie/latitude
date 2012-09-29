@@ -1,6 +1,7 @@
 from ev import Character
+from game.gamesrc.latitude.objects.object import LatitudeObject
 
-class LatitudeCharacter(Character):
+class LatitudeCharacter(LatitudeObject, Character):
     """
     The Character is like any normal Object (see example/object.py for
     a list of properties and methods), except it actually implements

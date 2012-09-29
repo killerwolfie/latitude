@@ -1,4 +1,4 @@
-from src.utils import utils
+#from src.utils import utils
 #from src.commands.connection_screen import DEFAULT_SCREEN
 
 CUSTOM_SCREEN = \
