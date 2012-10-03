@@ -5,8 +5,9 @@ from ev import default_cmds
 #from contrib import misc_commands
 #from contrib import chargen
 
-from game.gamesrc.latitude.commands import map
-from game.gamesrc.latitude.commands import whospecies
+from game.gamesrc.latitude.commands.default import map
+from game.gamesrc.latitude.commands.default import whospecies
+from game.gamesrc.latitude.commands.default import lock_unlock
 
 class DefaultCmdSet(default_cmds.DefaultCmdSet):
     """
@@ -32,6 +33,8 @@ class DefaultCmdSet(default_cmds.DefaultCmdSet):
         #
         self.add(map.CmdMap)
 	self.add(whospecies.CmdWhospecies)
+	self.add(lock_unlock.CmdLock)
+	self.add(lock_unlock.CmdUnlock)
 
         #self.add(menusystem.CmdMenuTest())
         #self.add(lineeditor.CmdEditor())

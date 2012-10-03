@@ -24,3 +24,8 @@ class LatitudeCharacter(LatitudeObject, Character):
         if self.db.prefs_automap == None or self.db.prefs_automap:
 	    self.execute_cmd('map')
         self.execute_cmd('look')
+
+    def at_post_login(self):
+        super(LatitudeCharacter, self).at_post_login() # For now call the default handler which unstows the character
+
+        self.at_after_move(None) # Logging in counts as moving into a location.  Perform all the looking around and position tracking involved in that.

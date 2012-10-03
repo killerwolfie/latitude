@@ -43,4 +43,7 @@ class CmdMap(default_cmds.MuxCommand):
                              # the cmdname must look to match this command.
 
     def func(self):
-        self.caller.msg(self.caller.location.generate_map())
+        if self.caller.location:
+            self.caller.msg(self.caller.location.generate_map())
+	else:
+	    self.caller.msg("You have no location to find on the map!")

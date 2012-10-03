@@ -41,4 +41,16 @@ class LatitudeExit(LatitudeObject, Exit):
                                     not be called if the attribute 'err_traverse' is
                                     defined, in which case that will simply be echoed.
     """
-    pass
+
+    def reverse_exits(self):
+        """
+	Finds the exit on the other side which leads back here.
+	"""
+	if not self.destination:
+	    return None
+
+        if not self.location:
+	    return None
+
+	return list(con for con in self.destination.contents if con.destination and con.destination == self.location)
+	

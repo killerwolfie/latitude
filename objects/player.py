@@ -87,4 +87,7 @@ class LatitudePlayer(Player):
      at_server_shutdown()
 
     """
-    pass
+    def at_post_login(self):
+        if not self.character:
+	    # We logged in OOCly
+	    self.execute_cmd('look')
