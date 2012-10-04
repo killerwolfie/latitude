@@ -8,17 +8,9 @@ from ev import default_cmds
 from game.gamesrc.latitude.commands.default import map
 from game.gamesrc.latitude.commands.default import whospecies
 from game.gamesrc.latitude.commands.default import lock_unlock
+from game.gamesrc.latitude.commands.default import sys_lock
 
 class DefaultCmdSet(default_cmds.DefaultCmdSet):
-    """
-    This is an example of how to overload the default command
-    set defined in src/commands/default/cmdset_default.py.
-
-    Here we copy everything by calling the parent, but you can
-    copy&paste any combination of the default command to customize
-    your default set. Next you change settings.CMDSET_DEFAULT to point
-    to this class.
-    """
     key = "DefaultMUX"
 
     def at_cmdset_creation(self):
@@ -31,10 +23,11 @@ class DefaultCmdSet(default_cmds.DefaultCmdSet):
         #
         # any commands you add below will overload the default ones.
         #
-        self.add(map.CmdMap)
+	self.add(map.CmdMap)
 	self.add(whospecies.CmdWhospecies)
 	self.add(lock_unlock.CmdLock)
 	self.add(lock_unlock.CmdUnlock)
+	self.add(sys_lock.CmdSysLock)
 
         #self.add(menusystem.CmdMenuTest())
         #self.add(lineeditor.CmdEditor())

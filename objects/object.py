@@ -18,6 +18,7 @@ this change, you have to convert them manually e.g. with the
 
 """
 from ev import Object
+from ev import Exit
 
 class LatitudeObject(Object):
     """
@@ -128,7 +129,7 @@ class LatitudeObject(Object):
         exits, users, things = [], [], []
         for con in visible:
             key = con.key
-            if con.destination:
+            if isinstance(con, Exit):
                 exits.append(key)
             elif con.player:
                 users.append("{c%s{n" % key)
