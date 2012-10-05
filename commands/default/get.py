@@ -1,6 +1,6 @@
 from ev import default_cmds
 
-class CmdSysGet(default_cmds.CmdGet):
+class CmdGet(default_cmds.CmdGet):
     """
     get
 

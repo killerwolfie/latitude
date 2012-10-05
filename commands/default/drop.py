@@ -1,6 +1,6 @@
 from ev import default_cmds
 
-class CmdSysDrop(default_cmds.CmdDrop):
+class CmdDrop(default_cmds.CmdDrop):
     """
     drop
 

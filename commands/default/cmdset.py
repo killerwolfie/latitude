@@ -20,14 +20,14 @@ from game.gamesrc.latitude.commands.default import sys_debug
 from game.gamesrc.latitude.commands.default import sys_desc
 from game.gamesrc.latitude.commands.default import sys_destroy
 from game.gamesrc.latitude.commands.default import sys_dig
-from game.gamesrc.latitude.commands.default import sys_drop
+from game.gamesrc.latitude.commands.default import drop
 from game.gamesrc.latitude.commands.default import sys_emit
 from game.gamesrc.latitude.commands.default import sys_examine
 from game.gamesrc.latitude.commands.default import sys_find
-from game.gamesrc.latitude.commands.default import sys_get
+from game.gamesrc.latitude.commands.default import get
 from game.gamesrc.latitude.commands.default import sys_help
 from game.gamesrc.latitude.commands.default import sys_home
-from game.gamesrc.latitude.commands.default import sys_inventory
+from game.gamesrc.latitude.commands.default import inventory
 from game.gamesrc.latitude.commands.default import sys_link
 from game.gamesrc.latitude.commands.default import sys_listcmdsets
 from game.gamesrc.latitude.commands.default import sys_lock
@@ -38,9 +38,9 @@ from game.gamesrc.latitude.commands.default import sys_nick
 from game.gamesrc.latitude.commands.default import sys_objects
 from game.gamesrc.latitude.commands.default import sys_open
 from game.gamesrc.latitude.commands.default import sys_perm
-from game.gamesrc.latitude.commands.default import sys_pose
+from game.gamesrc.latitude.commands.default import pose
 from game.gamesrc.latitude.commands.default import sys_py
-from game.gamesrc.latitude.commands.default import sys_say
+from game.gamesrc.latitude.commands.default import say
 from game.gamesrc.latitude.commands.default import sys_script
 from game.gamesrc.latitude.commands.default import sys_scripts
 from game.gamesrc.latitude.commands.default import sys_serverload
@@ -83,14 +83,14 @@ class DefaultCmdSet(CmdSet):
         self.add(sys_desc.CmdSysDesc)
         self.add(sys_destroy.CmdSysDestroy)
         self.add(sys_dig.CmdSysDig)
-        self.add(sys_drop.CmdSysDrop)
+        self.add(drop.CmdDrop)
         self.add(sys_emit.CmdSysEmit)
         self.add(sys_examine.CmdSysExamine)
         self.add(sys_find.CmdSysFind)
-        self.add(sys_get.CmdSysGet)
+        self.add(get.CmdGet)
         self.add(sys_help.CmdSysHelp)
 	self.add(sys_home.CmdSysHome)
-        self.add(sys_inventory.CmdSysInventory)
+        self.add(inventory.CmdInventory)
         self.add(sys_link.CmdSysLink)
         self.add(sys_listcmdsets.CmdSysListCmdSets)
         self.add(sys_lock.CmdSysLock)
@@ -101,9 +101,9 @@ class DefaultCmdSet(CmdSet):
         self.add(sys_objects.CmdSysObjects)
         self.add(sys_open.CmdSysOpen)
         self.add(sys_perm.CmdSysPerm)
-        self.add(sys_pose.CmdSysPose)
+        self.add(pose.CmdPose)
         self.add(sys_py.CmdSysPy)
-        self.add(sys_say.CmdSysSay)
+        self.add(say.CmdSay)
         self.add(sys_script.CmdSysScript)
         self.add(sys_scripts.CmdSysScripts)
         self.add(sys_serverload.CmdSysServerLoad)

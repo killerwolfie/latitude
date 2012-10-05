@@ -1,6 +1,6 @@
 from ev import default_cmds
 
-class CmdSysSay(default_cmds.CmdSay):
+class CmdSay(default_cmds.CmdSay):
     """
     say
 

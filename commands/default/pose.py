@@ -1,6 +1,6 @@
 from ev import default_cmds
 
-class CmdSysPose(default_cmds.CmdPose):
+class CmdPose(default_cmds.CmdPose):
     """
     pose - strike a pose
 

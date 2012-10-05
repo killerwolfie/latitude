@@ -1,6 +1,7 @@
 from ev import default_cmds
+from game.gamesrc.latitude.commands.muckcommand import MuckCommand
 
-class CmdSysLock(default_cmds.CmdLock):
+class CmdSysLock(default_cmds.CmdLock, MuckCommand):
     """
     lock - assign a lock definition to an object
 
@@ -35,4 +36,3 @@ class CmdSysLock(default_cmds.CmdLock):
     aliases = ["@locks", "lock", "locks"]
     locks = "cmd: perm(@locks) or perm(Builders)"
     help_category = "Building"
-
