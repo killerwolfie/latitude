@@ -1,13 +1,86 @@
 from ev import search_script
 import re
+import random
 
 from ev import Room
+from ev import Exit
 from game.gamesrc.latitude.objects.object import LatitudeObject
 
 class LatitudeRoom(LatitudeObject, Room):
-    def return_appearance(self, looker):
-        return ('%cn%ch%cw' + self.key + '\n' + super(LatitudeRoom, self).return_appearance(looker))
+    def at_object_creation(self):
+        self.db.attr_gender = 'Object'
+	self.db.pronoun_absolute = "this room's"
+	self.db.pronoun_subjective = "this room"
+	self.db.pronoun_objective = "this room"
+	self.db.pronoun_posessive = "this room's"
+	self.db.pronoun_reflexive = "this room"
+        self.db.situational_name = "this room"
 
+    def return_appearance_name(self, looker):
+        return ('%cn%ch%cw' + self.key)
+
+    def return_appearance_desc(self, looker):
+        desc = self.db.desc_appearance
+        if desc != None:
+            return('%cn' + desc)
+        else:
+            return(None)
+
+    def return_scent(self, looker):
+        """
+	Returns the scent description of the object.
+	"""
+	retval = super(LatitudeRoom, self).return_scent(looker)
+        visible = (con for con in self.contents if con != looker and con.access(looker, "view"))
+	for con in visible:
+	    if con.db.desc_scent and not isinstance(con, Exit):
+	        retval += '\n[%s]\n%s\n' % (con.key, con.db.desc_scent)
+	# Return the scents of everything in the room as well
+	return retval
+
+    def return_texture(self, looker):
+        """
+	Returns the scent description of the object.
+	"""
+	return super(LatitudeRoom, self).return_texture(looker)
+
+    def return_flavor(self, looker):
+        """
+	Returns the scent description of the object.
+	"""
+	return super(LatitudeRoom, self).return_flavor(looker)
+
+    def return_sound(self, looker):
+        """
+	Returns the scent description of the object.
+	"""
+	retval = super(LatitudeRoom, self).return_sound(looker)
+	# Return the sounds of things in the room at random
+        visible = (con for con in self.contents if con != looker and con.access(looker, "view"))
+	for con in visible:
+	    if con.db.desc_sound and not isinstance(con, Exit) and random.random() < 0.25:
+	        retval += '\n  %s' % (con.db.desc_sound)
+	return retval
+
+    def return_aura(self, looker):
+        """
+	Returns the scent description of the object.
+	"""
+	retval = super(LatitudeRoom, self).return_aura(looker)
+	# Return the auras of everything in the room as well
+        visible = (con for con in self.contents if con != looker and con.access(looker, "view"))
+	for con in visible:
+	    if con.db.desc_aura and not isinstance(con, Exit):
+	        retval += '\n[%s]\n%s\n' % (con.key, con.db.desc_aura)
+	return retval
+
+    def return_writing(self, looker):
+        """
+	Returns the scent description of the object.
+	"""
+	return super(LatitudeRoom, self).return_writing(looker)
+
+    # ----- Maps -----
     def generate_map(self):
         if not (self.db.area_id != None and self.db.area_map_num != None):
 	    return None

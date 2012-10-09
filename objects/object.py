@@ -120,35 +120,269 @@ class LatitudeObject(Object):
      at_drop(dropper)          - called when this object has been dropped.
      at_say(speaker, message)  - by default, called if an object inside this object speaks
 
-     """
+    """
+    # ----- Descriptions -----
     def return_appearance(self, looker):
+        """
+        Describes the appearance of this object.  Used by the "look" command.
+	This method, by default, delegates its desc generation into several other calls on the object.
+	   return_appearance_name for the name of the object. (Which defaults to showing nothing)
+	   return_apperaance_desc to generate the main description of the room.
+           return_appearance_exits to generate a line that shows you which exits are available for you to take
+	   return_appearance_contents to generate the description of the contents of the object
+	      (This, itself, calls return_appearance_contents_header if there are any contents to get the 'Carrying:' line by default)
+	"""
         if not looker:
-            return
+            return()
+
+	descs = [self.return_appearance_name(looker), self.return_appearance_desc(looker), self.return_appearance_exits(looker), self.return_appearance_contents(looker)]
+	descs = [desc for desc in descs if desc != None]
+	return('\n'.join(descs))
+
+    def return_appearance_name(self, looker):
+        """
+	Return the name portion of the visual description.
+	By default, the name of the object is not announced when getting the description.
+	"""
+        return(None)
+
+    def return_appearance_desc(self, looker):
+        """
+	Return the main portion of the visual description.
+	"""
+        desc = self.db.desc_appearance
+	if desc != None:
+	    return('%cn' + desc)
+	else:
+	    return('%cnYou see nothing special.')
+
+    def return_appearance_exits(self, looker):
+        """
+	Return a line that describes the visible exits in the object.
+	"""
         # get and identify all objects
+        visible = (con for con in self.contents if con != looker and con.access(looker, "view"))
+        exits = []
+        for con in visible:
+            if isinstance(con, Exit):
+                exits.append(con.key)
+
+        if exits:
+            return('%ch%cx[Exits: ' + ', '.join(exits) + ']%cn')
+	else:
+	    return(None)
+
+    def return_appearance_contents(self, looker):
+        """
+	Return a descriptive list of the contents held by this object.
+	"""
         visible = (con for con in self.contents if con != looker and con.access(looker, "view"))
         exits, users, things = [], [], []
         for con in visible:
             key = con.key
             if isinstance(con, Exit):
-                exits.append(key)
+	        exits.append(con.key)
             elif con.player:
                 users.append("{c%s{n" % key)
             else:
                 things.append(key)
-        # get description, build string
-        string = '%cn'
-        desc = self.db.desc_appearance
-        if desc != None:
-            string += desc
-	else:
-	    string += 'You see nothing special.'
-        if exits:
-            string += '\n%ch%cx[Exits: ' + ', '.join(exits) + ']%cn'
         if users or things:
-            string += '\n%ch%cbContents:%cn'
+            string = self.return_appearance_contents_header(looker)
             if users:
                 string += '\n%ch%cc' + '\n'.join(users) + '%cn'
             if things:
                 string += '\n%cn%cc' + '\n'.join(things) + '%cn'
-        return string
+            return(string)
+	else:
+	    return(None)
+
+    def return_appearance_contents_header(self, looker):
+        """
+	Returns a header line to display just before outputting the contents of the object.
+	"""
+        return('%ch%cbContents:%cn')
+
+    def return_scent(self, looker):
+        """
+	Returns the scent description of the object.
+	"""
+        if self.db.desc_scent:
+	    return self.db.desc_scent
+	else:
+	    return self.return_situational_name().capitalize() + " doesn't seem to have any descernable scent."
+
+    def return_texture(self, looker):
+        """
+	Returns the scent description of the object.
+	"""
+        if self.db.desc_texture:
+	    return self.db.desc_texture
+	else:
+	    return self.return_situational_name().capitalize() + " doesn't seem to have any descernable texture."
+
+    def return_flavor(self, looker):
+        """
+	Returns the scent description of the object.
+	"""
+        if self.db.desc_flavor:
+	    return self.db.desc_flavor
+	else:
+	    return self.return_situational_name().capitalize() + " doesn't seem to have any descernable flavor."
+
+    def return_sound(self, looker):
+        """
+	Returns the scent description of the object.
+	"""
+        if self.db.desc_sound:
+	    return self.db.desc_sound
+	else:
+	    return self.return_situational_name().capitalize() + " doesn't seem to have any descernable sound."
+
+    def return_aura(self, looker):
+        """
+	Returns the scent description of the object.
+	"""
+        if self.db.desc_aura:
+	    return self.db.desc_aura
+	else:
+	    return self.return_situational_name().capitalize() + " doesn't seem to have any descernable aura."
+
+    def return_writing(self, looker):
+        """
+	Returns the scent description of the object.
+	"""
+        if self.db.desc_writing:
+	    return self.db.desc_writing
+	else:
+	    return self.return_situational_name().capitalize() + " doesn't seem to have any descernable writing."
+
+    def return_situational_name(self):
+        """
+        A situational name is used by alerts that are sent to other players.
+        In almost all cases, a character's name should be their situational name, but for objects it's often not.
+        Examples:
+            Object: 'Water Fountain' would return 'the water fountain'
+            Exit: '[E]astern Gate' would return 'the eastern gate'
+            Room: Most rooms would return 'this room'
+        """
+        if self.db.desc_situational_name:
+            return self.db.desc_situational_name
+        return self.key
+
+    # ----- Pronoun Substitution -----
+    def return_pronoun_reflexive(self):
+        if self.db.desc_pronoun_reflexive:
+	    return(self.db.desc_pronoun_reflexive)
+	if self.is_male():
+	    return('himself')
+	if self.is_female():
+	    return('herself')
+        if self.is_herm():
+	    return('hirself')
+	if self.is_neuter():
+	    return('itself')
+	return(self.key)
+
+    def return_pronoun_posessive(self):
+        if self.db.desc_pronoun_posessive:
+	    return(self.db.desc_pronoun_posessive)
+	if self.is_male():
+	    return('his')
+	if self.is_female():
+	    return('her')
+        if self.is_herm():
+	    return('hir')
+	if self.is_neuter():
+	    return('its')
+	return(self.key + "'s")
+
+    def return_pronoun_objective(self):
+        if self.db.desc_pronoun_objective:
+	    return(self.db.desc_pronoun_objective)
+	if self.is_male():
+	    return('him')
+	if self.is_female():
+	    return('her')
+        if self.is_herm():
+	    return('hir')
+	if self.is_neuter():
+	    return('it')
+	return(self.key)
+
+    def return_pronoun_subjective(self):
+        if self.db.desc_pronoun_subjective:
+	    return(self.db.desc_pronoun_subjective)
+	if self.is_male():
+	    return('he')
+	if self.is_female():
+	    return('she')
+        if self.is_herm():
+	    return('shi')
+	if self.is_neuter():
+	    return('it')
+	return(self.key)
+
+    def return_pronoun_absolute(self):
+        if self.db.desc_pronoun_absolute:
+	    return(self.db.desc_pronoun_absolute)
+	if self.is_male():
+	    return('his')
+	if self.is_female():
+	    return('hers')
+        if self.is_herm():
+	    return('hirs')
+	if self.is_neuter():
+	    return('its')
+	return(self.key + "'s")
+
+    # ----- Gender -----
+    def is_male(self):
+        if self.db.attr_gender:
+            return(self.db.attr_gender.lower().rstrip() in ['male', 'man', 'boy', 'dude', 'him'])
+        return False
+
+    def is_female(self):
+        if self.db.attr_gender:
+            return(self.db.attr_gender.lower().rstrip() in ['female', 'woman', 'girl', 'chick', 'her'])
+        return False
+
+    def is_herm(self):
+        if self.db.attr_gender:
+            return(self.db.attr_gender.lower().rstrip() in ['herm', 'hermy', 'both', 'shemale'])
+        return False
+
+    def is_neuter(self):
+        if self.db.attr_gender:
+            return(self.db.attr_gender.lower().rstrip() in ['neuter', 'asexual', 'it', 'thing', 'object', 'machine'])
+        return False
+
+    # ----- Event Hooks -----
+    def at_desc(self, looker):
+        pass
+
+    def at_desc_scent(self, looker):
+        pass
+
+    def at_desc_flavor(self, looker):
+        if not looker.location or (not looker.location == self.location and not looker.location == self):
+            return()
+        self.msg('%s just smelled you!' % (looker.key))
+        if looker.location:
+            looker.location.msg_contents('%s just smelled %s.' % (looker.key, self.return_situational_name()))
+
+    def at_desc_texture(self, looker):
+        if not looker.location or (not looker.location == self.location and not looker.location == self):
+            return()
+        self.msg('%s just smelled you!' % (looker.key))
+        if looker.location:
+            looker.location.msg_contents('%s just smelled %s.' % (looker.key, self.return_situational_name()))
+
+    def at_desc_sound(self, looker):
+        pass
+
+    def at_desc_aura(self, looker):
+        pass
+
+    def at_desc_writing(self, looker):
+        pass
 

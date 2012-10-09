@@ -42,6 +42,14 @@ class LatitudeExit(LatitudeObject, Exit):
                                     defined, in which case that will simply be echoed.
     """
 
+    def at_object_creation(self):
+        self.db.attr_gender = 'Object'
+	self.db.pronoun_absolute = "that direction's"
+	self.db.pronoun_subjective = "that direction"
+	self.db.pronoun_objective = "that direction"
+	self.db.pronoun_posessive = "that direction's"
+	self.db.pronoun_reflexive = "that direction"
+
     def reverse_exits(self):
         """
 	Finds the exit on the other side which leads back here.
