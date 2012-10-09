@@ -16,6 +16,6 @@ class CmdSysBoot(default_cmds.CmdBoot):
     """
 
     key = "@boot"
-    locks = "cmd:perm(boot) or perm(Wizards)"
-    help_category = "Admin"
+    locks = "cmd:pperm(boot) or pperm(Janitors)"
+    help_category = "=== Admin ==="
 

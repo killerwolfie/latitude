@@ -34,9 +34,8 @@ class CmdMap(default_cmds.MuxCommand):
       """
 
     key = "map"
-    aliases = []
     locks = "cmd:all()"
-    help_category = "General"
+    help_category = "Actions"
 
     # auto_help = False      # uncomment to deactive auto-help for this command.
     # arg_regex = r"\s.*?|$" # optional regex detailing how the part after

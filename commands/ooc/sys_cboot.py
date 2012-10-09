@@ -16,5 +16,5 @@ class CmdSysCBoot(default_cmds.CmdCBoot):
 
     key = "@cboot"
     locks = "cmd: not pperm(channel_banned)"
-    help_category = "Comms"
+    help_category = "Communication"
 

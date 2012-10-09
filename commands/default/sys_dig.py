@@ -22,6 +22,6 @@ class CmdSysDig(default_cmds.CmdDig):
     like to the name of the room and the exits in question; an example would be 'north;no;n'.
     """
     key = "@dig"
-    locks = "cmd:perm(dig) or perm(Builders)"
-    help_category = "Building"
+    locks = "cmd:pperm(dig) or pperm(Custodians)"
+    help_category = "--- Coder/Sysadmin ---"
 

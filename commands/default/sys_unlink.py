@@ -13,6 +13,6 @@ class CmdSysUnLink(default_cmds.CmdUnLink):
     # this is just a child of CmdLink
 
     key = "@unlink"
-    locks = "cmd:perm(unlink) or perm(Builders)"
-    help_key = "Building"
+    locks = "cmd:pperm(unlink) or pperm(Custodians)"
+    help_category = "--- Coder/Sysadmin ---"
 

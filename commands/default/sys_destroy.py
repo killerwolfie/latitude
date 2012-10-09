@@ -19,7 +19,6 @@ class CmdSysDestroy(default_cmds.CmdDestroy):
     """
 
     key = "@destroy"
-    aliases = ["@delete", "@del"]
-    locks = "cmd:perm(destroy) or perm(Builders)"
-    help_category = "Building"
+    locks = "cmd:pperm(destroy) or pperm(Custodians)"
+    help_category = "--- Coder/Sysadmin ---"
 

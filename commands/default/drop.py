@@ -13,4 +13,4 @@ class CmdDrop(default_cmds.CmdDrop):
 
     key = "drop"
     locks = "cmd:all()"
-
+    help_category = "Actions"

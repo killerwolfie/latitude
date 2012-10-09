@@ -2,7 +2,7 @@ from ev import default_cmds
 
 class CmdSysPage(default_cmds.CmdPage):
     """
-    page - send private message
+    @page - send private message
 
     Usage:
       page[/switches] [<player>,<player>,... = <message>]
@@ -17,8 +17,8 @@ class CmdSysPage(default_cmds.CmdPage):
     argument is given, you will get a list of your latest messages.
     """
 
-    key = "page"
-    aliases = ['tell']
+    key = "@page"
+    aliases = ['page']
     locks = "cmd:not pperm(page_banned)"
-    help_category = "Comms"
+    help_category = "Communication"
 

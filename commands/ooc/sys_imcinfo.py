@@ -2,7 +2,7 @@ from ev import default_cmds
 
 class CmdSysIMCInfo(default_cmds.CmdIMCInfo):
     """
-    imcinfo - package of imc info commands
+    @imcinfo - package of imc info commands
 
     Usage:
       @imcinfo[/switches]
@@ -20,7 +20,7 @@ class CmdSysIMCInfo(default_cmds.CmdIMCInfo):
     """
 
     key = "@imcinfo"
-    aliases = ["@imcchanlist", "@imclist", "@imcwhois"]
-    locks = "cmd: serversetting(IMC2_ENABLED) and pperm(Wizards)"
-    help_category = "Comms"
+    aliases = []
+    locks = "cmd: serversetting(IMC2_ENABLED) and pperm(Janitors)"
+    help_category = "=== Admin ==="
 

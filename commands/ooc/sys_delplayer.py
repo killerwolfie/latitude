@@ -16,6 +16,6 @@ class CmdSysDelPlayer(default_cmds.CmdDelPlayer):
     """
 
     key = "@delplayer"
-    locks = "cmd:perm(delplayer) or perm(Immortals)"
-    help_category = "Admin"
+    locks = "cmd:pperm(delplayer) or pperm(Janitors)"
+    help_category = "=== Admin ==="
 

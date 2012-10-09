@@ -13,5 +13,5 @@ class CmdSysAbout(default_cmds.CmdAbout):
     key = "@about"
     aliases = "@version"
     locks = "cmd:all()"
-    help_category = "System"
+    help_category = "Information"
 

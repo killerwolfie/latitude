@@ -12,6 +12,6 @@ class CmdSysReload(default_cmds.CmdReload):
     @reset to purge) and at_reload() hooks will be called.
     """
     key = "@reload"
-    locks = "cmd:perm(reload) or perm(Immortals)"
-    help_category = "System"
+    locks = "cmd:pperm(reload) or pperm(Custodians)"
+    help_category = "--- Coder/Sysadmin ---"
 

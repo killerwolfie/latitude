@@ -2,10 +2,10 @@ from ev import default_cmds
 
 class CmdSysAllCom(default_cmds.CmdAllCom):
     """
-    allcom - operate on all channels
+    @allcom - operate on all channels
 
     Usage:
-      allcom [on | off | who | destroy]
+      @allcom [on | off | who | destroy]
 
     Allows the user to universally turn off or on all channels they are on,
     as well as perform a 'who' for all channels they are on. Destroy deletes
@@ -14,7 +14,7 @@ class CmdSysAllCom(default_cmds.CmdAllCom):
     Without argument, works like comlist.
     """
 
-    key = "allcom"
+    key = "@allcom"
     locks = "cmd: not pperm(channel_banned)"
-    help_category = "Comms"
+    help_category = "Communication"
 

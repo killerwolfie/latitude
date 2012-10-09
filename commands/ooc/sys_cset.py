@@ -14,5 +14,5 @@ class CmdSysCset(default_cmds.CmdCset):
     key = "@cset"
     locks = "cmd:not pperm(channel_banned)"
     aliases = ["@cclock"]
-    help_category = "Comms"
+    help_category = "Communication"
 

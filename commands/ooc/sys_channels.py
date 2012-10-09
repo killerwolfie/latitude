@@ -14,6 +14,6 @@ class CmdSysChannels(default_cmds.CmdChannels):
     """
     key = "@channels"
     aliases = ["@clist", "channels", "comlist", "chanlist", "channellist", "all channels"]
-    help_category = "Comms"
+    help_category = "Communication"
     locks = "cmd: not pperm(channel_banned)"
 

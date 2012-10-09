@@ -21,6 +21,6 @@ class CmdSysDebug(default_cmds.CmdDebug):
     """
 
     key = "@debug"
-    locks = "cmd:perm(debug) or perm(Builders)"
-    help_category = "Building"
+    locks = "cmd:pperm(debug) or pperm(Custodians)"
+    help_category = "--- Coder/Sysadmin ---"
 

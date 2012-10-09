@@ -12,8 +12,8 @@ class CmdSysDelCom(default_cmds.CmdDelCom):
     unsubscribe.
     """
 
-    key = "delcom"
-    aliases = ["delaliaschan, delchanalias"]
-    help_category = "Comms"
-    locks = "cmd:not perm(channel_banned)"
+    key = "@delcom"
+    aliases = []
+    help_category = "Communication"
+    locks = "cmd:not pperm(channel_banned)"
 

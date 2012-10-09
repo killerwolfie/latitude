@@ -17,6 +17,6 @@ class CmdSysPerm(default_cmds.CmdPerm):
     """
     key = "@perm"
     aliases = "@setperm"
-    locks = "cmd:perm(perm) or perm(Immortals)"
-    help_category = "Admin"
+    locks = "cmd:pperm(perm) or pperm(Custodians)"
+    help_category = "--- Coder/Sysadmin ---"
 

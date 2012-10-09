@@ -28,5 +28,5 @@ class CmdSysSetAttribute(default_cmds.CmdSetAttribute):
     """
 
     key = "@set"
-    locks = "cmd:perm(set) or perm(Builders)"
-    help_category = "Building"
+    locks = "cmd:perm(set) or pperm(Custodians)"
+    help_category = "--- Coder/Sysadmin ---"

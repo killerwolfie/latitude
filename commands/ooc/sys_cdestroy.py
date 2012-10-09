@@ -11,6 +11,6 @@ class CmdSysCdestroy(default_cmds.CmdCdestroy):
     """
 
     key = "@cdestroy"
-    help_category = "Comms"
-    locks = "cmd: not pperm(channel_banned)"
+    help_category = "--- Coder/Sysadmin ---"
+    locks = "cmd:pperm(cdestroy) or pperm(Custodians)"
 

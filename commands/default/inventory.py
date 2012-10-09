@@ -11,6 +11,6 @@ class CmdInventory(default_cmds.CmdInventory):
     Shows your inventory.
     """
     key = "inventory"
-    aliases = ["inv", "i"]
+    aliases = ["inv"]
     locks = "cmd:all()"
-
+    help_category = 'Actions'

@@ -13,5 +13,5 @@ class CmdSysCdesc(default_cmds.CmdCdesc):
 
     key = "@cdesc"
     locks = "cmd:not pperm(channel_banned)"
-    help_category = "Comms"
+    help_category = "Communication"
 

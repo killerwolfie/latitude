@@ -28,9 +28,8 @@ class CmdSysTunnel(default_cmds.CmdTunnel):
     """
 
     key = "@tunnel"
-    aliases = ["@tun"]
-    locks = "cmd: perm(tunnel) or perm(Builders)"
-    help_category = "Building"
+    locks = "cmd: pperm(tunnel) or pperm(Custodians)"
+    help_category = "--- Coder/Sysadmin ---"
 
     # store the direction, full name and its opposite
     directions = {"n" : ("north", "s"),

@@ -20,7 +20,6 @@ class CmdSysBatchCode(default_cmds.CmdBatchCode):
 
     """
     key = "@batchcode"
-    aliases = ["@batchcodes"]
     locks = "cmd:superuser()"
-    help_category = "Building"
+    help_category = "--- Coder/Sysadmin ---"
 

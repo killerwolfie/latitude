@@ -6,8 +6,6 @@ class CmdSysTypeclass(default_cmds.CmdTypeclass):
 
     Usage:
       @typclass[/switch] <object> [= <typeclass.path>]
-      @type                     ''
-      @parent                   ''
 
     Switch:
       reset - clean out *all* the attributes on the object -
@@ -15,7 +13,7 @@ class CmdSysTypeclass(default_cmds.CmdTypeclass):
       force - change to the typeclass also if the object
               already has a typeclass of the same name.
     Example:
-      @type button = examples.red_button.RedButton
+      @typeclass button = examples.red_button.RedButton
 
     View or set an object's typeclass. If setting, the creation hooks
     of the new typeclass will be run on the object. If you have
@@ -33,7 +31,6 @@ class CmdSysTypeclass(default_cmds.CmdTypeclass):
     """
 
     key = "@typeclass"
-    aliases = "@type, @parent"
-    locks = "cmd:perm(typeclass) or perm(Builders)"
-    help_category = "Building"
+    locks = "cmd:pperm(typeclass) or pperm(Custodians)"
+    help_category = "--- Coder/Sysadmin ---"
 

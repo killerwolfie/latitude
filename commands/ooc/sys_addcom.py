@@ -13,8 +13,8 @@ class CmdSysAddCom(default_cmds.CmdAddCom):
     aliases to an already joined channel.
     """
 
-    key = "addcom"
-    aliases = ["aliaschan","chanalias"]
-    help_category = "Comms"
+    key = "@addcom"
+    aliases = []
+    help_category = "Communication"
     locks = "cmd:not pperm(channel_banned)"
 

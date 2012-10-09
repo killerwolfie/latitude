@@ -21,6 +21,6 @@ class CmdSysLink(default_cmds.CmdLink):
     """
 
     key = "@link"
-    locks = "cmd:perm(link) or perm(Builders)"
-    help_category = "Building"
+    locks = "cmd:pperm(link) or pperm(Custodians)"
+    help_category = "--- Coder/Sysadmin ---"
 

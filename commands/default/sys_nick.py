@@ -31,7 +31,7 @@ class CmdSysNick(default_cmds.CmdNick):
     permanently add keywords to an object for everyone to use, you
     need build privileges and to use the @alias command.
     """
-    key = "nick"
-    aliases = ["nickname", "nicks", "@nick", "alias"]
+    key = "@nick"
+    aliases = ["nicks"]
     locks = "cmd:all()"
 

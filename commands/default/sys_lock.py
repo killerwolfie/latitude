@@ -23,16 +23,16 @@ class CmdSysLock(default_cmds.CmdLock, MuckCommand):
     Separator expressions need not be capitalized.
 
     For example:
-       'get: id(25) or perm(Wizards)'
+       'get: id(25) or pperm(Janitors)'
     The 'get' access_type is checked by the get command and will
     an object locked with this string will only be possible to
     pick up by Wizards or by object with id 25.
 
     You can add several access_types after oneanother by separating
     them by ';', i.e:
-       'get:id(25);delete:perm(Builders)'
+       'get:id(25);delete:pperm(Custodians)'
     """
     key = "@lock"
-    aliases = ["@locks", "lock", "locks"]
-    locks = "cmd: perm(@locks) or perm(Builders)"
-    help_category = "Building"
+    aliases = []
+    locks = "cmd: pperm(@locks) or pperm(Custodians)"
+    help_category = "--- Coder/Sysadmin ---"

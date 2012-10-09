@@ -22,6 +22,6 @@ class CmdSysEmit(default_cmds.CmdEmit):
     """
     key = "@emit"
     aliases = ["@pemit", "@remit"]
-    locks = "cmd:perm(emit) or perm(Builders)"
-    help_category = "Admin"
+    locks = "cmd:pperm(emit) or pperm(Janitors)"
+    help_category = "=== Admin ==="
 

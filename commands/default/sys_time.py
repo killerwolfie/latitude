@@ -10,7 +10,6 @@ class CmdSysTime(default_cmds.CmdTime):
     Server local time.
     """
     key = "@time"
-    aliases = "@uptime"
-    locks = "cmd:perm(time) or perm(Players)"
-    help_category = "System"
+    locks = "cmd:pperm(time) or pperm(Players)"
+    help_category = "Information"
 

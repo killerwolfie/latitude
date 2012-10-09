@@ -24,6 +24,6 @@ class CmdSysRSS2Chan(default_cmds.CmdRSS2Chan):
     """
 
     key = "@rss2chan"
-    locks = "cmd:serversetting(RSS_ENABLED) and pperm(Immortals)"
-    help_category = "Comms"
+    locks = "cmd:serversetting(RSS_ENABLED) and pperm(Custodians)"
+    help_category = "--- Coder/Sysadmin ---"
 

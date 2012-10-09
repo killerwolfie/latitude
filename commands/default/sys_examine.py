@@ -20,7 +20,6 @@ class CmdSysExamine(default_cmds.CmdExamine):
 
     """
     key = "@examine"
-    aliases = ["@ex","ex", "exam", "examine"]
-    locks = "cmd:perm(examine) or perm(Builders)"
-    help_category = "Building"
+    locks = "cmd:pperm(examine) or pperm(Janitors)"
+    help_category = "=== Admin ==="
     arg_regex = r"\s.*?|$"

@@ -17,6 +17,6 @@ class CmdSysTeleport(default_cmds.CmdTeleport):
     """
     key = "@tel"
     aliases = "@teleport"
-    locks = "cmd:perm(teleport) or perm(Builders)"
-    help_category = "Building"
+    locks = "cmd:pperm(teleport) or pperm(Janitors)"
+    help_category = "=== Admin ==="
 

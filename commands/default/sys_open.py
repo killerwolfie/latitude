@@ -15,5 +15,5 @@ class CmdSysOpen(default_cmds.CmdOpen):
 
     """
     key = "@open"
-    locks = "cmd:perm(open) or perm(Builders)"
-    help_category = "Building"
+    locks = "cmd:pperm(open) or pperm(Custodians)"
+    help_category = "--- Coder/Sysadmin ---"

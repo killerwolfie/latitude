@@ -17,6 +17,6 @@ class CmdSysSetObjAlias(default_cmds.CmdSetObjAlias):
 
     key  = "@alias"
     aliases = "@setobjalias"
-    locks = "cmd:perm(setobjalias) or perm(Builders)"
-    help_category = "Building"
+    locks = "cmd:perm(setobjalias) or pperm(Custodians)"
+    help_category = "--- Coder/Sysadmin ---"
 

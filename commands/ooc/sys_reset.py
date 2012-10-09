@@ -14,6 +14,6 @@ class CmdSysReset(default_cmds.CmdReset):
     """
     key = "@reset"
     aliases = ['@reboot']
-    locks = "cmd:perm(reload) or perm(Immortals)"
-    help_category = "System"
+    locks = "cmd:pperm(reload) or pperm(Custodians)"
+    help_category = "--- Coder/Sysadmin ---"
 

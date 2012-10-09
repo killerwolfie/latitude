@@ -24,6 +24,6 @@ class CmdSysCreate(default_cmds.CmdCreate):
     """
 
     key = "@create"
-    locks = "cmd:perm(create) or perm(Builders)"
-    help_category = "Building"
+    locks = "cmd:pperm(create) or pperm(Custodians)"
+    help_category = "--- Coder/Sysadmin ---"
 

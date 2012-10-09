@@ -24,4 +24,4 @@ class CmdSysEncoding(default_cmds.CmdEncoding):
     key = "@encoding"
     aliases = "@encode"
     locks = "cmd:all()"
-
+    help_category = "General"

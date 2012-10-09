@@ -5,12 +5,11 @@ class CmdSysAccess(default_cmds.CmdAccess):
     access - show access groups
 
     Usage:
-      access
+      @access
 
     This command shows you the permission hierarchy and
     which permission groups you are a member of.
     """
-    key = "access"
-    aliases = ["groups", "hierarchy"]
+    key = "@access"
     locks = "cmd:all()"
-
+    help_category = "Information"

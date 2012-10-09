@@ -1,6 +1,6 @@
-from ev import default_cmds
+from game.gamesrc.latitude.commands.default import say
 
-class CmdPose(default_cmds.CmdPose):
+class CmdPose(say.CmdSay):
     """
     pose - strike a pose
 
@@ -16,6 +16,18 @@ class CmdPose(default_cmds.CmdPose):
     Describe an action being taken. The pose text will
     automatically begin with your name.
     """
+
     key = "pose"
-    aliases = [":", "emote"]
+    aliases = [':']
     locks = "cmd:all()"
+    help_category = "Actions"
+
+    def func(self):
+        message = self.gen_pose(self.args)
+        if self.caller.location:
+            # Call the speech hook on the location
+            self.caller.location.at_say(self.caller, message)
+            self.caller.location.msg_contents(message, data={"raw":True})
+        else:
+            self.caller.msg(message, data={"raw":True})
+

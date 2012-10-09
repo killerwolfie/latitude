@@ -15,6 +15,6 @@ class CmdSysWipe(default_cmds.CmdWipe):
     matching the given attribute-wildcard search string.
     """
     key = "@wipe"
-    locks = "cmd:perm(wipe) or perm(Builders)"
-    help_category = "Building"
+    locks = "cmd:pperm(wipe) or pperm(Custodians)"
+    help_category = "--- Coder/Sysadmin ---"
 
