@@ -86,70 +86,115 @@ class LatitudeRoom(LatitudeObject, Room):
     def generate_map(self, location_name=False):
         if not (self.db.area_id != None and self.db.area_map_num != None):
 	    return None
-
         try:
 	    # Grab the map
 	    area = search_script(self.db.area_id)[0]
 	    region = search_script(area.db.region)[0]
 	    map_data = area.get_attribute('maps')[self.db.area_map_num]['map_data']
-
-            # Add in the X (clearing and rebuilding the map)
+            # Parse the map data's color codes and create a canvas
+            canvas = TextCanvas()
+            canvas.set_data(map_data)
 	    if self.db.area_map_x and self.db.area_map_y:
-		orig_map_lines = map_data.splitlines()
-		map_data = u''
-
-		x = 1
-		y = 1
-		mark_placed = False
-		max_width = 0
-
-		for map_line in orig_map_lines:
-		    if y == self.db.area_map_y:
-		        line_sections = re.split(r'(?<!\\)(%c[fihnxXrRgGyYbBmMcCwW])', map_line)
-			map_line = u''
-			fg_at_mark = None
-			bg_at_mark = None
-			attr_at_mark = None
-		        for line_section in line_sections:
-			    if not line_section:
-			        continue
-                            color_code_match = re.search(r'^%c([fihnxXrRgGyYbBmMcCwW])$', line_section)
-                            if color_code_match:
-			        color_code = color_code_match.group(1)
-				if color_code == 'n':
-				    fg_at_mark = None
-				    bg_at_mark = None
-				    attr_at_mark = None
-				elif color_code in 'fih':
-				    attr_at_mark = color_code
-				elif color_code in 'xrgybmcw':
-				    fg_at_mark = color_code
-				elif color_code in 'XRGYBMCW':
-				    bg_at_mark = color_code
-                            else:
-			        x += len(line_section)
-				if (not mark_placed) and x > self.db.area_map_x:
-				    mark_location = len(line_section) - ( x - self.db.area_map_x )
-				    mark = '%cn%crX%cn'
-				    if attr_at_mark:
-				        mark += '%c' + attr_at_mark
-				    if fg_at_mark:
-				        mark += '%c' + fg_at_mark
-				    if bg_at_mark:
-				        mark += '%c' + bg_at_mark
-				    line_section = line_section[:mark_location] + mark + line_section[mark_location + 1:]
-				    mark_placed = True
-		            map_line += line_section
-	            map_data += map_line + u'\n'
-		    y += 1
-	   
-	    # Return the map
+                canvas.draw(self.db.area_map_x, self.db.area_map_y, "X", attr=None, fg='r', bg='?')
+            retval = canvas.get_data()
 	    if location_name:
-                return map_data + ('{bRegion:{n %s {bArea:{n %s {bRoom:{n %s' % (region.db.name, area.db.name, self.key)).center(x + 12) # x = at this point, the width of the line with the marker, 12 = Number of color escape characters
-            else:
-	        return map_data.rstrip('\n')
-	except Exception as e:
+	        retval = retval + '\n' + ('{bRegion:{n %s {bArea:{n %s {bRoom:{n %s' % (region.db.name, area.db.name, self.key)).center(canvas.width() + 12) # 12 = Number of color escape characters
+	    return retval
+	except ValueError as e:
 	    # Looks like we blew it.
 	    filename = os.path.split(sys.exc_info()[2].tb_frame.f_code.co_filename)[1]
             line = sys.exc_info()[2].tb_lineno
 	    return '{R[Error displaying map (%s:%d): %s]{n' % (filename, line, str(e))
+
+class TextCanvas():
+    def __init__(self):
+        self.canvas = []
+
+    def set_data(self, canvas_string):
+        self.canvas = []
+	for string_line in canvas_string.split('\n'):
+	    canvas_line = []
+	    line_sections = re.split(r'(?<!\\)(%c[fihnxXrRgGyYbBmMcCwW])', string_line)
+	    fg_at_mark = None
+	    bg_at_mark = None
+	    attr_at_mark = None
+	    for line_section in line_sections:
+		if not line_section:
+		    continue
+		color_code_match = re.search(r'^%c([fihnxXrRgGyYbBmMcCwW])$', line_section)
+		if color_code_match: # Color code section
+		    color_code = color_code_match.group(1)
+		    if color_code == 'n':
+			fg_at_mark = None
+			bg_at_mark = None
+			attr_at_mark = None
+		    elif color_code in 'fih':
+			attr_at_mark = color_code
+		    elif color_code in 'xrgybmcw':
+			fg_at_mark = color_code
+		    elif color_code in 'XRGYBMCW':
+			bg_at_mark = color_code
+	        else: # Text data section
+		    for character in line_section:
+		        canvas_line.append({
+			    'character' : character,
+			    'color_fg' : fg_at_mark,
+			    'color_bg' : bg_at_mark,
+			    'color_attr' : attr_at_mark,
+			})
+            self.canvas.append(canvas_line)
+
+    def get_data(self):
+        retval = u''
+        current_fg = None
+        current_bg = None
+        current_attr = None
+        for line in self.canvas:
+            for char in line:
+                if char['color_fg'] != current_fg or char['color_bg'] != current_bg or char['color_attr'] != current_attr:
+                    current_fg = char['color_fg']
+                    current_bg = char['color_bg']
+                    current_attr = char['color_attr']
+                    retval += '%cn'
+                    if current_fg:
+                        retval += '%c' + current_fg
+                    if current_bg:
+                        retval += '%c' + current_bg
+                    if current_attr:
+                        retval += '%c' + current_attr
+                retval += char['character']
+            retval += '\n'
+        return retval[:-1]
+
+    def draw(self, x, y, draw_string, fg=None, bg=None, attr=None):
+        # If needed, expand the canvas horizontally
+        for i in range((1 + y) - len(self.canvas)):
+            self.canvas.append([])
+	# If needed, expand the canvas vertically
+	for i in range((x + len(draw_string)) - len(self.canvas[y])):
+	    self.canvas[y].append({'color_fg' : None, 'color_bg' : None, 'color_attr' : None, 'character' : ' '})
+	# Apply the drawing
+	for i in range(len(draw_string)):
+	    if fg == '?': # Unchanged
+	        new_fg = self.canvas[y][x + i]['color_fg']
+            else:
+	        new_fg = fg
+	    if bg == '?': # Unchanged
+	        new_bg = self.canvas[y][x + i]['color_bg']
+            else:
+	        new_bg = bg
+	    if attr == '?': # Unchanged
+	        new_attr = self.canvas[y][x + i]['color_attr']
+            else:
+	        new_attr = attr
+	    self.canvas[y][x + i] = {'color_fg' : new_fg, 'color_bg' : new_bg, 'color_attr' : new_attr, 'character' : draw_string[i]}
+
+    def width(self):
+        max_len = 0
+        for line in self.canvas:
+            if max_len < len(line):
+	        max_len = len(line)
+        return max_len
+
+    def height(self):
+        return len(self.canvas)
