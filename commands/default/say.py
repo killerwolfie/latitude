@@ -107,14 +107,12 @@ class CmdSay(MuckCommand):
         return "exclaims"
 
     def parse_color(self, desc):
-        self.caller.msg(desc)
         retval = ''
 	for name in desc.split(','):
 	    if name in color_names:
 	        retval += color_names[name]
         if retval:
 	    retval = ANSI_NORMAL + retval # Default to normal
-	self.caller.msg(retval + 'xyz')
 	return retval
 
     def get_color_depth(self, depth):
