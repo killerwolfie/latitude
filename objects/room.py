@@ -83,7 +83,7 @@ class LatitudeRoom(LatitudeObject, Room):
 	return super(LatitudeRoom, self).return_writing(looker)
 
     # ----- Maps -----
-    def generate_map(self, print_location=False, mark_self=True, mark_friends_of=None):
+    def return_map(self, print_location=False, mark_self=True, mark_friends_of=None):
         if not (self.db.area_id != None and self.db.area_map_num != None):
 	    return None
         try:
@@ -97,6 +97,7 @@ class LatitudeRoom(LatitudeObject, Room):
 	    if mark_self and self.db.area_map_x and self.db.area_map_y:
                 canvas.draw(self.db.area_map_x, self.db.area_map_y, "X", attr=None, fg='r', bg='?')
             if mark_friends_of:
+	        friend_legend = ''
 	        if mark_friends_of.player:
 		    mark_friends_of = mark_friends_of.player
 	        friends = mark_friends_of.db.friends_list
@@ -108,7 +109,6 @@ class LatitudeRoom(LatitudeObject, Room):
 		        {'character' : '4', 'attr' : 'h', 'fg' : 'm', 'bg' : '?'},
 		        {'character' : '5', 'attr' : 'h', 'fg' : 'b', 'bg' : '?'},
 		    ]
-		    friend_legend = ''
 		    for friend in friends:
 		        if not friend.sessions: # Offline
 			    continue
@@ -125,7 +125,7 @@ class LatitudeRoom(LatitudeObject, Room):
 	    if print_location:
 	        retval += '\n' + ('{bRegion:{n %s {bArea:{n %s {bRoom:{n %s' % (region.db.name, area.db.name, self.key)).center(canvas.width() + 12) # 12 = Number of color escape characters
 	    if mark_friends_of and friend_legend:
-	        retval += '\n' + friend_legend
+	            retval += '\n' + friend_legend
 	    return retval
 	except ValueError as e:
 	    # Looks like we blew it.

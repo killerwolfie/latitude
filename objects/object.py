@@ -19,6 +19,7 @@ this change, you have to convert them manually e.g. with the
 """
 from ev import Object
 from ev import Exit
+from ev import Room
 
 class LatitudeObject(Object):
     """
@@ -269,6 +270,16 @@ class LatitudeObject(Object):
             return self.db.desc_situational_name
         return self.key
 
+    # ----- Maps -----
+    def return_map(self, mark_friends_of=None):
+        """
+	Return an ascii image representing the location of the object for helping users to navigate.
+	"""
+	room = self.containing_room()
+	if hasattr(room, 'return_map'):
+	    return room.return_map(mark_friends_of)
+	return None
+
     # ----- Pronoun Substitution -----
     def return_pronoun_reflexive(self):
         if self.db.desc_pronoun_reflexive:
@@ -386,3 +397,35 @@ class LatitudeObject(Object):
     def at_desc_writing(self, looker):
         pass
 
+    # ----- Utilities -----
+    def containing_room(self):
+        """
+	Ascends the tree until it hits the first room, and returns it.
+	"""
+        obj_seen = set([self])
+        room = self.location
+        while room:
+            if room in obj_seen:
+                raise Exception('Object loop detected!  ' + room.dbref + ' contains itself!')
+            obj_seen.add(room)
+            if isinstance(room.typeclass, Room):
+                break
+            room = room.location
+	if room.location != None:
+	    raise Exception('"Child" room detected!  ' + room.dbref + ' has a location!')
+        return room
+
+    def is_inside(self, obj):
+        """
+	Ascends the tree to determine if this object is inside obj
+	"""
+        obj_seen = set([self])
+        parent = self.location
+        while parent:
+            if parent in obj_seen:
+                raise Exception('Object loop detected!  ' + parent.dbref + ' contains itself!')
+            obj_seen.add(parent)
+	    if parent == obj:
+	        return True
+            parent = parent.location
+	return False
