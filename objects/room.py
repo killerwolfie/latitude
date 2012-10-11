@@ -1,6 +1,8 @@
 from ev import search_script
 import re
 import random
+import sys
+import os
 
 from ev import Room
 from ev import Exit
@@ -81,13 +83,14 @@ class LatitudeRoom(LatitudeObject, Room):
 	return super(LatitudeRoom, self).return_writing(looker)
 
     # ----- Maps -----
-    def generate_map(self):
+    def generate_map(self, location_name=False):
         if not (self.db.area_id != None and self.db.area_map_num != None):
 	    return None
 
         try:
 	    # Grab the map
-	    area = search_script('area_' + str(self.db.area_id))[0]
+	    area = search_script(self.db.area_id)[0]
+	    region = search_script(area.db.region)[0]
 	    map_data = area.get_attribute('maps')[self.db.area_map_num]['map_data']
 
             # Add in the X (clearing and rebuilding the map)
@@ -98,6 +101,7 @@ class LatitudeRoom(LatitudeObject, Room):
 		x = 1
 		y = 1
 		mark_placed = False
+		max_width = 0
 
 		for map_line in orig_map_lines:
 		    if y == self.db.area_map_y:
@@ -138,9 +142,14 @@ class LatitudeRoom(LatitudeObject, Room):
 		            map_line += line_section
 	            map_data += map_line + u'\n'
 		    y += 1
-	    
+	   
 	    # Return the map
-	    return map_data.rstrip('\n')
+	    if location_name:
+                return map_data + ('{bRegion:{n %s {bArea:{n %s {bRoom:{n %s' % (region.db.name, area.db.name, self.key)).center(x + 12) # x = at this point, the width of the line with the marker, 12 = Number of color escape characters
+            else:
+	        return map_data.rstrip('\n')
 	except Exception as e:
 	    # Looks like we blew it.
-	    return '%cr[Error displaying map: ' + str(e) + ']%cn'
+	    filename = os.path.split(sys.exc_info()[2].tb_frame.f_code.co_filename)[1]
+            line = sys.exc_info()[2].tb_lineno
+	    return '{R[Error displaying map (%s:%d): %s]{n' % (filename, line, str(e))
