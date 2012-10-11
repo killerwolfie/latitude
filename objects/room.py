@@ -83,7 +83,7 @@ class LatitudeRoom(LatitudeObject, Room):
 	return super(LatitudeRoom, self).return_writing(looker)
 
     # ----- Maps -----
-    def generate_map(self, location_name=False):
+    def generate_map(self, print_location=False, mark_self=True, mark_friends_of=None):
         if not (self.db.area_id != None and self.db.area_map_num != None):
 	    return None
         try:
@@ -94,11 +94,38 @@ class LatitudeRoom(LatitudeObject, Room):
             # Parse the map data's color codes and create a canvas
             canvas = TextCanvas()
             canvas.set_data(map_data)
-	    if self.db.area_map_x and self.db.area_map_y:
+	    if mark_self and self.db.area_map_x and self.db.area_map_y:
                 canvas.draw(self.db.area_map_x, self.db.area_map_y, "X", attr=None, fg='r', bg='?')
+            if mark_friends_of:
+	        if mark_friends_of.player:
+		    mark_friends_of = mark_friends_of.player
+	        friends = mark_friends_of.db.friends_list
+		if friends:
+		    friend_markers = [
+		        {'character' : '1', 'attr' : 'h', 'fg' : 'g', 'bg' : '?'},
+		        {'character' : '2', 'attr' : 'h', 'fg' : 'y', 'bg' : '?'},
+		        {'character' : '3', 'attr' : 'h', 'fg' : 'c', 'bg' : '?'},
+		        {'character' : '4', 'attr' : 'h', 'fg' : 'm', 'bg' : '?'},
+		        {'character' : '5', 'attr' : 'h', 'fg' : 'b', 'bg' : '?'},
+		    ]
+		    friend_legend = ''
+		    for friend in friends:
+		        if not friend.sessions: # Offline
+			    continue
+		        if not friend.character:
+			    continue
+			friend_char = friend.character
+		        if friend_char.location and friend_char.location.db.area_id == area.dbref and friend_char.location != self and friend_char.location.db.area_map_x and friend_char.location.db.area_map_y:
+			    friend_marker = friend_markers.pop(0)
+                            canvas.draw(friend_char.location.db.area_map_x, friend_char.location.db.area_map_y, friend_marker['character'], attr=friend_marker['attr'], fg=friend_marker['fg'], bg=friend_marker['bg'])
+                            friend_legend += '%cn%c' + friend_marker['attr'] + '%c' + friend_marker['fg'] + friend_marker['character'] + ') ' + friend.name + ' '
+			    if not friend_markers: # No more markers to place
+			        break
             retval = canvas.get_data()
-	    if location_name:
-	        retval = retval + '\n' + ('{bRegion:{n %s {bArea:{n %s {bRoom:{n %s' % (region.db.name, area.db.name, self.key)).center(canvas.width() + 12) # 12 = Number of color escape characters
+	    if print_location:
+	        retval += '\n' + ('{bRegion:{n %s {bArea:{n %s {bRoom:{n %s' % (region.db.name, area.db.name, self.key)).center(canvas.width() + 12) # 12 = Number of color escape characters
+	    if mark_friends_of and friend_legend:
+	        retval += '\n' + friend_legend
 	    return retval
 	except ValueError as e:
 	    # Looks like we blew it.

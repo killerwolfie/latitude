@@ -43,6 +43,6 @@ class CmdMap(default_cmds.MuxCommand):
 
     def func(self):
         if self.caller.location:
-            self.caller.msg(self.caller.location.generate_map())
+            self.caller.msg(self.caller.location.generate_map(mark_friends_of=self.caller))
 	else:
 	    self.caller.msg("You have no location to find on the map!")

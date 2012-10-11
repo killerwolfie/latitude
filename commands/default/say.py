@@ -46,6 +46,20 @@ ANSI_RETURN = "\r\n"
 ANSI_TAB = "\t"
 ANSI_SPACE = " "
 
+color_names = {
+    'black' : ANSI_BLACK,
+    'red' : ANSI_RED,
+    'green' : ANSI_GREEN,
+    'yellow' : ANSI_YELLOW,
+    'blue' : ANSI_BLUE,
+    'magenta' : ANSI_MAGENTA,
+    'cyan' : ANSI_CYAN,
+    'white' : ANSI_WHITE,
+    'bold' : ANSI_HILITE,
+    'hilight' : ANSI_HILITE,
+    'hilite' : ANSI_HILITE,
+}
+
 class CmdSay(MuckCommand):
     """
     Usage:
@@ -77,11 +91,11 @@ class CmdSay(MuckCommand):
 	    verb = self.get_exclaims()
 	else:
 	    verb = self.get_says()
-	return self.get_color_player() + self.caller.name + ' ' + self.colorize(verb + ', "' + say_string + '"')
+	return self.get_color_name() + self.caller.name + ' ' + self.colorize(verb + ', "' + say_string + '"')
 
     def gen_pose(self, pose_string):
         # TODO: No-space detection
-        return(self.get_color_player() + self.caller.name + ' ' + self.colorize(pose_string))
+        return(self.get_color_name() + self.caller.name + ' ' + self.colorize(pose_string))
 
     def get_says(self):
         return "says"
@@ -92,21 +106,38 @@ class CmdSay(MuckCommand):
     def get_exclaims(self):
         return "exclaims"
 
+    def parse_color(self, desc):
+        self.caller.msg(desc)
+        retval = ''
+	for name in desc.split(','):
+	    if name in color_names:
+	        retval += color_names[name]
+        if retval:
+	    retval = ANSI_NORMAL + retval # Default to normal
+	self.caller.msg(retval + 'xyz')
+	return retval
+
     def get_color_depth(self, depth):
+        if self.caller.get_attribute('say_color_depth' + str(depth)):
+	    return self.parse_color(self.caller.get_attribute('say_color_depth' + str(depth)))
         if depth < 1:
-	    return ANSI_HILITE + ANSI_BLACK
+	    return ANSI_NORMAL + ANSI_CYAN
 	elif depth == 1:
 	    return ANSI_NORMAL + ANSI_WHITE
 	elif depth == 2:
-	    return ANSI_HILITE + ANSI_WHITE
+	    return ANSI_NORMAL + ANSI_WHITE
 	elif depth >= 3:
-	    return ANSI_HILITE + ANSI_CYAN
+	    return ANSI_NORMAL + ANSI_WHITE
 
     def get_color_quote(self):
-        return ANSI_HILITE + ANSI_RED
+        if self.caller.get_attribute('say_color_quote'):
+	    return self.parse_color(self.caller.get_attribute('say_color_quote'))
+        return ANSI_NORMAL + ANSI_WHITE
 
-    def get_color_player(self):
-        return ANSI_HILITE + ANSI_YELLOW
+    def get_color_name(self):
+        if self.caller.get_attribute('say_color_name'):
+	    return self.parse_color(self.caller.get_attribute('say_color_name'))
+        return ANSI_HILITE + ANSI_CYAN
 
     def colorize(self, say_string):
         retval = u''
