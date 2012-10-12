@@ -3,6 +3,7 @@ import re
 import random
 import sys
 import os
+import time
 
 from ev import Room
 from ev import Exit
@@ -88,6 +89,8 @@ class LatitudeRoom(LatitudeObject, Room):
         if not (self.db.area_id != None and self.db.area_map_num != None):
 	    return None
         try:
+	    # Grab the time at which this call was made, so if the call takes a while it doesn't drift our 'idle time' calculations
+	    now = time.time()
 	    # Grab the map
 	    area = search_script(self.db.area_id)[0]
 	    region = search_script(area.db.region)[0]
@@ -95,38 +98,96 @@ class LatitudeRoom(LatitudeObject, Room):
             # Parse the map data's color codes and create a canvas
             canvas = TextCanvas()
             canvas.set_data(map_data)
+            # Generate a list of marks, and associated legend entries.
+	    marks = {}
+	    # TODO: poi_marks ?
 	    if mark_self and self.db.area_map_x and self.db.area_map_y:
-                canvas.draw_string(self.db.area_map_x, self.db.area_map_y, "X", attr=None, fg='r', bg='?')
+	        location = (self.db.area_map_x, self.db.area_map_y)
+		marker = {'type' : 'Location', 'legend' : None, 'prio' : 10}
+	        if location in marks:
+		    marks[location].append(marker)
+		else:
+		    marks[location] = [ marker ]
             if mark_friends_of:
-	        friend_legend = ''
 	        if mark_friends_of.player:
 		    mark_friends_of = mark_friends_of.player
-	        friends = mark_friends_of.db.friends_list
+		friends = mark_friends_of.db.friends_list
 		if friends:
-		    friend_markers = [
-		        {'character' : '1', 'attr' : 'h', 'fg' : 'g', 'bg' : '?'},
-		        {'character' : '2', 'attr' : 'h', 'fg' : 'y', 'bg' : '?'},
-		        {'character' : '3', 'attr' : 'h', 'fg' : 'c', 'bg' : '?'},
-		        {'character' : '4', 'attr' : 'h', 'fg' : 'm', 'bg' : '?'},
-		        {'character' : '5', 'attr' : 'h', 'fg' : 'b', 'bg' : '?'},
-		    ]
 		    for friend in friends:
 		        if not friend.sessions: # Offline
 			    continue
-		        if not friend.character:
+			if not friend.character: # Not IC.  This will need to be modified to handle multi-character connections.
 			    continue
-			friend_char = friend.character
-		        if friend_char.location and friend_char.location.db.area_id == area.dbref and friend_char.location != self and friend_char.location.db.area_map_x and friend_char.location.db.area_map_y:
-			    friend_marker = friend_markers.pop(0)
-                            canvas.draw_string(friend_char.location.db.area_map_x, friend_char.location.db.area_map_y, friend_marker['character'], attr=friend_marker['attr'], fg=friend_marker['fg'], bg=friend_marker['bg'])
-                            friend_legend += '%cn%c' + friend_marker['attr'] + '%c' + friend_marker['fg'] + friend_marker['character'] + ') ' + friend.name + ' '
-			    if not friend_markers: # No more markers to place
-			        break
+                        friend_char = friend.character
+                        if friend_char.location and friend_char.location.db.area_id == area.dbref and friend_char.location.db.area_map_x and friend_char.location.db.area_map_y:
+			    location = (friend_char.location.db.area_map_x, friend_char.location.db.area_map_y)
+			    if friend.sessions:
+			        prio = friend.sessions[0].cmd_last_visible - now
+		            else:
+			        prio = time.mktime(friend.user.last_login.timetuple()) - now
+			    marker = {'type' : 'Friend', 'legend' : friend_char.key, 'prio' : -1}
+			    if location in marks:
+			        marks[location].append(marker)
+			    else:
+			        marks[location] = [ marker ]
+            # Make sure all the marks are sorted
+	    for location in marks.keys():
+	        marks[location].sort(key=lambda item: item['prio'], reverse=True)
+	    # Place the marks on the map, and generate the legend
+	    number_markers = [
+		{'char' : '1', 'attr' : 'h', 'fg' : 'g', 'bg' : '?'},
+		{'char' : '2', 'attr' : 'h', 'fg' : 'y', 'bg' : '?'},
+		{'char' : '3', 'attr' : 'h', 'fg' : 'c', 'bg' : '?'},
+		{'char' : '4', 'attr' : 'h', 'fg' : 'm', 'bg' : '?'},
+		{'char' : '5', 'attr' : 'h', 'fg' : 'b', 'bg' : '?'},
+	    ]
+	    location_marker = {'char' : 'X', 'attr' : None, 'fg' : 'r', 'bg' : '?'}
+	    legend_remaining = 10
+	    legend = ''
+	    for location, mark in sorted(marks.items(), key=lambda mark_item: mark_item[1][0]['prio'], reverse=True):
+                # Take the item with the highest priority and determine its type of marker
+                if mark[0]['type'] == 'Location':
+		    marker = location_marker
+		    do_legend = False
+		elif number_markers:
+	            marker = number_markers.pop(0)
+		    do_legend = True
+		else:
+		    # We're out of number markers.  Reduce the remaining quota to 0.
+		    legend_remaining = min(0, legend_remaining)
+		    marker = None
+		    do_legend = True # We want to do the legend even though it won't append to the string, so it tracks how '(# more...)' entries.
+		# Make the actual mark
+                if marker and legend_remaining > 0 or mark[0]['prio'] >= 0: # If there is no marker to place, or we're drawing an optional (prio < 0) mark without remaining legend space, then skip
+		    canvas.draw_string(location[0], location[1], marker['char'], attr=marker['attr'], fg=marker['fg'], bg=marker['bg'])
+		# Extract the legend items
+		if do_legend:
+		    legend_items = [item['legend'] for item in mark if item['legend'] != None]
+		    if legend_items:
+			if marker and legend_remaining > 0: # We're not out of markers, and we're not out of our legend item quota
+			    legend += '%cn'
+			    if marker['attr'] != None and marker['attr'] != '?':
+				legend += '%c' + marker['attr']
+			    if marker['fg'] != None and marker['fg'] != '?':
+				legend += '%c' + marker['fg']
+			    if marker['bg'] != None and marker['bg'] != '?':
+				legend += '%c' + marker['bg']
+			    legend += marker['char'] + ') '
+			    if len(legend_items) <= legend_remaining:
+				legend += ', '.join(legend_items)
+			    else:
+				legend += ', '.join(legend_items[:legend_remaining])
+			    legend += ' '
+			legend_remaining -= len(legend_items)
+	    if legend_remaining < 0:
+	        legend += '%cn(' + str(0 - legend_remaining) + ' more...)'
+
+	    # Grab and print the output
             retval = canvas.get_data()
 	    if print_location:
 	        retval += '\n' + ('{bRegion:{n %s {bArea:{n %s {bRoom:{n %s' % (region.db.name, area.db.name, self.key)).center(canvas.width() + 12) # 12 = Number of color escape characters
-	    if mark_friends_of and friend_legend:
-	            retval += '\n' + friend_legend
+	    if legend:
+		    retval += '\n' + legend
 	    return retval
 	except ValueError as e:
 	    # Looks like we blew it.
