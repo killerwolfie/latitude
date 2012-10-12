@@ -411,7 +411,7 @@ class LatitudeObject(Object):
             if isinstance(room.typeclass, Room):
                 break
             room = room.location
-	if room.location != None:
+	if room and room.location != None:
 	    raise Exception('"Child" room detected!  ' + room.dbref + ' has a location!')
         return room
 

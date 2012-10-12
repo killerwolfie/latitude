@@ -7,6 +7,7 @@ import os
 from ev import Room
 from ev import Exit
 from game.gamesrc.latitude.objects.object import LatitudeObject
+from game.gamesrc.latitude.utils.text_canvas import TextCanvas
 
 class LatitudeRoom(LatitudeObject, Room):
     def at_object_creation(self):
@@ -95,7 +96,7 @@ class LatitudeRoom(LatitudeObject, Room):
             canvas = TextCanvas()
             canvas.set_data(map_data)
 	    if mark_self and self.db.area_map_x and self.db.area_map_y:
-                canvas.draw(self.db.area_map_x, self.db.area_map_y, "X", attr=None, fg='r', bg='?')
+                canvas.draw_string(self.db.area_map_x, self.db.area_map_y, "X", attr=None, fg='r', bg='?')
             if mark_friends_of:
 	        friend_legend = ''
 	        if mark_friends_of.player:
@@ -117,7 +118,7 @@ class LatitudeRoom(LatitudeObject, Room):
 			friend_char = friend.character
 		        if friend_char.location and friend_char.location.db.area_id == area.dbref and friend_char.location != self and friend_char.location.db.area_map_x and friend_char.location.db.area_map_y:
 			    friend_marker = friend_markers.pop(0)
-                            canvas.draw(friend_char.location.db.area_map_x, friend_char.location.db.area_map_y, friend_marker['character'], attr=friend_marker['attr'], fg=friend_marker['fg'], bg=friend_marker['bg'])
+                            canvas.draw_string(friend_char.location.db.area_map_x, friend_char.location.db.area_map_y, friend_marker['character'], attr=friend_marker['attr'], fg=friend_marker['fg'], bg=friend_marker['bg'])
                             friend_legend += '%cn%c' + friend_marker['attr'] + '%c' + friend_marker['fg'] + friend_marker['character'] + ') ' + friend.name + ' '
 			    if not friend_markers: # No more markers to place
 			        break
@@ -132,96 +133,3 @@ class LatitudeRoom(LatitudeObject, Room):
 	    filename = os.path.split(sys.exc_info()[2].tb_frame.f_code.co_filename)[1]
             line = sys.exc_info()[2].tb_lineno
 	    return '{R[Error displaying map (%s:%d): %s]{n' % (filename, line, str(e))
-
-class TextCanvas():
-    def __init__(self):
-        self.canvas = []
-
-    def set_data(self, canvas_string):
-        self.canvas = []
-	for string_line in canvas_string.split('\n'):
-	    canvas_line = []
-	    line_sections = re.split(r'(?<!\\)(%c[fihnxXrRgGyYbBmMcCwW])', string_line)
-	    fg_at_mark = None
-	    bg_at_mark = None
-	    attr_at_mark = None
-	    for line_section in line_sections:
-		if not line_section:
-		    continue
-		color_code_match = re.search(r'^%c([fihnxXrRgGyYbBmMcCwW])$', line_section)
-		if color_code_match: # Color code section
-		    color_code = color_code_match.group(1)
-		    if color_code == 'n':
-			fg_at_mark = None
-			bg_at_mark = None
-			attr_at_mark = None
-		    elif color_code in 'fih':
-			attr_at_mark = color_code
-		    elif color_code in 'xrgybmcw':
-			fg_at_mark = color_code
-		    elif color_code in 'XRGYBMCW':
-			bg_at_mark = color_code
-	        else: # Text data section
-		    for character in line_section:
-		        canvas_line.append({
-			    'character' : character,
-			    'color_fg' : fg_at_mark,
-			    'color_bg' : bg_at_mark,
-			    'color_attr' : attr_at_mark,
-			})
-            self.canvas.append(canvas_line)
-
-    def get_data(self):
-        retval = u''
-        current_fg = None
-        current_bg = None
-        current_attr = None
-        for line in self.canvas:
-            for char in line:
-                if char['color_fg'] != current_fg or char['color_bg'] != current_bg or char['color_attr'] != current_attr:
-                    current_fg = char['color_fg']
-                    current_bg = char['color_bg']
-                    current_attr = char['color_attr']
-                    retval += '%cn'
-                    if current_fg:
-                        retval += '%c' + current_fg
-                    if current_bg:
-                        retval += '%c' + current_bg
-                    if current_attr:
-                        retval += '%c' + current_attr
-                retval += char['character']
-            retval += '\n'
-        return retval[:-1]
-
-    def draw(self, x, y, draw_string, fg=None, bg=None, attr=None):
-        # If needed, expand the canvas horizontally
-        for i in range((1 + y) - len(self.canvas)):
-            self.canvas.append([])
-	# If needed, expand the canvas vertically
-	for i in range((x + len(draw_string)) - len(self.canvas[y])):
-	    self.canvas[y].append({'color_fg' : None, 'color_bg' : None, 'color_attr' : None, 'character' : ' '})
-	# Apply the drawing
-	for i in range(len(draw_string)):
-	    if fg == '?': # Unchanged
-	        new_fg = self.canvas[y][x + i]['color_fg']
-            else:
-	        new_fg = fg
-	    if bg == '?': # Unchanged
-	        new_bg = self.canvas[y][x + i]['color_bg']
-            else:
-	        new_bg = bg
-	    if attr == '?': # Unchanged
-	        new_attr = self.canvas[y][x + i]['color_attr']
-            else:
-	        new_attr = attr
-	    self.canvas[y][x + i] = {'color_fg' : new_fg, 'color_bg' : new_bg, 'color_attr' : new_attr, 'character' : draw_string[i]}
-
-    def width(self):
-        max_len = 0
-        for line in self.canvas:
-            if max_len < len(line):
-	        max_len = len(line)
-        return max_len
-
-    def height(self):
-        return len(self.canvas)
