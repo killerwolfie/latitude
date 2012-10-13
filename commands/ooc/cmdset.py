@@ -4,6 +4,7 @@ from ev import CmdSet
 #from contrib import misc_commands
 #from contrib import chargen
 
+from game.gamesrc.latitude.commands.ooc import sys_3who
 from game.gamesrc.latitude.commands.ooc import sys_addcom
 from game.gamesrc.latitude.commands.ooc import sys_allcom
 from game.gamesrc.latitude.commands.ooc import sys_cboot
@@ -46,6 +47,7 @@ class OOCCmdSet(CmdSet):
         """
         Populates the cmdset
         """
+        self.add(sys_3who.CmdSys3Who)
         self.add(sys_addcom.CmdSysAddCom)
         self.add(sys_allcom.CmdSysAllCom)
         self.add(sys_cboot.CmdSysCBoot)
