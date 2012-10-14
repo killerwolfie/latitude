@@ -3,6 +3,7 @@ from game.gamesrc.latitude.utils.stringmanip import conj_join
 from ev import search_object
 from ev import Object
 from ev import Character
+import re
 
 class CmdFollow(MuckCommand):
     """
@@ -18,7 +19,7 @@ class CmdFollow(MuckCommand):
     key = "follow"
     locks = "cmd:all()"
     help_category = "Actions"
-    aliases = []
+    aliases = ['ride', 'hopon']
 
     def func(self):
         if 'stop' in self.switches:
@@ -27,6 +28,49 @@ class CmdFollow(MuckCommand):
             self.auto()
         else:
             self.follow()
+
+    def auto(self):
+        if self.args.lower() == 'none':
+            self.caller.locks.add('follow:none()')
+            self.caller.msg('Nobody can now automatically lead you.')
+        elif self.args.lower() == 'all':
+            self.caller.locks.add('follow:all()')
+            self.caller.msg('Anybody can now automatically lead you.')
+        elif self.args:
+            characters = []
+            for arg in self.args.split(','):
+                # TODO: Long distance character name search
+                character = self.caller.search(arg)
+                if not character:
+                    return # Rely on the search call to output an error message
+                if not isinstance(character, Object):
+                    self.caller.msg("'%s' is not an object." % arg)
+                characters.append(character)
+            self.caller.locks.add('follow:' + ' or '.join(['id(%s)' % character.dbref for character in characters]))
+            self.caller.msg('Automatic leader list set.')
+        else:
+            lock = self.caller.locks.get('follow')
+            # Check for all/none
+            if not lock or lock[2] == 'follow:none()':
+                self.caller.msg('Nobody can automatically lead you.')
+                return
+            elif lock[2] == 'follow:all()':
+                self.caller.msg('Everybody can automatically lead you.')
+                return
+            # Check for a list of approved objects
+            approved_list = []
+            lock_elements = lock[2][7:].split(' or ')
+            for lock_element in lock_elements:
+                match = re.search(r'^id\((#\d+)\)$', lock_element)
+                if not match:
+                    self.caller.msg('Special rules are used to see if someone can automatically lead you.')
+                approved_obj = search_object(match.group(1))
+                if approved_obj:
+                    approved_list.append(approved_obj[0])
+            if approved_list:
+                self.caller.msg('The leading characters/objects can automatically lead you: %s.' % (conj_join(approved_list, 'and')))
+            else:
+                self.caller.msg('Nobody can automatically lead you.')
 
     def stop(self):
         follower = self.caller
