@@ -17,6 +17,7 @@ this change, you have to convert them manually e.g. with the
 
 """
 from ev import Exit
+from ev import search_object
 from game.gamesrc.latitude.objects.object import LatitudeObject
 
 class LatitudeExit(LatitudeObject, Exit):
@@ -61,4 +62,50 @@ class LatitudeExit(LatitudeObject, Exit):
 	    return None
 
 	return list(con for con in self.destination.contents if con.destination and con.destination == self.location)
-	
+
+    def at_after_traverse(self, traveller, source_loc):
+        # Check for followers
+        for follower in search_object(traveller, attribute_name='follow_following'):
+            # Ensure that the follower is still at your source location.
+            # (Safety check.  Moving around on your own should clear your 'following' attribute)
+            if not follower.location or follower.location != source_loc:
+                self.at_failed_follow(traveller, follower)
+                del follower.db.follow_following
+                break
+            # Check te ensure that the follower is awake.
+            # (Safety check.  Disconnecting your character should clear your 'following' attribute)
+            if not follower.player:
+                self.at_failed_follow(traveller, follower)
+                del follower.db.follow_following
+                break
+            # Ensure the follower has access to travel through the exit
+            if not self.access(follower, 'traverse_follow'):
+                self.at_failed_follow(traveller, follower)
+                del follower.db.follow_following
+                break
+            # Bring the follower alonga
+            self.at_before_follow(traveller, follower)
+            follower.move_to(traveller.location)
+            self.at_after_follow(traveller, follower, source_loc)
+
+    def at_before_follow(self, leader, follower):
+        """
+        Called just before a follower is dragged along after a successful traveller traverses the exit.
+        """
+        # By default, just call the normal traverse handler
+        self.at_before_traverse(follower)
+
+    def at_after_follow(self, leader, follower, source_loc):
+        """
+        Called just after a follower is dragged along after a successful traveller traverses the exit.
+        """
+        # By default, just call the normal traverse handler
+        self.at_after_traverse(follower, source_loc)
+        # And then alert everyone about the follow
+
+    def at_failed_follow(self, leader, follower):
+        """
+        Called if, for some reason, a follower is unable to successfully be dragged along after a traveller successfully traverses the exit.
+        """
+        leader.msg('%s seems to have lost you, and is no longer following you.' % follower.key)
+        follower.msg('%s moves off, but you find yourself unable to follow.' % leader.key)

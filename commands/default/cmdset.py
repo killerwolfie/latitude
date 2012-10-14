@@ -6,8 +6,10 @@ from ev import CmdSet
 
 from game.gamesrc.latitude.commands.default import drop
 from game.gamesrc.latitude.commands.default import feel
+from game.gamesrc.latitude.commands.default import follow
 from game.gamesrc.latitude.commands.default import get
 from game.gamesrc.latitude.commands.default import inventory
+from game.gamesrc.latitude.commands.default import lead
 from game.gamesrc.latitude.commands.default import listen
 from game.gamesrc.latitude.commands.default import lock
 from game.gamesrc.latitude.commands.default import look
@@ -76,9 +78,11 @@ class DefaultCmdSet(CmdSet):
         """
 	self.add(drop.CmdDrop)
 	self.add(feel.CmdFeel)
+	self.add(follow.CmdFollow)
 	self.add(get.CmdGet)
 	self.add(inventory.CmdInventory)
 	self.add(listen.CmdListen)
+	self.add(lead.CmdLead)
 	self.add(lock.CmdLock)
 	self.add(look.CmdLook)
 	self.add(map.CmdMap)

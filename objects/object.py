@@ -429,3 +429,15 @@ class LatitudeObject(Object):
 	        return True
             parent = parent.location
 	return False
+
+    # ----- Default Behavior -----
+    def at_after_move(source_location):
+        super(LatitudeObject, self).at_after_move(source_location)
+        # Clear 'following'
+        following = self.db.follow_following
+        if following and following.location == None or following.location != self.location:
+            self.msg('You move off, and stop following %s.' % (following.key))
+            del self.db.follow_following
+        # Clear any pending follow or lead requests
+        del self.db.follow_wantfollow
+        del self.db.follow_wantlead
