@@ -397,19 +397,46 @@ class LatitudeObject(Object):
     def at_desc_writing(self, looker):
         pass
 
-    # ----- Utilization -----
-    def use(self, user):
+    # ----- Player Actions -----
+    def action_use(self, user):
+        """
+        Called when a player attempts to use this object, without using it on something specific.
+        This allows the object to decide its default target, if it's targetable.
+        """
         user.msg("You can't use that.")
 
-    def useOn(self, user, targets):
+    def action_use_on(self, user, targets):
+        """
+        Called when a player attempts to use this object on another object.
+        It also works on multiple objects, for example: use vacuum cleaner on dust bunny, crumbs
+        """
         # If there's only one target, then the default is to try reversing it.
         if len(targets) == 1:
             targets[0].usedOnBy(user, self)
         else:
             user.msg("That doesn't work.")
 
-    def usedOnBy(self, user, targets):
+    def action_used_on_by(self, user, targets):
+        """
+        This is a secondary call, when the system is unable or unwilling to call 'use_on' for an object.
+        It's called to indicate that a player wants to use an object on this object.
+        It also works with multiple objects, for example: use candy wrapper, pop can on trash bin
+        """
         user.msg("That doesn't work.")
+
+    def action_lock(self, locker):
+        """
+        This action is called when a player attempts to 'lock' the object.
+        The definition of locking is left up to the object creator.
+        """
+        locker.msg("You can't lock that!")
+
+    def action_unlock(self, unlocker):
+        """
+        This action is called when a player attempts to 'lock' the object.
+        The definition of locking is left up to the object creator.
+        """
+        unlocker.msg("You can't unlock that!")
 
     # ----- Utilities -----
     def containing_room(self):

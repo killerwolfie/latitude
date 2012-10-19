@@ -1,4 +1,4 @@
-from game.gamesrc.latitude.commands.default import look
+from game.gamesrc.latitude.commands.default.character import look
 
 class CmdFeel(look.CmdLook):
     """

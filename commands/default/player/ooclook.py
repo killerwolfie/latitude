@@ -1,4 +1,4 @@
-from game.gamesrc.latitude.commands.default import look
+from game.gamesrc.latitude.commands.default.character import look
 from src.commands.default.muxcommand import MuxCommandOOC
 from ev import default_cmds
 

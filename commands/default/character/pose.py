@@ -1,4 +1,4 @@
-from game.gamesrc.latitude.commands.default import say
+from game.gamesrc.latitude.commands.default.character import say
 
 class CmdPose(say.CmdSay):
     """

@@ -1,20 +1,24 @@
 from game.gamesrc.latitude.objects.exit import LatitudeExit
+from game.gamesrc.latitude.commands.contextual.locks.cmdset import LatitudeCmdsetLocks
 
 class LatitudeExitDeadbolt(LatitudeExit):
     def at_object_creation(self):
+        super(LatitudeExitDeadbolt, self).at_object_creation()
         self.db.deadbolt_key_id = None
 	self.db.deadbolt_two_way = True
 	self.db.deadbolt_exit_name = self.key
+        self.cmdset.add(LatitudeCmdsetLocks, permanent=True)
 
-    def unlock(self, unlocker):
+    def action_unlock(self, unlocker):
         self.lock_unlock(unlocker, True)
 
-    def lock(self, locker):
+    def action_lock(self, locker):
         self.lock_unlock(locker, False)
 
     def lock_unlock(self, locker, unlock):
-        # Bail out if they don't have lock access
-	# TODO: WAITING ON FEATURE REQUEST
+        if not self.access(locker, 'lock'):
+            locker.msg("You don't have the key to that lock.")
+            return
 
 	if unlock:
 	    change_from = 'traverse:none()'
@@ -32,11 +36,11 @@ class LatitudeExitDeadbolt(LatitudeExit):
 	# Check the current traverse access
 	current_lock = self.locks.get('traverse')
 
-	if current_lock[2] == change_to:
+	if current_lock == change_to:
             locker.msg(msg_already_done)
 	    return()
 
-	if current_lock[2] != change_from: # Unexpected traverse lock value
+	if current_lock != change_from: # Unexpected traverse lock value
 	    locker.msg('The lock appears to be jammed.')
 	    return()
 
@@ -47,7 +51,7 @@ class LatitudeExitDeadbolt(LatitudeExit):
 	    # We don't care if the opposite side is already locked/unlocked.  This should force a sync.
 	    for reverse_exit in reverse_exits:
 	        reverse_lock = reverse_exit.locks.get('traverse')
-		if reverse_lock[2] != change_from and reverse_lock[2] != change_to:
+		if reverse_lock != change_from and reverse_lock != change_to:
 		    locker.msg('There seems to be a key broken off in the lock.')
 		    return()
 

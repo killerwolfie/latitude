@@ -1,15 +1,15 @@
 from ev import default_cmds
-from game.gamesrc.latitude.objects.exit_deadbolt import LatitudeExitDeadbolt
 
-class CmdUnlock(default_cmds.MuxCommand):
+class CmdLock(default_cmds.MuxCommand):
     """
-      unlock <object>
+    lock <object>
+    
+      Attempt to lock <object>, so it can't be opened or used.
+    """
 
-        Attempt to lock <object> so it can be opened or used.
-    """
-    key = "unlock"
+    key = "lock"
     locks = "cmd:all()"
-    help_category = "Actions"
+    help_category = "Contextual"
 
     # auto_help = False      # uncomment to deactive auto-help for this command.
     # arg_regex = r"\s.*?|$" # optional regex detailing how the part after
@@ -17,12 +17,9 @@ class CmdUnlock(default_cmds.MuxCommand):
 
     def func(self):
         if not self.args:
-	    self.caller.msg('Unlock what?')
+	    self.caller.msg('Lock what?')
 	    return()
         obj = self.caller.search(self.args)
 	if not obj:
 	    return()
-	if not isinstance(obj, LatitudeExitDeadbolt):
-	    self.caller.msg("You can't unlock that")
-	    return()
-	obj.unlock(self.caller)
+	obj.action_lock(self.caller)

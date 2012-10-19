@@ -48,8 +48,8 @@ class CmdUse(Command):
         # Determine which object to call for use handling, and cal lit.
         if len(used) == 1:
             if used_on:
-                used[0].useOn(self.caller, used_on)
+                used[0].action_use_on(self.caller, used_on)
             else:
-                used[0].use(self.caller)
+                used[0].action_use(self.caller)
         else:
-            used_on[0].usedOnBy(self.caller, used)
+            used_on[0].action_used_on_by(self.caller, used)

@@ -55,15 +55,15 @@ class CmdLead(MuckCommand):
         else:
             lock = self.caller.locks.get('lead')
             # Check for all/none
-            if not lock or lock[2] == 'lead:none()':
+            if not lock or lock == 'lead:none()':
                 self.caller.msg('Nobody can automatically follow you.')
                 return
-            elif lock[2] == 'lead:all()':
+            elif lock == 'lead:all()':
                 self.caller.msg('Everybody can automatically follow you.')
                 return
             # Check for a list of approved objects
             approved_list = []
-            lock_elements = lock[2][5:].split(' or ')
+            lock_elements = lock[5:].split(' or ')
             for lock_element in lock_elements:
                 match = re.search(r'^id\((#\d+)\)$', lock_element)
                 if not match:
