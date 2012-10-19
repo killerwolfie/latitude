@@ -68,6 +68,7 @@ from game.gamesrc.latitude.commands.default import sys_who
 from game.gamesrc.latitude.commands.default import sys_wipe
 from game.gamesrc.latitude.commands.default import taste
 from game.gamesrc.latitude.commands.default import unlock
+from game.gamesrc.latitude.commands.default import use
 
 class DefaultCmdSet(CmdSet):
     key = "Default"
@@ -140,6 +141,7 @@ class DefaultCmdSet(CmdSet):
         self.add(sys_wipe.CmdSysWipe)
 	self.add(taste.CmdTaste)
 	self.add(unlock.CmdUnlock)
+	self.add(use.CmdUse)
 
         #self.add(menusystem.CmdMenuTest())
         #self.add(lineeditor.CmdEditor())

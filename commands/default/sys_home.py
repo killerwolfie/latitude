@@ -1,6 +1,6 @@
 from src.commands.default import building
 
-class CmdSysHome(building.CmdHome):
+class CmdSysHome(building.CmdSetHome):
     """
     @home - control an object's home location
 

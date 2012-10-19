@@ -397,6 +397,20 @@ class LatitudeObject(Object):
     def at_desc_writing(self, looker):
         pass
 
+    # ----- Utilization -----
+    def use(self, user):
+        user.msg("You can't use that.")
+
+    def useOn(self, user, targets):
+        # If there's only one target, then the default is to try reversing it.
+        if len(targets) == 1:
+            targets[0].usedOnBy(user, self)
+        else:
+            user.msg("That doesn't work.")
+
+    def usedOnBy(self, user, targets):
+        user.msg("That doesn't work.")
+
     # ----- Utilities -----
     def containing_room(self):
         """
