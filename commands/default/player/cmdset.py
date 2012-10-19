@@ -4,6 +4,8 @@ from ev import CmdSet
 #from contrib import misc_commands
 #from contrib import chargen
 
+from game.gamesrc.latitude.commands.default.player import ooclook
+from game.gamesrc.latitude.commands.default.player import special_nomatch
 from game.gamesrc.latitude.commands.default.player import sys_3who
 from game.gamesrc.latitude.commands.default.player import sys_addcom
 from game.gamesrc.latitude.commands.default.player import sys_allcom
@@ -26,7 +28,6 @@ from game.gamesrc.latitude.commands.default.player import sys_imcpage
 from game.gamesrc.latitude.commands.default.player import sys_irc2chan
 from game.gamesrc.latitude.commands.default.player import sys_newpassword
 from game.gamesrc.latitude.commands.default.player import sys_ooc
-from game.gamesrc.latitude.commands.default.player import ooclook
 from game.gamesrc.latitude.commands.default.player import sys_page
 from game.gamesrc.latitude.commands.default.player import sys_password
 from game.gamesrc.latitude.commands.default.player import sys_quit
@@ -35,18 +36,20 @@ from game.gamesrc.latitude.commands.default.player import sys_reset
 from game.gamesrc.latitude.commands.default.player import sys_rss2chan
 from game.gamesrc.latitude.commands.default.player import sys_shutdown
 
-class OOCCmdSet(CmdSet):
+class LatitudeCmdsetPlayer(CmdSet):
     """
     This is set is available to the player when they have no
     character connected to them (i.e. they are out-of-character, ooc).
     """
-    key = "OOC"
+    key = "Player"
     priority = -5
 
     def at_cmdset_creation(self):
         """
         Populates the cmdset
         """
+        self.add(ooclook.CmdOOCLook)
+        self.add(special_nomatch.CmdNoMatch)
         self.add(sys_3who.CmdSys3Who)
         self.add(sys_addcom.CmdSysAddCom)
         self.add(sys_allcom.CmdSysAllCom)
@@ -69,7 +72,6 @@ class OOCCmdSet(CmdSet):
         self.add(sys_irc2chan.CmdSysIRC2Chan)
         self.add(sys_newpassword.CmdSysNewPassword)
         self.add(sys_ooc.CmdSysOOC)
-        self.add(ooclook.CmdOOCLook)
         self.add(sys_page.CmdSysPage)
         self.add(sys_password.CmdSysPassword)
         self.add(sys_quit.CmdSysQuit)

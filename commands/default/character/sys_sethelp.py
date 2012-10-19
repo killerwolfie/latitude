@@ -27,8 +27,8 @@ class CmdSysSetHelp(default_cmds.CmdSetHelp):
     the help file.
 
     """
-    key = "@help"
-    aliases = "@sethelp"
+    key = "@sethelp"
+    aliases = []
     locks = "cmd:perm(PlayerHelpers)"
     help_category = "--- Coder/Sysadmin ---"
 

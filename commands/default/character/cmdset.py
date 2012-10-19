@@ -68,8 +68,8 @@ from game.gamesrc.latitude.commands.default.character import sys_wipe
 from game.gamesrc.latitude.commands.default.character import taste
 from game.gamesrc.latitude.commands.default.character import use
 
-class DefaultCmdSet(CmdSet):
-    key = "Default"
+class LatitudeCmdsetCharacter(CmdSet):
+    key = "Character"
 
     def at_cmdset_creation(self):
         """

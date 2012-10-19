@@ -7,7 +7,7 @@ from game.gamesrc.latitude.commands.default.unloggedin import help
 from game.gamesrc.latitude.commands.default.unloggedin import look
 from game.gamesrc.latitude.commands.default.unloggedin import quit
 
-class UnloggedinCmdSet(CmdSet):
+class LatitudeCmdsetUnloggedin(CmdSet):
     key = "Unloggedin"
 
     def at_cmdset_creation(self):

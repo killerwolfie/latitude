@@ -12,5 +12,6 @@ class CmdSysHelp(default_cmds.CmdHelp):
     This will search for help on commands and other
     topics related to the game.
     """
-    key = "help"
+    key = '@help'
+    aliases = [ 'help' ]
     locks = "cmd:all()"

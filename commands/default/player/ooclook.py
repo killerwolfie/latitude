@@ -20,6 +20,7 @@ class CmdOOCLook(MuxCommandOOC, look.CmdLook):
     aliases = ['@ooclook']
     locks = "cmd:all()"
     help_category = "Actions"
+    auto_help = False
 
     def func(self):
         "implement the ooc look command"
