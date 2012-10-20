@@ -11,6 +11,15 @@ from game.gamesrc.latitude.objects.object import LatitudeObject
 from game.gamesrc.latitude.utils.text_canvas import TextCanvas
 
 class LatitudeRoom(LatitudeObject, Room):
+    def basetype_setup(self):
+        """
+        This sets up the default properties of an Object,
+        just before the more general at_object_creation.
+        """
+        super(LatitudeRoom, self).basetype_setup()
+        self.locks.add(";".join(["get:false()",
+                                 "puppet:false()"])) # would be weird to puppet a room ...
+
     def at_object_creation(self):
         self.db.attr_gender = 'Object'
 	self.db.pronoun_absolute = "this room's"

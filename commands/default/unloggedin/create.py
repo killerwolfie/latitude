@@ -97,8 +97,8 @@ class CmdUnconnectedCreate(MuxCommand):
 #                    string = "New player '%s' could not connect to public channel!" % new_player.key
 #                    logger.log_errmsg(string)
 
-            # allow only the character itself and the player to puppet this character (and Immortals).
-            new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" %
+            # allow only the character itself and the player to puppet this character (and Janitors).
+            new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Janitors) or pperm(Janitors)" %
                                     (new_character.id, new_player.id))
 
 

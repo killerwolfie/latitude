@@ -8,6 +8,7 @@ class LatitudeExitDeadbolt(LatitudeExit):
 	self.db.deadbolt_two_way = True
 	self.db.deadbolt_exit_name = self.key
         self.cmdset.add(LatitudeCmdsetLocks, permanent=True)
+        self.locks.add("lock:none()")
 
     def action_unlock(self, unlocker):
         self.lock_unlock(unlocker, True)

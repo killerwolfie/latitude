@@ -20,6 +20,15 @@ class LatitudeCharacter(LatitudeObject, Character):
                     to the room
 
     """
+    def basetype_setup(self):
+        """
+        This sets up the default properties of an Object,
+        just before the more general at_object_creation.
+        """
+        super(LatitudeCharacter, self).basetype_setup()
+        self.locks.add(";".join(["get:false()",  # noone can pick up the character
+                                 "call:false()"])) # no commands can be called on character from outside
+
     def at_after_move(self, source_location):
         if self.db.prefs_automap == None or self.db.prefs_automap:
 	    self.execute_cmd('map')

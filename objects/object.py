@@ -122,6 +122,21 @@ class LatitudeObject(Object):
      at_say(speaker, message)  - by default, called if an object inside this object speaks
 
     """
+    def basetype_setup(self):
+        """
+        This sets up the default properties of an Object,
+        just before the more general at_object_creation.
+        """
+        super(LatitudeObject, self).basetype_setup()
+        self.locks.add(";".join(["control:pperm(Janitors)",   # edit locks/permissions, delete
+                                 "examine:pperm(Janitors)",   # examine properties
+                                 "view:all()",               # look at object (visibility)
+                                 "edit:pperm(Janitors)",      # edit properties/attributes
+                                 "delete:pperm(Janitors)",    # delete object
+                                 "get:all()",                # pick up object
+                                 "call:true()",              # allow to call commands on this object
+                                 "puppet:id(%s) or pperm(Janitors)" % self.dbref])) # restricts puppeting of this object
+
     # ----- Descriptions -----
     def return_appearance(self, looker):
         """

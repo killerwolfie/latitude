@@ -87,6 +87,18 @@ class LatitudePlayer(Player):
      at_server_shutdown()
 
     """
+    def basetype_setup(self):
+        """
+        This sets up the default properties of an Object,
+        just before the more general at_object_creation.
+        """
+        super(LatitudePlayer, self).basetype_setup()
+        self.locks.add("examine:pperm(Janitors)")
+        self.locks.add("edit:pperm(Janitors)")
+        self.locks.add("delete:pperm(Janitors)")
+        self.locks.add("boot:pperm(Janitors)")
+        self.locks.add("msg:all()")
+
     def at_post_login(self):
         if not self.character:
 	    # We logged in OOCly

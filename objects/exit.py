@@ -42,6 +42,16 @@ class LatitudeExit(LatitudeObject, Exit):
                                     not be called if the attribute 'err_traverse' is
                                     defined, in which case that will simply be echoed.
     """
+    def basetype_setup(self):
+        """
+        This sets up the default properties of an Object,
+        just before the more general at_object_creation.
+        """
+        super(LatitudeExit, self).basetype_setup()
+        self.locks.add(";".join(["puppet:false()", # would be weird to puppet an exit ...
+                                 "traverse:all()", # who can pass through exit by default
+                                 "traverse_follow:all()", # who can be carried through exit by default
+                                 "get:false()"]))   # noone can pick up the exit
 
     def at_object_creation(self):
         self.db.attr_gender = 'Object'
