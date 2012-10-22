@@ -1,5 +1,4 @@
 from game.gamesrc.latitude.objects.exit import LatitudeExit
-from game.gamesrc.latitude.commands.contextual.locks.cmdset import LatitudeCmdsetLocks
 
 class LatitudeExitDeadbolt(LatitudeExit):
     def at_object_creation(self):
@@ -7,8 +6,7 @@ class LatitudeExitDeadbolt(LatitudeExit):
         self.db.deadbolt_key_id = None
 	self.db.deadbolt_two_way = True
 	self.db.deadbolt_exit_name = self.key
-        self.cmdset.add(LatitudeCmdsetLocks, permanent=True)
-        self.locks.add("lock:none()")
+        self.locks.add("lock:all()")
 
     def action_unlock(self, unlocker):
         self.lock_unlock(unlocker, True)

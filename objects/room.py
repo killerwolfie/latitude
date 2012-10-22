@@ -17,8 +17,8 @@ class LatitudeRoom(LatitudeObject, Room):
         just before the more general at_object_creation.
         """
         super(LatitudeRoom, self).basetype_setup()
-        self.locks.add(";".join(["get:false()",
-                                 "puppet:false()"])) # would be weird to puppet a room ...
+        self.locks.add(";".join(["puppet:false()", # would be weird to puppet a room ...
+                                 "call:true()"])) # characters can call commands in the room
 
     def at_object_creation(self):
         self.db.attr_gender = 'Object'

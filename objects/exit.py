@@ -51,7 +51,7 @@ class LatitudeExit(LatitudeObject, Exit):
         self.locks.add(";".join(["puppet:false()", # would be weird to puppet an exit ...
                                  "traverse:all()", # who can pass through exit by default
                                  "traverse_follow:all()", # who can be carried through exit by default
-                                 "get:false()"]))   # noone can pick up the exit
+                                 "call:true()"]))   # using an exit is done by calling commands on it
 
     def at_object_creation(self):
         self.db.attr_gender = 'Object'

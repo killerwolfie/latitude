@@ -11,6 +11,7 @@ from game.gamesrc.latitude.commands.default.character import get
 from game.gamesrc.latitude.commands.default.character import inventory
 from game.gamesrc.latitude.commands.default.character import lead
 from game.gamesrc.latitude.commands.default.character import listen
+from game.gamesrc.latitude.commands.default.character import lock
 from game.gamesrc.latitude.commands.default.character import look
 from game.gamesrc.latitude.commands.default.character import map
 from game.gamesrc.latitude.commands.default.character import pose
@@ -66,6 +67,7 @@ from game.gamesrc.latitude.commands.default.character import sys_wall
 from game.gamesrc.latitude.commands.default.character import sys_who
 from game.gamesrc.latitude.commands.default.character import sys_wipe
 from game.gamesrc.latitude.commands.default.character import taste
+from game.gamesrc.latitude.commands.default.character import unlock
 from game.gamesrc.latitude.commands.default.character import use
 
 class LatitudeCmdsetCharacter(CmdSet):
@@ -82,6 +84,7 @@ class LatitudeCmdsetCharacter(CmdSet):
 	self.add(inventory.CmdInventory)
 	self.add(listen.CmdListen)
 	self.add(lead.CmdLead)
+	self.add(lock.CmdLock)
 	self.add(look.CmdLook)
 	self.add(map.CmdMap)
 	self.add(ooc.CmdOOC)
@@ -137,6 +140,7 @@ class LatitudeCmdsetCharacter(CmdSet):
         self.add(sys_who.CmdSysWho)
         self.add(sys_wipe.CmdSysWipe)
 	self.add(taste.CmdTaste)
+	self.add(unlock.CmdUnlock)
 	self.add(use.CmdUse)
 
         #self.add(menusystem.CmdMenuTest())

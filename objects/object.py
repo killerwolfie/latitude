@@ -133,8 +133,8 @@ class LatitudeObject(Object):
                                  "view:all()",               # look at object (visibility)
                                  "edit:pperm(Janitors)",      # edit properties/attributes
                                  "delete:pperm(Janitors)",    # delete object
-                                 "get:all()",                # pick up object
-                                 "call:true()",              # allow to call commands on this object
+                                 "get:none()",                # pick up object
+                                 "call:false()",              # allow to call commands on this object
                                  "puppet:id(%s) or pperm(Janitors)" % self.dbref])) # restricts puppeting of this object
 
     # ----- Descriptions -----
