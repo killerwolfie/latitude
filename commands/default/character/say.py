@@ -6,58 +6,18 @@ This module contains commands that are used for player communication.
 import re
 from game.gamesrc.latitude.commands.muckcommand import MuckCommand
 
-# ANSI definitions
-
-ANSI_BEEP = "\07"
-ANSI_ESCAPE = "\033"
-ANSI_NORMAL = "\033[0m"
-
-ANSI_UNDERLINE = "\033[4m"
-ANSI_HILITE = "\033[1m"
-ANSI_BLINK = "\033[5m"
-ANSI_INVERSE = "\033[7m"
-ANSI_INV_HILITE = "\033[1;7m"
-ANSI_INV_BLINK = "\033[7;5m"
-ANSI_BLINK_HILITE = "\033[1;5m"
-ANSI_INV_BLINK_HILITE = "\033[1;5;7m"
-
-# Foreground colors
-ANSI_BLACK = "\033[30m"
-ANSI_RED = "\033[31m"
-ANSI_GREEN = "\033[32m"
-ANSI_YELLOW = "\033[33m"
-ANSI_BLUE = "\033[34m"
-ANSI_MAGENTA = "\033[35m"
-ANSI_CYAN = "\033[36m"
-ANSI_WHITE = "\033[37m"
-
-# Background colors
-ANSI_BACK_BLACK = "\033[40m"
-ANSI_BACK_RED = "\033[41m"
-ANSI_BACK_GREEN = "\033[42m"
-ANSI_BACK_YELLOW = "\033[43m"
-ANSI_BACK_BLUE = "\033[44m"
-ANSI_BACK_MAGENTA = "\033[45m"
-ANSI_BACK_CYAN = "\033[46m"
-ANSI_BACK_WHITE = "\033[47m"
-
-# Formatting Characters
-ANSI_RETURN = "\r\n"
-ANSI_TAB = "\t"
-ANSI_SPACE = " "
-
 color_names = {
-    'black' : ANSI_BLACK,
-    'red' : ANSI_RED,
-    'green' : ANSI_GREEN,
-    'yellow' : ANSI_YELLOW,
-    'blue' : ANSI_BLUE,
-    'magenta' : ANSI_MAGENTA,
-    'cyan' : ANSI_CYAN,
-    'white' : ANSI_WHITE,
-    'bold' : ANSI_HILITE,
-    'hilight' : ANSI_HILITE,
-    'hilite' : ANSI_HILITE,
+    'black' : '%cx',
+    'red' : '%cr',
+    'green' : '%cg',
+    'yellow' : '%cy',
+    'blue' : '%cb',
+    'magenta' : '%cm',
+    'cyan' : '%cc',
+    'white' : '%cw',
+    'bold' : '%ch',
+    'hilight' : '%ch',
+    'hilite' : '%ch',
 }
 
 class CmdSay(MuckCommand):
@@ -79,9 +39,9 @@ class CmdSay(MuckCommand):
         if self.caller.location:
             # Call the speech hook on the location
             self.caller.location.at_say(self.caller, message)
-            self.caller.location.msg_contents(message, data={"raw":True})
+            self.caller.location.msg_contents(message)
         else:
-            self.caller.msg(message, data={"raw":True})
+            self.caller.msg(message)
 
     def gen_say(self, say_string):
         # Determine verb
@@ -112,37 +72,37 @@ class CmdSay(MuckCommand):
 	    if name in color_names:
 	        retval += color_names[name]
         if retval:
-	    retval = ANSI_NORMAL + retval # Default to normal
+	    retval = '%cn' + retval # Default to normal
 	return retval
 
     def get_color_depth(self, depth):
         if self.caller.get_attribute('say_color_depth' + str(depth)):
 	    return self.parse_color(self.caller.get_attribute('say_color_depth' + str(depth)))
         if depth < 1:
-	    return ANSI_NORMAL + ANSI_CYAN
+	    return '%cn%cc'
 	elif depth == 1:
-	    return ANSI_NORMAL + ANSI_WHITE
+	    return '%cn%cw'
 	elif depth == 2:
-	    return ANSI_NORMAL + ANSI_WHITE
+	    return '%cn%cw'
 	elif depth >= 3:
-	    return ANSI_NORMAL + ANSI_WHITE
+	    return '%cn%cw'
 
     def get_color_quote(self):
         if self.caller.get_attribute('say_color_quote'):
 	    return self.parse_color(self.caller.get_attribute('say_color_quote'))
-        return ANSI_NORMAL + ANSI_WHITE
+	return '%cn%cw'
 
     def get_color_name(self):
         if self.caller.get_attribute('say_color_name'):
 	    return self.parse_color(self.caller.get_attribute('say_color_name'))
-        return ANSI_HILITE + ANSI_CYAN
+	return '%ch%cc'
 
     def colorize(self, say_string):
         retval = u''
         current_color = 0
         last_change = 1
 	say_sections = []
-        for say_section in say_string.split('"'):
+        for say_section in say_string.replace('%', '%%').replace('{', '{{').split('"'):
             say_sections.append(self.get_color_depth(current_color) + say_section)
 	    if say_section == '':
 	        current_color += last_change

@@ -34,7 +34,7 @@ class CmdOOC(say.CmdSay):
         if self.caller.location:
             # Call the speech hook on the location
             self.caller.location.at_say(self.caller, message)
-            self.caller.location.msg_contents(message, data={"raw":True})
+            self.caller.location.msg_contents(message)
         else:
-            self.caller.msg(message, data={"raw":True})
+            self.caller.msg(message)
 

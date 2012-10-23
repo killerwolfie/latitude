@@ -3,9 +3,7 @@ from game.gamesrc.latitude.objects.exit import LatitudeExit
 class LatitudeExitDeadbolt(LatitudeExit):
     def at_object_creation(self):
         super(LatitudeExitDeadbolt, self).at_object_creation()
-        self.db.deadbolt_key_id = None
 	self.db.deadbolt_two_way = True
-	self.db.deadbolt_exit_name = self.key
         self.locks.add("lock:all()")
 
     def action_unlock(self, unlocker):
@@ -55,9 +53,7 @@ class LatitudeExitDeadbolt(LatitudeExit):
 		    return()
 
         # Apply lock
-	exit_name = self.db.deadbolt_exit_name
-	if not exit_name:
-	    exit_name = self.key
+	exit_name = self.return_situational_name()
 	
 	if self.db.deadbolt_two_way:
 	    for reverse_exit in reverse_exits:

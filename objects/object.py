@@ -427,7 +427,7 @@ class LatitudeObject(Object):
         """
         # If there's only one target, then the default is to try reversing it.
         if len(targets) == 1:
-            targets[0].usedOnBy(user, self)
+            targets[0].action_used_on_by(user, self)
         else:
             user.msg("That doesn't work.")
 
