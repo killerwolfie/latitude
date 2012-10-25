@@ -13,41 +13,60 @@ class TextCanvas():
     stripped when the canvas is turned back into a string.  <<== TODO!
     """
     def __init__(self):
-        self.canvas = []
+        self.canvas = [[]]
 
     def set_data(self, canvas_string):
-        self.canvas = []
-	for string_line in canvas_string.split('\n'):
-	    canvas_line = []
-	    line_sections = re.split(r'(?<!\\)(%c[fihnxXrRgGyYbBmMcCwW])', string_line)
-	    fg_at_mark = None
-	    bg_at_mark = None
-	    attr_at_mark = None
-	    for line_section in line_sections:
-		if not line_section:
-		    continue
-		color_code_match = re.search(r'^%c([fihnxXrRgGyYbBmMcCwW])$', line_section)
-		if color_code_match: # Color code section
-		    color_code = color_code_match.group(1)
-		    if color_code == 'n':
-			fg_at_mark = None
-			bg_at_mark = None
-			attr_at_mark = None
-		    elif color_code in 'fih':
-			attr_at_mark = color_code
-		    elif color_code in 'xrgybmcw':
-			fg_at_mark = color_code
-		    elif color_code in 'XRGYBMCW':
-			bg_at_mark = color_code
-	        else: # Text data section
-		    for character in line_section:
-		        canvas_line.append({
-			    'character' : character,
-			    'color_fg' : fg_at_mark,
-			    'color_bg' : bg_at_mark,
-			    'color_attr' : attr_at_mark,
-			})
-            self.canvas.append(canvas_line)
+        # Explode the supplied strings into a series of chunks split based on where the color codes happen.
+        color_explosion = []
+        for newline_section in re.split(r'(\n)', canvas_string):
+            for percent_section in re.split(r'(%)%', newline_section):
+                for bracket_section in re.split(r'(\{)\{', percent_section):
+                    for color_section in re.split(r'(%c[fihnxXrRgGyYbBmMcCwW]|\{[nxXrRgGyYbBmMcCwW])', bracket_section):
+                        color_explosion.append(color_section)
+        # Iterate through the color explosion, identifying which type of chunk it is, and appending to the canvas data as we go.
+        current_fg = None
+        current_bg = None
+        current_attr = None
+        for chunk in color_explosion:
+            if chunk == '\n':
+                # Newlines increment the line number
+                self.canvas.append([])
+                continue
+            percent_c_match = re.search(r'^%c([fihnxXrRgGyYbBmMcCwW])$', chunk)
+            if percent_c_match:
+                # Assign the current color based on the %c code
+                color_code = percent_c_match.group(1)
+                if color_code == 'n':
+                    current_fg = None
+                    current_bg = None
+                    current_attr = None
+                elif color_code in 'fih':
+                    current_attr = color_code
+                elif color_code in 'xrgybmcw':
+                    current_fg = color_code
+                elif color_code in 'XRGYBMCW':
+                    current_bg = color_code
+                continue
+            bracket_match = re.search(r'^\{([nxXrRgGyYbBmMcCwW])$', chunk)
+            if bracket_match:
+                # Assign the current color based on the { code
+                color_code = bracket_match.group(1)
+                if color_code == 'n':
+                    current_fg = None
+                    current_bg = None
+                    current_attr = None
+                elif color_code in 'xrgybmcw':
+                    current_fg = color_code
+                    current_attr = None
+                elif color_code in 'XRGYBMCW':
+                    current_fg = color_code
+                    current_attr = 'h'
+                continue
+            # Process the chunk as ordinary text
+            for c in chunk:
+                self.canvas[-1].append({'color_fg' : current_fg, 'color_bg' : current_bg, 'color_attr' : current_attr, 'character' : c})
+        # Ensure that the canvas data is perfectly rectangular
+        # TODO
 
     def get_data(self):
         retval = u''
@@ -67,7 +86,12 @@ class TextCanvas():
                         retval += '%c' + current_bg
                     if current_attr:
                         retval += '%c' + current_attr
-                retval += char['character']
+                if char['character'] == '%':
+                    retval += '%%'
+                elif char['character'] == '{':
+                    retval += '{{'
+                else:
+                    retval += char['character']
             retval += '\n'
         return retval[:-1]
 
