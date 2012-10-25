@@ -1,60 +1,48 @@
 from ev import Command, CmdSet
 
-class CmdMenuGoto(Command):
+class CmdMenu(Command):
+    locks = "cmd:all()"
+    def __init__(self, key, aliases=[], menustring=None):
+        super(CmdMenu, self).__init__()
+        self.key = key
+        self.aliases = aliases
+        self.menustring = menustring
+
+class CmdMenuGoto(CmdMenu):
     locks = "cmd:all()"
 
     def __init__(self, key, node, aliases=[], menustring=None):
-        super(CmdMenuGoto, self).__init__()
-        self.key = key
-        self.aliases = aliases
-        self.menustring = menustring
+        super(CmdMenuGoto, self).__init__(key=key, aliases=aliases, menustring=menustring)
         self.node = node
 
     def func(self):
-        if not hasattr(self, 'menutree'):
-            self.caller.msg('{rThis command is intended to be called from the dbmenu system.')
-            return
         self.menutree.goto(self.node)
-        self.menutree.refresh()
 
-class CmdMenuQuit(Command):
-    """
-    Ends the associated menutree, and runs the 'look' command.
-    """
-    locks = "cmd:all()"
-
-    def __init__(self, key, aliases=[], menustring=None):
-        super(CmdMenuQuit, self).__init__()
-        self.key = key
-        self.aliases = aliases
-        self.menustring = menustring
-
-    def func(self):
-        if not hasattr(self, 'menutree'):
-            self.caller.msg('{rThis command is intended to be called from the dbmenu system.')
-            return
-        self.menutree.end()
-        self.caller.execute_cmd('look')
-
-class CmdMenuCode(Command):
+class CmdMenuCode(CmdMenu):
     locks = "cmd:all()"
 
     def __init__(self, key, code, aliases=[], menustring=None):
-        super(CmdMenuCode, self).__init__()
-        self.key = key
-        self.aliases = aliases
-        self.menustring = menustring
+        super(CmdMenuCode, self).__init__(key=key, aliases=aliases, menustring=menustring)
         self.code = code
 
     def func(self):
-        if not hasattr(self, 'menutree'):
-            self.caller.msg('{rThis command is intended to be called from the dbmenu system.')
-            return
         try:
             exec(self.code)
         except Exception, e:
             self.caller.msg("%s\n{rThere was an error with this selection." % e)
-        self.menutree.refresh()
+
+class CmdMenuList(CmdMenu):
+    locks = "cmd:all()"
+
+    def __init__(self, key, top_msg, aliases=[], menustring=None):
+        super(CmdMenuList, self).__init__(key=key, aliases=aliases, menustring=menustring)
+        self.top_msg = top_msg
+
+    def func(self):
+        self.caller.msg(self.top_msg)
+        for cmd in self.menutree.current_node:
+            if cmd.menustring:
+                self.caller.msg('%s - %s' % (cmd.key, cmd.menustring))
 
 class CmdsetMenu(CmdSet):
     key = "menucmdset"
@@ -63,47 +51,38 @@ class CmdsetMenu(CmdSet):
     def at_cmdset_creation(self):
         pass
 
-class MenuNode(object):
-    def __init__(self, cmds, text=None, cols=1):
-        self.cmds = cmds
-        self.text = text
-        self.cols = 1
-
-    def init(self, menutree):
-        self.cmdset = CmdsetMenu()
-        for cmd in self.cmds:
-            cmd.menutree = menutree
-            self.cmdset.add(cmd)
-            if cmd.menustring:
-                # TODO: Columns
-                self.text += '\n%s - %s' % (cmd.key, cmd.menustring)
-         
-
 class MenuTree(object):
-    def __init__(self, caller, nodes):
+    def __init__(self, caller, nodes, refresh_cmd='look'):
         self.caller = caller
         self.nodes = nodes
-        self.current_node = None
+        self.refresh_cmd = refresh_cmd
         for node in nodes.values():
-            node.init(self)
+            for cmd in node:
+                cmd.menutree = self
 
     def goto(self, node):
-        if not node in self.nodes:
-            self.caller.msg("{rThe requested menu node is not defined.  Perhaps it hasn't been created yet?")
         # Delete the old cmdset
         self.caller.cmdset.delete("menucmdset")
-        # Set the new current node, display its text, and assign its cmdset to the user
-        self.current_node = self.nodes[node]
-        self.caller.msg(self.current_node.text)
-        self.caller.cmdset.add(self.current_node.cmdset)
-
-    def end(self):
-        self.caller.cmdset.delete("menucmdset")
-        self.current_node = None
+        # Produce a new cmdset to add, if any
+        if node:
+            if not node in self.nodes:
+                self.caller.msg("{rMenu entry not found!  Exiting.")
+                self.current_node = None
+                return
+            self.current_node = self.nodes[node]
+            # Create and add a new cmdset for a new menu entry
+            menucmdset = CmdsetMenu()
+            for cmd in self.current_node:
+                menucmdset.add(cmd)
+            self.caller.cmdset.add(menucmdset)
+        else:
+            self.current_node = None
+        # Call the refresh command.  It's called even if the menu has exited.
+        self.refresh()
 
     def refresh(self):
-        if self.current_node:
-            self.caller.msg(self.current_node.text)
+        # Issue the desired refresh command to display the menu entry to the user
+        self.caller.execute_cmd(self.refresh_cmd)
 
 class CmdMenuTest(Command):
     """
@@ -119,22 +98,24 @@ class CmdMenuTest(Command):
     def func(self):
         "Testing the menu system"
         menu = MenuTree(self.caller, nodes={
-            'node0' : MenuNode(text="Start node. Select one of the links below. Here the links are ordered in one column.", cmds=[
+            'node0' : [
+                CmdMenuList(key='look', aliases=['help'], top_msg='Start node. Select one of the links below. Here the links are ordered in one column.'),
                 CmdMenuGoto(key='1', menustring='Goto first node', node='node1'),
                 CmdMenuGoto(key='2', menustring='Goto second node', node='node2'),
-                CmdMenuQuit(key='3', menustring='Quit'),
-            ]),
-            'node1' : MenuNode(text="First node.  This node shows letters instead of numbers for the choices.", cols=2, cmds=[
-                CmdMenuQuit(key='q', menustring='Quit'),
+                CmdMenuGoto(key='3', menustring='Quit', node=None),
+            ],
+            'node1' : [
+                CmdMenuList(key='look', aliases=['help'], top_msg='First node.  This node shows letters instead of numbers for the choices.'),
+                CmdMenuGoto(key='q', menustring='Quit', node=None),
                 CmdMenuGoto(key='b', menustring='Back to start', node='node0'),
-            ]),
-            'node2' : MenuNode(text="Second node.  This node lists choices in two columns.", cmds=[
-                CmdMenuCode(key='1', menustring='Set menutest attribute', code='self.caller.db.menutest="Testing!"; self.caller.msg("Attribute \'menutest\' set on you.  If you examine yourself, you can see it.")'),
-                CmdMenuCode(key='2', menustring='Examine yourself', code='self.caller.msg("%s/%s = %s" % (self.caller.key, \'menutest\', self.caller.db.menutest))'),
-                CmdMenuQuit(key='3', menustring='Quit'),
-                CmdMenuCode(key='4', menustring='Remove attribute and quit', code='del self.caller.db.menutest; self.menutree.end(); self.caller.execute_cmd("look")'),
-                # In practice for option '4', it's probably better to make your own Command class to do complex things like this, but this way works too.
-            ]),
+            ],
+            'node2' : [
+                CmdMenuList(key='look', aliases=['help'], top_msg='Second node.  This node lists choices in two columns.'),
+                CmdMenuCode(key='1', menustring='Set menutest attribute', code='self.caller.db.menutest="Testing!"; self.caller.msg("Attribute \'menutest\' set on you.  If you examine yourself, you can see it."); self.menutree.refresh()'),
+                CmdMenuCode(key='2', menustring='Examine yourself', code='self.caller.msg("%s/%s = %s" % (self.caller.key, \'menutest\', self.caller.db.menutest)); self.menutree.refresh()'),
+                CmdMenuGoto(key='3', menustring='Quit', node=None),
+                CmdMenuCode(key='4', menustring='Remove attribute and quit', code='del self.caller.db.menutest; self.menutree.goto(None)'),
+            ],
         })
         menu.goto('node0') # Start the menu
 
