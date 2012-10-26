@@ -8,7 +8,7 @@ import time
 from ev import Room
 from ev import Exit
 from game.gamesrc.latitude.objects.object import LatitudeObject
-from game.gamesrc.latitude.utils.text_canvas import TextCanvas
+from game.gamesrc.latitude.utils import evennia_color
 
 class LatitudeRoom(LatitudeObject, Room):
     def basetype_setup(self):
@@ -105,7 +105,7 @@ class LatitudeRoom(LatitudeObject, Room):
 	    region = search_script(area.db.region)[0]
 	    map_data = area.get_attribute('maps')[self.db.area_map_num]['map_data']
             # Parse the map data's color codes and create a canvas
-            canvas = TextCanvas()
+            canvas = evennia_color.EvenniaColorCanvas()
             canvas.evennia_import(map_data)
             # Generate a list of marks, and associated legend entries.
 	    marks = {}

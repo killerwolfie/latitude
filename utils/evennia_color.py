@@ -1,16 +1,18 @@
+"""
+This module contains classes and functions which assist in managing strings which contain Evennia color escape codes.
+"""
 import re
 import sys
 import os
 
-class TextCanvas():
+class EvenniaColorCanvas():
     """
     This class creanes a text canvass which can be drawn upon.
     Much like how an image is a 2 dimentional array of pixels, this canvas is
     a two dimentional array of characters, and associated Evennia color codes.
 
     Internally, the canvas is stored as a perfect rectangle, with equal length
-    lines, padded with uncolored spaces.  Optionally, the spaces can be
-    stripped when the canvas is turned back into a string.  <<== TODO!
+    lines, padded with uncolored spaces.
     """
     def __init__(self):
         self.canvas = [[]]
@@ -106,7 +108,7 @@ class TextCanvas():
         return retval[:-1]
 
     def draw_string(self, x, y, string_to_draw, transparent_background=False, transparent_spaces=False):
-        string_canvas = TextCanvas()
+        string_canvas = EvenniaColorCanvas()
         string_canvas.evennia_import(string_to_draw)
         self.draw_canvas(x, y, string_canvas, transparent_background, transparent_spaces)
 
@@ -161,3 +163,42 @@ class TextCanvas():
 	Returns the number of lines in the canvas.
 	"""
         return len(self.canvas)
+
+def evennia_color_left(string_to_justify, width, signal_trunc=False):
+    """
+    Truncates or pads a string (with spaces) to a desired width, and left justifies each line.
+    Color code characters are ignored when padding, or truncating, so that the on screen length (after color parsing) matches the supplied width.
+
+    string_to_justify - A copy of this string is returned, with its contents modified as requested
+    width - The desired width of the string.  This isn't the same as the length of the string, because the operation is performed separately on every line.
+    signal_trunc - If true, then if any line is truncated, the last three characters will be replaced with '...' to signal that the line was shortened.
+    """
+    pass # TODO
+
+def evennia_color_center(string_to_justify, width, signal_trunc=False):
+    """
+    Truncates or pads a string (with spaces) to a desired width, and centers each line.
+    Color code characters are ignored when padding, or truncating, so that the on screen length (after color parsing) matches the supplied width.
+
+    string_to_justify - A copy of this string is returned, with its contents modified as requested
+    width - The desired width of the string.  This isn't the same as the length of the string, because the operation is performed separately on every line.
+    signal_trunc - If true, then if any line is truncated, the last three characters will be replaced with '...' to signal that the line was shortened.
+    """
+    pass # TODO
+
+def evennia_color_right(string_to_justify, width, signal_trunc=False):
+    """
+    Truncates or pads a string (with spaces) to a desired width, and left justifies each line.
+    Color code characters are ignored when padding, or truncating, so that the on screen length (after color parsing) matches the supplied width.
+
+    string_to_justify - A copy of this string is returned, with its contents modified as requested
+    width - The desired width of the string.  This isn't the same as the length of the string, because the operation is performed separately on every line.
+    signal_trunc - If true, then if any line is truncated, the last three characters will be replaced with '...' to signal that the line was shortened.
+    """
+    pass # TODO
+
+def evennia_color_len(string_to_measure):
+    """
+    This returns the length of a string, not counting Evennia color codes
+    """
+    pass # TODO
