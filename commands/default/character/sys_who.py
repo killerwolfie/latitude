@@ -2,12 +2,16 @@ from src.server.sessionhandler import SESSIONS
 from ev import default_cmds
 from ev import utils
 import time
+from game.gamesrc.latitude.utils import evennia_color
 
 class CmdSysWho(default_cmds.MuxCommand):
     """
-    @who
+    @who - Display a table of basic information on other characters
 
-      Display a table of basic information on other players.
+    Usage:
+      @who - Lists everyone on the server who's connected
+      @who/room - Lists everyone in your current room (The default if you use the 'ws' command.)
+      @who/far <character> - Shows information on a specific character
     """
 
     key = "@who"
@@ -44,78 +48,82 @@ class CmdSysWho(default_cmds.MuxCommand):
 	    # There should never be a situation where you list a room or the whole server and get nobody.
 	    # Otherwise, if you get to this point, there should have already been some error output.
 	    return()
-
         idle_threshhold = 180 # Three minutes minimum idle.
-
         num_asleep = 0
 	num_awake = 0
-
-        self.caller.msg("%cn%ccName               Stamina   Gender    Species")
-        self.caller.msg("%cn%ch%cw------------------------------------------------------------------------------")
+        self.caller.msg("{CName                Stamina  Gender    Species   {b[{chelp @who{b for help]")
+        self.caller.msg("{w------------------------------------------------------------------------------")
 	if not char_list:
-	    self.caller.msg('%cn%crNo results')
+	    self.caller.msg('{RNo results')
         for character in char_list:
-            name = '%-18s' % character.key
-	    name = name[:18]
-	    if character.has_player:
-	        name = '%cn%ch%cc' + name
-	    else:
-	        name = '%cn%cc' + name
-
-            status = '%cn%cw?%ch%cr?%cg?%cy?%cb?%cm?%cc?  '
+            # Character Name
+            name = character.key
             if character.has_player:
-                idle_time = time.time() - character.sessions[0].cmd_last_visible
+                name = '%cn%ch%cc' + name
+            else:
+                name = '%cn%cc' + name
+            # Stamina / Status readout
+            stamina = '%cn%cw?%ch%cr?%cg?%cy?%cb?%cm?%cc?'
+            if character.has_player:
+                idle_time = int(time.time() - character.sessions[0].cmd_last_visible)
                 if idle_time < idle_threshhold:
 		    if character.db.stat_stamina != None and character.db.stat_stamina_max != None:
-                        status = '%d/%d' % (character.db.stat_stamina, character.db.stat_stamina_max)
-			status = '%-9s' % status
+                        stamina = '%d/%d' % (character.db.stat_stamina, character.db.stat_stamina_max)
 			fraction = float(character.db.stat_stamina) / float(character.db.stat_stamina_max)
 			if fraction > 0.8:
-			    status = '%ch%cg' + status
+			    sstamina = '%ch%cg' + stamina
 			elif fraction > 0.5:
-			    status = '%cn%cg' + status
+			    stamina = '%cn%cg' + stamina
 			elif fraction > 0.2:
-			    status = '%ch%cy' + status
+			    stamina = '%ch%cy' + stamina
                         else:
-			    status = '%cn%cr' + status
+			    stamina = '%cn%cr' + stamina
                 else:
-                    status = '%ch%cwIdle     '
+                    stamina = self.idle_string(idle_time)
             else:
-                status = '%cn%cgZzzz     '
-
+                stamina = '%cn%cgZzzz'
+            # Gender
             gender = character.db.attr_gender
-	    if gender:
-                gender = '%-10s' % gender
-	        gender = gender[:10]
-
 	    if not gender:
-	        gender = '%cn%cr-Unset-  '
-            elif gender.lower().rstrip() in ['male', 'man', 'boy', 'dude', 'him']:
+	        gender = '%cn%cr-Unset-'
+            elif character.is_male():
 	        gender = '%cn%ch%cb' + gender
-            elif gender.lower().rstrip() in ['female', 'woman', 'girl', 'chick', 'her']:
+            elif character.is_female():
 	        gender = '%cn%ch%cm' + gender
-	    elif gender.lower().rstrip() in ['herm', 'hermy', 'both', 'shemale']:
+	    elif character.is_herm():
 	        gender = '%cn%ch%cg' + gender
 	    else:
 	        gender = '%cn%ch%cw' + gender
-
+            # Species
             species = character.db.desc_species
-	    if species:
-                species = '%-39s' % species
-		species = species[:39]
-
 	    if not species:
 	        species = '%cn%cr-Unset-'
             else:
 	        species = '%cn%ch%cw' + species
 
-            self.caller.msg('%s %s %s %s' % (name, status, gender, species))
+            self.caller.msg('%s %s %s %s' % (evennia_color.evennia_color_left(name, 19, dots=True), evennia_color.evennia_color_left(stamina, 8), evennia_color.evennia_color_left(gender, 9, dots=True), evennia_color.evennia_color_left(species, 39, dots=True)))
 
 	    if character.has_player:
 	        num_awake += 1
             else:
 	        num_asleep += 1
-        footer = "%%cn%%ch%%cw--%%cb[ %%cn%%cc%d%%ch%%cb players listed (%%cn%%cc%d%%ch%%cb awake) ]%%cw---------------------------------------------------------------------------------" % (num_awake + num_asleep, num_awake)
-	footer = footer[:117]
-        self.caller.msg(footer)
+        footer = evennia_color.EvenniaColorCanvas()
+        footer.evennia_import('{w------------------------------------------------------------------------------')
+        footer.draw_string(3, 0, '{b[ {C%s{b players listed ({C%d{b awake) ]' % (num_awake + num_asleep, num_awake))
+        self.caller.msg(footer.evennia_export())
 
+    def idle_string(self, seconds):
+        unit_table = [
+            (60, 'm'),
+            (60, 'h'),
+            (24, 'd'),
+            (365, 'y'),
+        ]
+
+        unit = 's'
+        for entry in unit_table:
+            if seconds / entry[0] == 0:
+                break
+            unit = entry[1]
+            seconds = seconds / entry[0]
+        return '{wi{y%s{R%c' % (str(seconds), unit)

@@ -29,7 +29,8 @@ class CmdSys3Who(default_cmds.MuxCommand):
             char_num += 1
             name = character.key
             onseconds = int(time.time() - character.sessions[0].cmd_last_visible)
-            ontime = '%02d:%02d' % (onseconds / 60, onseconds % 60)
+            onminutes = onseconds / 60
+            ontime = '%02d:%02d' % (onminutes / 60, onminutes % 60)
             idletime = self.tdelta_string(int(time.time() - character.sessions[0].cmd_last_visible))
             output += '%-12s %6s %-5s ' % (name[:12], ontime[:6], idletime[:5])
             if char_num and char_num % 3 == 0:

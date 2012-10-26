@@ -68,7 +68,7 @@ class EvenniaColorCanvas():
                     current_fg = color_code
                     current_attr = 'h'
                 elif color_code in 'XRGYBMCW':
-                    current_fg = color_code
+                    current_fg = color_code.lower()
                     current_attr = None
                 continue
             # Process the chunk as ordinary text
