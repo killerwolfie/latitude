@@ -106,7 +106,7 @@ class LatitudeRoom(LatitudeObject, Room):
 	    map_data = area.get_attribute('maps')[self.db.area_map_num]['map_data']
             # Parse the map data's color codes and create a canvas
             canvas = TextCanvas()
-            canvas.set_data(map_data)
+            canvas.evennia_import(map_data)
             # Generate a list of marks, and associated legend entries.
 	    marks = {}
 	    # TODO: poi_marks ?
@@ -143,14 +143,22 @@ class LatitudeRoom(LatitudeObject, Room):
 	    for location in marks.keys():
 	        marks[location].sort(key=lambda item: item['prio'], reverse=True)
 	    # Place the marks on the map, and generate the legend
-	    number_markers = [
-		{'char' : '1', 'attr' : 'h', 'fg' : 'g', 'bg' : '?'},
-		{'char' : '2', 'attr' : 'h', 'fg' : 'y', 'bg' : '?'},
-		{'char' : '3', 'attr' : 'h', 'fg' : 'c', 'bg' : '?'},
-		{'char' : '4', 'attr' : 'h', 'fg' : 'm', 'bg' : '?'},
-		{'char' : '5', 'attr' : 'h', 'fg' : 'b', 'bg' : '?'},
-	    ]
-	    location_marker = {'char' : 'X', 'attr' : None, 'fg' : 'r', 'bg' : '?'}
+#	    number_markers = [
+#		{'char' : '1', 'attr' : 'h', 'fg' : 'g', 'bg' : '?'},
+#		{'char' : '2', 'attr' : 'h', 'fg' : 'y', 'bg' : '?'},
+#		{'char' : '3', 'attr' : 'h', 'fg' : 'c', 'bg' : '?'},
+#		{'char' : '4', 'attr' : 'h', 'fg' : 'm', 'bg' : '?'},
+#		{'char' : '5', 'attr' : 'h', 'fg' : 'b', 'bg' : '?'},
+#	    ]
+#	    location_marker = {'char' : 'X', 'attr' : None, 'fg' : 'r', 'bg' : '?'}
+            number_markers = [
+                '%ch%cg1',
+                '%ch%cy2',
+                '%ch%cc3',
+                '%ch%cm4',
+                '%ch%cb5',
+            ]
+            location_marker = '%crX'
 	    legend_remaining = 10
 	    legend = ''
 	    for location, mark in sorted(marks.items(), key=lambda mark_item: mark_item[1][0]['prio'], reverse=True):
@@ -168,7 +176,7 @@ class LatitudeRoom(LatitudeObject, Room):
 		    do_legend = True # We want to do the legend even though it won't append to the string, so it tracks how '(# more...)' entries.
 		# Make the actual mark
                 if marker and legend_remaining > 0 or mark[0]['prio'] >= 0: # If there is no marker to place, or we're drawing an optional (prio < 0) mark without remaining legend space, then skip
-		    canvas.draw_string(location[0], location[1], marker['char'], attr=marker['attr'], fg=marker['fg'], bg=marker['bg'])
+		    canvas.draw_string(location[0], location[1], marker, transparent_background=True)
 		# Extract the legend items
 		if do_legend:
 		    legend_items = [item['legend'] for item in mark if item['legend'] != None]
@@ -192,7 +200,7 @@ class LatitudeRoom(LatitudeObject, Room):
 	        legend += '%cn(' + str(0 - legend_remaining) + ' more...)'
 
 	    # Grab and print the output
-            retval = canvas.get_data()
+            retval = canvas.evennia_export()
 	    if print_location:
 	        retval += '\n' + ('{bRegion:{n %s {bArea:{n %s {bRoom:{n %s' % (region.db.name, area.db.name, self.key)).center(canvas.width() + 12) # 12 = Number of color escape characters
 	    if legend:

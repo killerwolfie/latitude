@@ -15,7 +15,14 @@ class TextCanvas():
     def __init__(self):
         self.canvas = [[]]
 
-    def set_data(self, canvas_string):
+    def evennia_import(self, canvas_string):
+        """
+        Replaces the data in the canvas with the data supplied in a string.
+        Evennia color codes are parsed, so that the resulting canvas should contain exactly what you would see if you printed the string with msg()
+        This (and all other) routines require and when appopriate attempt to ensure that the canvas is perfectly rectangular.
+
+        canvas_string - The string to import
+        """
         # Explode the supplied strings into a series of chunks split based on where the color codes happen.
         color_explosion = []
         for newline_section in re.split(r'(\n)', canvas_string):
@@ -66,9 +73,12 @@ class TextCanvas():
             for c in chunk:
                 self.canvas[-1].append({'color_fg' : current_fg, 'color_bg' : current_bg, 'color_attr' : current_attr, 'character' : c})
         # Ensure that the canvas data is perfectly rectangular
-        # TODO
+        self.resize(self.width(), self.height())
 
-    def get_data(self):
+    def evennia_export(self):
+        """
+        Produces a string representation of the contents of the canvas, with color codes suitable for sending to Evennia's 'msg' call.
+        """
         retval = u''
         current_fg = None
         current_bg = None
@@ -95,50 +105,49 @@ class TextCanvas():
             retval += '\n'
         return retval[:-1]
 
-    def draw_string(self, x, y, string_to_draw, fg=None, bg=None, attr=None):
-        # TODO: This function currently does not take a color-coded string!  It should be modified to split color codes out, instead of taking fg, bg, and attr.
+    def draw_string(self, x, y, string_to_draw, transparent_background=False, transparent_spaces=False):
+        string_canvas = TextCanvas()
+        string_canvas.evennia_import(string_to_draw)
+        self.draw_canvas(x, y, string_canvas, transparent_background, transparent_spaces)
 
-        # If needed, expand the canvas horizontally
-        for i in range((1 + y) - len(self.canvas)):
-            self.canvas.append([])
-	# If needed, expand the canvas vertically
-	for i in range((x + len(string_to_draw)) - len(self.canvas[y])):
-	    self.canvas[y].append({'color_fg' : None, 'color_bg' : None, 'color_attr' : None, 'character' : ' '})
-	# Apply the drawing
-	for i in range(len(string_to_draw)):
-	    if fg == '?': # Unchanged
-	        new_fg = self.canvas[y][x + i]['color_fg']
-            else:
-	        new_fg = fg
-	    if bg == '?': # Unchanged
-	        new_bg = self.canvas[y][x + i]['color_bg']
-            else:
-	        new_bg = bg
-	    if attr == '?': # Unchanged
-	        new_attr = self.canvas[y][x + i]['color_attr']
-            else:
-	        new_attr = attr
-	    self.canvas[y][x + i] = {'color_fg' : new_fg, 'color_bg' : new_bg, 'color_attr' : new_attr, 'character' : string_to_draw[i]}
-
-    def draw_canvas(self, x, y, canvas_to_draw, left=True, top=True):
+    def draw_canvas(self, x, y, canvas_to_draw, transparent_background=False, transparent_spaces=False):
         """
 	Draws another canvas class into this canvas.
+        Any overflow will not be drawn, so ensure that the canvas is properly resize()'d beforehand if needed.
+
 	canvas_to_draw - The supplied canvas to draw on this canvas
 	x, y - Coordinates in this canvas, in which to draw the supplied canvas
-        left - If True, then x indicates where to put the leftmost column of convas_to_draw,
-	       otherwise x indicates the rightmost column
-	top - If True, then y represents where to put the topmost row of canvas_to_draw,
-	      otherwise y indicates the bottommost row.
 	"""
-        pass
+        # Ensure the underlying data is perfectly square by resizing the canvas to its current size
+        self.resize(self.width(), self.height())
+        # Apply the canvas
+        for y_in, line_in in enumerate(canvas_to_draw.canvas):
+            for x_in, char_in in enumerate(line_in):
+                # Attempt to ensure that we don't overflow the canvas
+                if y_in + y >= len(self.canvas):
+                    continue
+                if x_in + x >= len(self.canvas[y_in + y]):
+                    continue
+                # Skip this character if spaces are transparent
+                if transparent_spaces and char_in['character'] == ' ':
+                    continue
+                # Modify the character if background colors are transparent
+                if transparent_background:
+                    char_in['color_bg'] = self.canvas[y_in + y][x_in + x]['color_bg']
+                # Draw the character
+                self.canvas[y_in + y][x_in + x] = char_in
 
-    def resize(self, x, y, pad_left=False, bad_top=False):
+    def resize(self, x, y, x_pad_before=False, y_pad_before=False):
         """
 	Resizes the canvas.
+
 	x, y - New size
-	pad_left - If True, the
 	"""
-        pass
+        self.canvas += [ [] for line in range(y - len(self.canvas)) ] # Pad vertically (If applicable)
+        del self.canvas[(y + 1):] # Truncate vertically (If applicable)
+        for line in self.canvas:
+            line += [ {'color_fg' : None, 'color_bg' : None, 'color_attr' : None, 'character' : ' '} for char in range(x - len(line)) ] # Pad horizontally (If applicable)
+            del line[(x + 1):] # Truncate horizontally (If applicable)
 
     def width(self):
         max_len = 0
