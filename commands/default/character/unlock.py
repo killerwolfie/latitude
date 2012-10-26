@@ -8,7 +8,7 @@ class CmdUnlock(default_cmds.MuxCommand):
     """
     key = "unlock"
     locks = "cmd:all()"
-    help_category = "Contextual"
+    help_category = "Actions"
 
     # auto_help = False      # uncomment to deactive auto-help for this command.
     # arg_regex = r"\s.*?|$" # optional regex detailing how the part after
