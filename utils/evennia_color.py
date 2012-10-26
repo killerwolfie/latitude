@@ -164,7 +164,7 @@ class EvenniaColorCanvas():
 	"""
         return len(self.canvas)
 
-def evennia_color_left(string_to_justify, width, signal_trunc=False):
+def evennia_color_left(string_to_justify, width, dots=False):
     """
     Truncates or pads a string (with spaces) to a desired width, and left justifies each line.
     Color code characters are ignored when padding, or truncating, so that the on screen length (after color parsing) matches the supplied width.
@@ -173,9 +173,17 @@ def evennia_color_left(string_to_justify, width, signal_trunc=False):
     width - The desired width of the string.  This isn't the same as the length of the string, because the operation is performed separately on every line.
     signal_trunc - If true, then if any line is truncated, the last three characters will be replaced with '...' to signal that the line was shortened.
     """
-    pass # TODO
-
-def evennia_color_center(string_to_justify, width, signal_trunc=False):
+    # Truncate the string (If required)
+    if dots:
+        truncated_string = evennia_color_trunc_dots(string_to_justify, width)
+    else:
+        truncated_string = evennia_color_trunc(string_to_justify, width)
+    # Pad with spaces (If required)
+    truncated_string += u' ' * (width - evennia_color_len(truncated_string))
+    # Return the result
+    return truncated_string
+        
+def evennia_color_center(string_to_justify, width, dots=False):
     """
     Truncates or pads a string (with spaces) to a desired width, and centers each line.
     Color code characters are ignored when padding, or truncating, so that the on screen length (after color parsing) matches the supplied width.
@@ -184,9 +192,19 @@ def evennia_color_center(string_to_justify, width, signal_trunc=False):
     width - The desired width of the string.  This isn't the same as the length of the string, because the operation is performed separately on every line.
     signal_trunc - If true, then if any line is truncated, the last three characters will be replaced with '...' to signal that the line was shortened.
     """
-    pass # TODO
+    # Truncate the string (If required)
+    if dots:
+        truncated_string = evennia_color_trunc_dots(string_to_justify, width)
+    else:
+        truncated_string = evennia_color_trunc(string_to_justify, width)
+    # Left pad with spaces (If required)
+    truncated_string = u' ' * ((width - evennia_color_len(truncated_string)) / 2) + truncated_string
+    # Right pad with spaces (If required)
+    truncated_string += u' ' * (width - evennia_color_len(truncated_string))
+    # Return the result
+    return truncated_string
 
-def evennia_color_right(string_to_justify, width, signal_trunc=False):
+def evennia_color_right(string_to_justify, width, dots=False):
     """
     Truncates or pads a string (with spaces) to a desired width, and left justifies each line.
     Color code characters are ignored when padding, or truncating, so that the on screen length (after color parsing) matches the supplied width.
@@ -195,10 +213,75 @@ def evennia_color_right(string_to_justify, width, signal_trunc=False):
     width - The desired width of the string.  This isn't the same as the length of the string, because the operation is performed separately on every line.
     signal_trunc - If true, then if any line is truncated, the last three characters will be replaced with '...' to signal that the line was shortened.
     """
-    pass # TODO
+    # Truncate the string (If required)
+    if dots:
+        truncated_string = evennia_color_trunc_dots(string_to_justify, width)
+    else:
+        truncated_string = evennia_color_trunc(string_to_justify, width)
+    # Pad with spaces (If required)
+    truncated_string = u' ' * (width - evennia_color_len(truncated_string)) + truncated_string
+    # Return the result
+    return truncated_string
+
+def evennia_color_trunc_dots(string_to_truncate, width):
+    """
+    Like evennia_color_trunc, this function truncates a string, compensating for evenna color codes, but if truncation was required, the last three characters are replaced with '...'
+    Like evennia_color_trunc, this also doesn't compensate for newlines, just counts them as any other character
+    """
+    if evennia_color_len(string_to_truncate) > width:
+        if width <= 3:
+            # Do what we can with the space provided
+            return evennia_color_trunc(string_to_truncate, 0) + (u'.' * width)
+        else:
+            return evennia_color_trunc(string_to_truncate, width - 3) + '...'
+    else:
+        return evennia_color_trunc(string_to_truncate, width)
+
+def evennia_color_trunc(string_to_truncate, width):
+    """
+    Truncates a string to a specified length, compensating for any evennia color codes that may be present in the string.
+    Does not compensate for newlines, just counts them as any other character.
+    """
+    # FIXME: Maybe this should determine what the final color code is, in the string, and ensure that the truncated string still ends in that color code.
+    #        Might be a bit excessive, though, because users of the function can feel free to append whatever code they want to the end.
+    if width <= 0:
+        width = 0
+    width_remaining = width
+    retval = u''
+    for percent_section in re.split(r'(%%)', string_to_truncate):
+        for bracket_section in re.split(r'(\{\{)', percent_section):
+            for color_section in re.split(r'(%c[fihnxXrRgGyYbBmMcCwW]|\{[nxXrRgGyYbBmMcCwW])', bracket_section):
+                # Check if we need to ignore the length of this section (because it's a color code)
+                if re.search(r'^(%c[fihnxXrRgGyYbBmMcCwW]|\{[nxXrRgGyYbBmMcCwW])$', color_section):
+                    retval += color_section
+                    continue
+                # Calculate the length of this section
+                if color_section == '{{' or color_section == '%%':
+                    section_length = 1
+                else:
+                    section_length = len(color_section)
+                # Check if we've reached our allotment (If this is changed to > instead of >=, then trailing color codes will make it through)
+                if section_length >= width_remaining: # We've reached the end of our allotment
+                    retval += color_section[:width_remaining]
+                    return retval
+                # Append the stringd 
+                retval += color_section
+                width_remaining -= section_length
+    # We got to the end without hitting the cap
+    return retval
 
 def evennia_color_len(string_to_measure):
     """
-    This returns the length of a string, not counting Evennia color codes
+    Returns the length of a string, not counting Evennia color codes
     """
-    pass # TODO
+    return len(evennia_color_strip(string_to_measure))
+
+def evennia_color_strip(string_to_strip):
+    """
+    Strips all Evennia color codes from a string
+    """
+    clean_string = u''
+    for bracket_section in re.split(r'(\{)\{', string_to_strip):
+        for percent_section in re.split(r'(%)%', bracket_section):
+            clean_string += re.sub(r'(%c[fihnxXrRgGyYbBmMcCwW]|\{[nxXrRgGyYbBmMcCwW])', '', percent_section)
+    return clean_string
