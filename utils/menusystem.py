@@ -1,4 +1,4 @@
-from ev import Command, CmdSet
+from ev import Command, CmdSet, syscmdkeys
 
 class CmdMenu(Command):
     locks = "cmd:all()"
@@ -7,6 +7,9 @@ class CmdMenu(Command):
         self.key = key
         self.aliases = aliases
         self.menustring = menustring
+
+    def get_menustring(self):
+        return self.menustring
 
 class CmdMenuGoto(CmdMenu):
     locks = "cmd:all()"
@@ -41,11 +44,21 @@ class CmdMenuList(CmdMenu):
     def func(self):
         self.caller.msg(self.top_msg)
         for cmd in self.menutree.current_node:
-            if cmd.menustring:
+            if cmd.get_menustring():
                 self.caller.msg('%s - %s' % (cmd.key, cmd.menustring))
 
 class CmdsetMenu(CmdSet):
     key = "menucmdset"
+    priority = 5
+    no_objs = True
+    no_exits = True
+    no_channels = True
+    mergetype = "Replace"
+    def at_cmdset_creation(self):
+        pass
+
+class CmdsetDisable(CmdSet):
+    key = "disable"
     priority = 1
     mergetype = "Replace"
     def at_cmdset_creation(self):
@@ -62,7 +75,9 @@ class MenuTree(object):
 
     def goto(self, node):
         # Delete the old cmdset
-        self.caller.cmdset.delete("menucmdset")
+        if hasattr(self.caller, 'player'):
+            self.caller.player.cmdset.delete('disable')
+        self.caller.cmdset.delete('menucmdset')
         # Produce a new cmdset to add, if any
         if node:
             if not node in self.nodes:
@@ -71,6 +86,8 @@ class MenuTree(object):
                 return
             self.current_node = self.nodes[node]
             # Create and add a new cmdset for a new menu entry
+            if hasattr(self.caller, 'player'):
+                self.caller.player.cmdset.add(CmdsetDisable)
             menucmdset = CmdsetMenu()
             for cmd in self.current_node:
                 menucmdset.add(cmd)
@@ -99,17 +116,20 @@ class CmdMenuTest(Command):
         "Testing the menu system"
         menu = MenuTree(self.caller, nodes={
             'node0' : [
+                CmdMenuList(key=syscmdkeys.CMD_NOMATCH, top_msg='That option is not recognized.'),
                 CmdMenuList(key='look', aliases=['help'], top_msg='Start node. Select one of the links below. Here the links are ordered in one column.'),
                 CmdMenuGoto(key='1', menustring='Goto first node', node='node1'),
                 CmdMenuGoto(key='2', menustring='Goto second node', node='node2'),
                 CmdMenuGoto(key='3', menustring='Quit', node=None),
             ],
             'node1' : [
+                CmdMenuList(key=syscmdkeys.CMD_NOMATCH, top_msg='That option is not recognized.'),
                 CmdMenuList(key='look', aliases=['help'], top_msg='First node.  This node shows letters instead of numbers for the choices.'),
                 CmdMenuGoto(key='q', menustring='Quit', node=None),
                 CmdMenuGoto(key='b', menustring='Back to start', node='node0'),
             ],
             'node2' : [
+                CmdMenuList(key=syscmdkeys.CMD_NOMATCH, top_msg='That option is not recognized.'),
                 CmdMenuList(key='look', aliases=['help'], top_msg='Second node.  This node lists choices in two columns.'),
                 CmdMenuCode(key='1', menustring='Set menutest attribute', code='self.caller.db.menutest="Testing!"; self.caller.msg("Attribute \'menutest\' set on you.  If you examine yourself, you can see it."); self.menutree.refresh()'),
                 CmdMenuCode(key='2', menustring='Examine yourself', code='self.caller.msg("%s/%s = %s" % (self.caller.key, \'menutest\', self.caller.db.menutest)); self.menutree.refresh()'),
