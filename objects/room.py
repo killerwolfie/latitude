@@ -143,14 +143,6 @@ class LatitudeRoom(LatitudeObject, Room):
 	    for location in marks.keys():
 	        marks[location].sort(key=lambda item: item['prio'], reverse=True)
 	    # Place the marks on the map, and generate the legend
-#	    number_markers = [
-#		{'char' : '1', 'attr' : 'h', 'fg' : 'g', 'bg' : '?'},
-#		{'char' : '2', 'attr' : 'h', 'fg' : 'y', 'bg' : '?'},
-#		{'char' : '3', 'attr' : 'h', 'fg' : 'c', 'bg' : '?'},
-#		{'char' : '4', 'attr' : 'h', 'fg' : 'm', 'bg' : '?'},
-#		{'char' : '5', 'attr' : 'h', 'fg' : 'b', 'bg' : '?'},
-#	    ]
-#	    location_marker = {'char' : 'X', 'attr' : None, 'fg' : 'r', 'bg' : '?'}
             number_markers = [
                 '%ch%cg1',
                 '%ch%cy2',
