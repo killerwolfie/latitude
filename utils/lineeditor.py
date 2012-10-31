@@ -9,17 +9,17 @@ import shlex
 if sys.version_info < (2,7,3):
     raise Exception("The Latitude Line Editor module requires Python version 2.7.3 or higher")
 
-HELP_STRING = """
+VI_HELP_STRING = """
 {w--{CText Editor Help{w------------------------------------------------------------{n
 <txt>  - any non-command is appended to the end of the buffer.
 :  <l> - view buffer or only line <l>
-:: <l> - view buffer without line numbers or other parsing
+:: <l> - view buffer without line numbers or other parsing (In color if available)
 :::    - print a ':' as the only character on the line...
 :h     - this help.
 
 :w     - saves the buffer (don't quit)
 :wq    - save buffer and quit
-:q     - quits (will be asked to save if buffer was changed)
+:q     - quit, but only if the buffer is unchanged.
 :q!    - quit without saving, no questions asked
 
 :u     - (undo) step backwards in undo history
@@ -230,8 +230,6 @@ class CmdLineEditorVi(Command):
                    self.caller.msg('{rUsage: :fd [lstart[:lend]]')
                    return
                self.editor.dedent(start=self.editor_vi_lstart, end=self.editor_vi_lend)
-           elif self.editor_cmdstring == ':h':
-               self.caller.msg(HELP_STRING)
            elif self.editor_cmdstring == ':w':
                self.caller.msg('{rError saving buffer: No child class, or ":w" call not overriden by child class.')
            elif self.editor_cmdstring == ':wq':
@@ -240,8 +238,10 @@ class CmdLineEditorVi(Command):
                self.caller.msg('{rError quitting editor (Try reconnecting): No child class, or ":q" call not overriden by child class.')
            elif self.editor_cmdstring == ':q!':
                self.caller.msg('{rError quitting editor (Try reconnecting): No child class, or ":q!" call not overriden by child class.')
+           elif self.editor_cmdstring == ':h':
+               self.caller.msg(VI_HELP_STRING)
            else:
-               self.caller.msg('Unrecognized editor command "%s".  Try ":h" for help.' % self.editor_cmdstring)
+               self.caller.msg('{rUnrecognized editor command "%s".  Try ":h" for help.' % self.editor_cmdstring)
        else:
            self.editor.insert(self.raw_string)
 
@@ -250,13 +250,21 @@ class LineEditor(object):
     This defines a line editor object.  It maintains a line buffer, and defines operations that users can perform on the buffer.
     """
 
-    def __init__(self, caller, key=""):
+    def __init__(self, caller, maxlines=None, maxwords=None, maxchars=None, color=False, key=""):
         """
         caller - who is using the editor
         key = an optional key for naming this session (such as which attribute is being edited)
+        maxlines - Maximum number of lines for the user to enter (advisory)
+        maxwords - Maximum number of words for the user to enter (advisory)
+        maxchars - Maximum number of characters for the user to enter (advisory)
+        color - Permit color codes  (If False, then get_buffer will default to returning escaped color codes)
         """
-        self.key = key
         self.caller = caller
+        self.maxlines = maxlines
+        self.maxwords = maxwords
+        self.maxchars = maxchars
+        self.color = color
+        self.key = key
         self.text_buffer = []
 
         # store the original version
@@ -270,18 +278,48 @@ class LineEditor(object):
         # copy buffer
         self.copy_buffer = []
 
-        # show the buffer ui
-        self.display_buffer()
+    def get_buffer(self, escape_colors=None):
+        if escape_colors == None:
+            if self.color:
+                escape_colors=False
+            else:
+                escape_colors=True
+        if escape_colors:
+            return '\n'.join(self.text_buffer).replace('%', '%%').replace('{', '{{')
+        else:
+            return '\n'.join(self.text_buffer)
 
     def set_buffer(self, buf):
-        self.caller.msg('STUB: set_buffer not implemented')
+        if buf == None or buf == '':
+            self.text_bufer = []
+        else:
+            self.text_buffer = buf.split('\n')
+        self.pristine_buffer = list(self.text_buffer)
 
-    def get_buffer(self, buf):
-        self.caller.msg('STUB: get_buffer not implemented')
+    def set_pristine(self):
+        self.pristine_buffer = list(self.text_buffer)
+
+    def set_color(self, color):
+        self.color = color
+
+    def set_maxlines(self, maxlines):
+        self.maxlines = maxlines
+
+    def set_maxwords(self, maxwords):
+        self.maxwords = maxwords
+
+    def set_maxchars(self, maxchars):
+        self.maxchars = maxchars
+
+    def set_key(self, key):
+        self.key = key
+
+    def is_unchanged(self):
+        return self.text_buffer == self.pristine_buffer
 
     def display_buffer(self, start=None, end=None, raw=False):
        if raw:
-           self.caller.msg('\n'.join(self.text_buffer), data={'raw' : True})
+           self.caller.msg(self.get_buffer())
            return
        # Generate a title string
        title = '{CText Editor'
@@ -289,20 +327,45 @@ class LineEditor(object):
            title += ' {C[{c%s{C]' % self.key
        title = evennia_color.evennia_color_trunc_dots(title, 78)
        # Generate a footer statistic string
-       footer_info = "{C[l:%02i w:%03i c:%04i]" % (len(self.text_buffer), len([ word for word in re.split(r'\s+', '\n'.join(self.text_buffer)) if word != '']), len('\n'.join(self.text_buffer)))
+       nlines = len(self.text_buffer)
+       if self.maxlines and nlines > self.maxlines:
+           slines = '{r%d{C/%d' % (nlines, self.maxlines)
+       elif self.maxlines:
+           slines = '{C%d/%d' % (nlines, self.maxlines)
+       else:
+           slines = '{C%d' % (nlines)
+       nwords = len([ word for word in re.split(r'\s+', '\n'.join(self.text_buffer)) if word != ''])
+       if self.maxwords and nwords > self.maxwords:
+           swords = '{r%d{C/%d' % (nwords, self.maxwords)
+       elif self.maxwords:
+           swords = '{C%d/%d' % (nwords, self.maxwords)
+       else:
+           swords = '{C%d' % (nwords)
+       nchars = len('\n'.join(self.text_buffer))
+       if self.maxchars and nchars > self.maxchars:
+           schars = '{r%d{C/%d' % (nchars, self.maxchars)
+       elif self.maxchars:
+           schars = '{C%d/%d' % (nchars, self.maxchars)
+       else:
+           schars = '{C%d' % (nchars)
+       footer_info = '{C[l:%s {Cw:%s {Cc:%s{C]' % (slines, swords, schars)
+
        # Combine the strings into a header and footer
        header = evennia_color.EvenniaColorCanvas()
-       header.evennia_import('{w-----------------------------------------------------------------------------')
-       header.draw_string(39 - (evennia_color.evennia_color_len(title) / 2), 0, title)
+       header.evennia_import('{w------------------------------------------------------------------------------')
+       header.draw_string(header.width() / 2 - (evennia_color.evennia_color_len(title) / 2), 0, title)
        footer = evennia_color.EvenniaColorCanvas()
-       footer.evennia_import('{w--------------------------------------------------------------{b[{c:h{b for help]{w--')
+       footer.evennia_import('{w---------------------------------------------------------------{b[{c:h{b for help]{w--')
        footer.draw_string(3, 0, footer_info)
        self.caller.msg(header.evennia_export())
        if self.text_buffer == []:
            self.caller.msg('      {rEmpty Buffer')
        else:
            for lineno, line in enumerate(self.text_buffer):
-               self.caller.msg('{c%5s {n%s' % (lineno + 1, line))
+               if self.color:
+                   self.caller.msg('{c%5s {n%s' % (lineno + 1, line))
+               else:
+                   self.caller.msg('{c%5s {n%s' % (lineno + 1, line.replace('%', '%%').replace('{', '{{')))
        self.caller.msg(footer.evennia_export())
         
     def undo(self):
@@ -326,7 +389,13 @@ class LineEditor(object):
         else:
             start_index = None
         del self.text_buffer[start_index:end]
-        if start == end:
+        if start == None and end == None:
+            self.caller.msg('Deleted all lines')
+        elif end == None:
+            self.caller.msg('Deleted all lines from %d' % (start))
+        elif start == None:
+            self.caller.msg('Deleted all lines up to %d' % (end))
+        elif start == end:
             self.caller.msg('Deleted line %d' % (start))
         else:
             self.caller.msg('Deleted lines %d to %d' % (start, end))
