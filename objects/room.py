@@ -174,14 +174,7 @@ class LatitudeRoom(LatitudeObject, Room):
 		    legend_items = [item['legend'] for item in mark if item['legend'] != None]
 		    if legend_items:
 			if marker and legend_remaining > 0: # We're not out of markers, and we're not out of our legend item quota
-			    legend += '%cn'
-			    if marker['attr'] != None and marker['attr'] != '?':
-				legend += '%c' + marker['attr']
-			    if marker['fg'] != None and marker['fg'] != '?':
-				legend += '%c' + marker['fg']
-			    if marker['bg'] != None and marker['bg'] != '?':
-				legend += '%c' + marker['bg']
-			    legend += marker['char'] + ') '
+			    legend = marker + ') '
 			    if len(legend_items) <= legend_remaining:
 				legend += ', '.join(legend_items)
 			    else:
