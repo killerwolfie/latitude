@@ -332,7 +332,7 @@ class EditObj(object):
         if hasattr(self.caller, 'player'):
             self.caller.player.cmdset.delete('ObjEdit')
         self.caller.cmdset.delete('ObjEdit')
-        self.caller.msg('Editor closed.')
+        self.caller.execute_cmd('look')
 
 class CmdEditTest(Command):
     """
