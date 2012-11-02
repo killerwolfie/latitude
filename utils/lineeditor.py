@@ -204,20 +204,27 @@ class CmdLineEditorVi(Command):
                    return
                self.editor.cut(start=self.editor_vi_lstart, end=self.editor_vi_lend)
            elif self.editor_cmdstring == ':p':
-               self.editor.paste(start=self.editor_vi_lstart, end=self.editor_vi_lend)
+               if len(self.editor_args) != 0 or (self.editor_vi_lstart and self.editor_vi_lstart != self.editor_vi_lend):
+                   self.caller.msg('{rUsage: :p lineno')
+                   return
+               if self.editor_vi_lstart:
+                   self.editor.paste(after_line=self.editor_vi_lstart)
+               else:
+                   self.editor.paste(after_line=self.editor.get_nlines())
+
            elif self.editor_cmdstring == ':i':
                if not self.editor_args:
                    self.caller.msg('{rUsage: :dw [lstart[:lend]] "addme"')
                    return
                self.editor.insert(' '.join(self.editor_args), before_line=self.editor_vi_lstart)
            elif self.editor_cmdstring == ':r':
-               self.editor.replace(' '.join(self.editor_args), line=self.editor_vi_lstart)
+               self.editor.replace(line_string=' '.join(self.editor_args), line=self.editor_vi_lstart)
            elif self.editor_cmdstring == ':I':
                self.editor.prepend(string_to_prepend=' '.join(self.editor_args), line=self.editor_vi_lstart)
            elif self.editor_cmdstring == ':A':
                self.editor.append(string_to_append=' '.join(self.editor_args), line=self.editor_vi_lstart)
            elif self.editor_cmdstring == ':s':
-               self.editor.sub(self.editor_args[0], ' '.join(self.editor_args), start=self.editor_vi_lstart, end=self.editor_vi_lend)
+               self.editor.sub(self.editor_args[0], ' '.join(self.editor_args[1:]), start=self.editor_vi_lstart, end=self.editor_vi_lend)
            elif self.editor_cmdstring == ':f':
                self.editor.fill(start=self.editor_vi_lstart, end=self.editor_vi_lend)
            elif self.editor_cmdstring == ':fi':
@@ -271,7 +278,7 @@ class LineEditor(object):
         self.pristine_buffer = []
 
         # undo operation buffer
-        self.undo_buffer = [self.text_buffer]
+        self.undo_buffer = [list(self.text_buffer)]
         self.undo_pos = 0
         self.undo_max = 20
 
@@ -289,12 +296,26 @@ class LineEditor(object):
         else:
             return '\n'.join(self.text_buffer)
 
+    def get_nlines(self):
+        return len(self.text_buffer)
+
+    def get_nwords(self):
+        return len([ word for word in re.split(r'\s+', '\n'.join(self.text_buffer)) if word != ''])
+
+    def get_nchars(self):
+        return len('\n'.join(self.text_buffer))
+
     def set_buffer(self, buf):
+        """
+        Resets everything, and sets the initial buffer
+        """
         if buf == None or buf == '':
             self.text_bufer = []
         else:
             self.text_buffer = buf.split('\n')
         self.pristine_buffer = list(self.text_buffer)
+        self.undo_buffer = [list(self.text_buffer)]
+        self.undo_pos = 0
 
     def set_pristine(self):
         self.pristine_buffer = list(self.text_buffer)
@@ -313,6 +334,17 @@ class LineEditor(object):
 
     def set_key(self, key):
         self.key = key
+
+    def add_undo_stage(self):
+        if self.undo_buffer[self.undo_pos] != self.text_buffer:
+            # If we're currently back in the undo buffer, truncate it at the current position
+            if self.undo_pos > 0:
+                del self.undo_buffer[:self.undo_pos]
+                self.undo_pos = 0
+            # Add to the undo buffer
+            self.undo_buffer.insert(0, list(self.text_buffer))
+            # Truncate the buffer if it's too big
+            del self.undo_buffer[self.undo_max:]
 
     def is_unchanged(self):
         return self.text_buffer == self.pristine_buffer
@@ -369,16 +401,27 @@ class LineEditor(object):
        self.caller.msg(footer.evennia_export())
         
     def undo(self):
-        self.caller.msg('STUB: undo not implemented')
+        if self.undo_pos >= len(self.undo_buffer) - 1:
+            self.caller.msg('{rAlready at oldest change')
+            return
+        self.undo_pos += 1
+        self.text_buffer = list(self.undo_buffer[self.undo_pos])
+        self.caller.msg('Undo: 1 change')
 
     def redo(self):
-        self.caller.msg('STUB: redo not implemented')
+        if self.undo_pos <= 0:
+            self.caller.msg('{rAlready at newest change')
+            return
+        self.undo_pos -= 1
+        self.text_buffer = list(self.undo_buffer[self.undo_pos])
+        self.caller.msg('Redo: 1 change')
 
     def undo_all(self):
-        self.caller.msg('STUB: undo_all not implemented')
+        self.text_buffer = list(self.pristine_buffer)
+        self.add_undo_stage()
 
     def delete(self, start=None, end=None):
-        if end and (start > len(self.text_buffer) or start < 1):
+        if start and (start > len(self.text_buffer) or start < 1):
             self.caller.msg('{rNo such start line.')
             return
         if end and (end > len(self.text_buffer) or end < 1):
@@ -400,17 +443,69 @@ class LineEditor(object):
         else:
             self.caller.msg('Deleted lines %d to %d' % (start, end))
 
-    def sub(regex, replacement, start=None, end=None):
-        self.caller.msg('STUB: sub not implemented')
+    def sub(self, regex, replacement, start=None, end=None):
+        if start and (start > len(self.text_buffer) or start < 1):
+            self.caller.msg('{rNo such start line.')
+            return
+        if end and (end > len(self.text_buffer) or end < 1):
+            self.caller.msg('{rNo such end line.')
+            return
+        try:
+            regex = re.compile(regex)
+        except re.error, e:
+            self.caller.msg('{rInvalid regular expression: ' + str(e))
+            return
+        if start:
+            start_index = start - 1
+        else:
+            start_index = 0
+        if end:
+            end_index = end
+        else:
+            end_index = self.get_nlines()
+        for i in range(start_index, end_index):
+            self.text_buffer[i] = re.sub(regex, replacement, self.text_buffer[i])
+        self.add_undo_stage()
 
     def copy(self, start=None, end=None):
-        self.caller.msg('STUB: copy not implemented')
+        if start and (start > len(self.text_buffer) or start < 1):
+            self.caller.msg('{rNo such start line.')
+            return
+        if end and (end > len(self.text_buffer) or end < 1):
+            self.caller.msg('{rNo such end line.')
+            return
+        if start != None:
+            start_index = start - 1
+        else:
+            start_index = None
+        self.copy_buffer = self.text_buffer[start_index:end]
 
     def cut(self, start=None, end=None):
-        self.caller.msg('STUB: cut not implemented')
+        if start and (start > len(self.text_buffer) or start < 1):
+            self.caller.msg('{rNo such start line.')
+            return
+        if end and (end > len(self.text_buffer) or end < 1):
+            self.caller.msg('{rNo such end line.')
+            return
+        if start != None:
+            start_index = start - 1
+        else:
+            start_index = None
+        self.copy_buffer = self.text_buffer[start_index:end]
+        del self.text_buffer[start_index:end]
+        self.add_undo_stage()
 
     def paste(self, after_line=None):
-        self.caller.msg('STUB: paste not implemented')
+        if after_line and (after_line > len(self.text_buffer) or after_line < 1):
+            self.caller.msg('{rNo such line.')
+            return
+        if not self.copy_buffer:
+            self.caller.msg('{rNothing to paste.')
+            return
+        if after_line == None:
+            after_line = 0
+        self.text_buffer = self.text_buffer[:after_line] + self.copy_buffer + self.text_buffer[after_line:]
+        self.add_undo_stage()
 
     def insert(self, line_string='', before_line=None):
         if before_line != None:
@@ -422,18 +517,66 @@ class LineEditor(object):
             self.text_buffer.append(line_string)
         if before_line != None:
             self.caller.msg('Inserted line %d' % (before_line))
+        self.add_undo_stage()
 
     def replace(self, line, line_string=''):
-        self.caller.msg('STUB: replace not implemented')
+        if line > len(self.text_buffer) or line < 1:
+            self.caller.msg('{rNo such line number.')
+            return
+        self.text_buffer[line - 1] = line_string
+        self.caller.msg('Replaced line %d' % (line))
+        self.add_undo_stage()
 
     def prepend(self, line, string_to_prepend):
-        self.caller.msg('STUB: prepend not implemented')
+        if line > len(self.text_buffer) or line < 1:
+            self.caller.msg('{rNo such line number.')
+            return
+        self.text_buffer[line - 1] = string_to_prepend + self.text_buffer[line - 1]
+        self.caller.msg('Prepended to line %d' % (line))
+        self.add_undo_stage()
 
     def append(self, line, string_to_append):
-        self.caller.msg('STUB: append not implemented')
+        if line > len(self.text_buffer) or line < 1:
+            self.caller.msg('{rNo such line number.')
+            return
+        self.text_buffer[line - 1] += string_to_append
+        self.caller.msg('Appended to line %d' % (line))
+        self.add_undo_stage()
 
     def indent(self, width=4, start=None, end=None):
-        self.caller.msg('STUB: indent not implemented')
+        if start and (start > len(self.text_buffer) or start < 1):
+            self.caller.msg('{rNo such start line.')
+            return
+        if end and (end > len(self.text_buffer) or end < 1):
+            self.caller.msg('{rNo such end line.')
+            return
+        if start:
+            start_index = start - 1
+        else:
+            start_index = 0
+        if end:
+            end_index = end
+        else:
+            end_index = self.get_nlines()
+        for i in range(start_index, end_index):
+            self.text_buffer[i] = ' ' * width + self.text_buffer[i]
+        self.add_undo_stage()
 
     def dedent(self, width=4, start=None, end=None):
-        self.caller.msg('STUB: dedent not implemented')
+        if start and (start > len(self.text_buffer) or start < 1):
+            self.caller.msg('{rNo such start line.')
+            return
+        if end and (end > len(self.text_buffer) or end < 1):
+            self.caller.msg('{rNo such end line.')
+            return
+        if start:
+            start_index = start - 1
+        else:
+            start_index = 0
+        if end:
+            end_index = end
+        else:
+            end_index = self.get_nlines()
+        for i in range(start_index, end_index):
+            self.text_buffer[i] = re.sub(r'^\s{0,%d}' % width, '', self.text_buffer[i])
+        self.add_undo_stage()
