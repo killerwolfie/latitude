@@ -11,6 +11,7 @@ class CmdLook(MuckCommand):
     Visually observes your location or objects in your vicinity.
     """
     key = "look"
+    aliases = ['l']
     locks = "cmd:all()"
     arg_regex = r"\s.*?|$"
     help_category = "Actions"

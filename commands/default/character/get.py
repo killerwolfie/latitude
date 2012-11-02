@@ -11,5 +11,6 @@ class CmdGet(default_cmds.CmdGet):
     your inventory.
     """
     key = "get"
+    aliases = ['take']
     locks = "cmd:all()"
     help_category = "Actions"
