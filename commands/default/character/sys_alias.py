@@ -1,6 +1,6 @@
 from ev import default_cmds
 
-class CmdSysSetObjAlias(default_cmds.CmdSetObjAlias):
+class CmdSysAlias(default_cmds.CmdSetObjAlias):
     """
     Adding permanent aliases
 
@@ -16,7 +16,7 @@ class CmdSysSetObjAlias(default_cmds.CmdSetObjAlias):
     """
 
     key  = "@alias"
-    aliases = "@setobjalias"
-    locks = "cmd:perm(setobjalias) or pperm(Custodians)"
+    aliases = []
+    locks = "cmd:perm(alias) or pperm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 
