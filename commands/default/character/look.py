@@ -30,17 +30,11 @@ class CmdLook(MuckCommand):
             looking_at_obj = caller.search(args, use_nicks=True)
             if not looking_at_obj:
                 return
-            if not looking_at_obj.access(caller, "view"):
-	        caller.msg("Could not find '%s'." % args)
-		return
         else:
             looking_at_obj = caller.location
             if not looking_at_obj:
                 caller.msg("You have no location to percieve!")
                 return
-            if not looking_at_obj.access(caller, "view"):
-	        caller.msg("You can't tell where you are!")
-		return
         # Get the object's description
         caller.msg(getattr(looking_at_obj, 'return_'+ sense)(caller))
         # the object's at_desc() method.

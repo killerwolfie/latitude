@@ -130,7 +130,6 @@ class LatitudeObject(Object):
         super(LatitudeObject, self).basetype_setup()
         self.locks.add(";".join(["control:pperm(Janitors)",   # edit locks/permissions, delete
                                  "examine:pperm(Janitors)",   # examine properties
-                                 "view:all()",               # look at object (visibility)
                                  "edit:pperm(Janitors)",      # edit properties/attributes
                                  "delete:pperm(Janitors)",    # delete object
                                  "get:none()",                # pick up object
@@ -177,7 +176,7 @@ class LatitudeObject(Object):
 	Return a line that describes the visible exits in the object.
 	"""
         # get and identify all objects
-        visible = (con for con in self.contents if con != looker and con.access(looker, "view"))
+        visible = (con for con in self.contents if con != looker)
         exits = []
         for con in visible:
             if isinstance(con, Exit):
@@ -192,7 +191,7 @@ class LatitudeObject(Object):
         """
 	Return a descriptive list of the contents held by this object.
 	"""
-        visible = (con for con in self.contents if con != looker and con.access(looker, "view"))
+        visible = (con for con in self.contents if con != looker)
         exits, users, things = [], [], []
         for con in visible:
             key = con.key

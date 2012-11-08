@@ -44,7 +44,7 @@ class LatitudeRoom(LatitudeObject, Room):
 	Returns the scent description of the object.
 	"""
 	retval = super(LatitudeRoom, self).return_scent(looker)
-        visible = (con for con in self.contents if con != looker and con.access(looker, "view"))
+        visible = (con for con in self.contents if con != looker)
 	for con in visible:
 	    if con.db.desc_scent and not isinstance(con, Exit):
 	        retval += '\n[%s]\n%s\n' % (con.key, con.db.desc_scent)
@@ -69,7 +69,7 @@ class LatitudeRoom(LatitudeObject, Room):
 	"""
 	retval = super(LatitudeRoom, self).return_sound(looker)
 	# Return the sounds of things in the room at random
-        visible = (con for con in self.contents if con != looker and con.access(looker, "view"))
+        visible = (con for con in self.contents if con != looker)
 	for con in visible:
 	    if con.db.desc_sound and not isinstance(con, Exit) and random.random() < 0.25:
 	        retval += '\n  %s' % (con.db.desc_sound)
@@ -81,7 +81,7 @@ class LatitudeRoom(LatitudeObject, Room):
 	"""
 	retval = super(LatitudeRoom, self).return_aura(looker)
 	# Return the auras of everything in the room as well
-        visible = (con for con in self.contents if con != looker and con.access(looker, "view"))
+        visible = (con for con in self.contents if con != looker)
 	for con in visible:
 	    if con.db.desc_aura and not isinstance(con, Exit):
 	        retval += '\n[%s]\n%s\n' % (con.key, con.db.desc_aura)
@@ -174,7 +174,7 @@ class LatitudeRoom(LatitudeObject, Room):
 		    legend_items = [item['legend'] for item in mark if item['legend'] != None]
 		    if legend_items:
 			if marker and legend_remaining > 0: # We're not out of markers, and we're not out of our legend item quota
-			    legend = marker + ') '
+			    legend += marker + ') '
 			    if len(legend_items) <= legend_remaining:
 				legend += ', '.join(legend_items)
 			    else:

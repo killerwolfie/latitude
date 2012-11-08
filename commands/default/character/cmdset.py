@@ -56,7 +56,7 @@ from game.gamesrc.latitude.commands.default.character import sys_serverload
 from game.gamesrc.latitude.commands.default.character import sys_service
 from game.gamesrc.latitude.commands.default.character import sys_setattribute
 from game.gamesrc.latitude.commands.default.character import sys_sethelp
-from game.gamesrc.latitude.commands.default.character import sys_setobjalias
+from game.gamesrc.latitude.commands.default.character import sys_alias
 from game.gamesrc.latitude.commands.default.character import sys_teleport
 from game.gamesrc.latitude.commands.default.character import sys_time
 from game.gamesrc.latitude.commands.default.character import sys_tunnel
@@ -129,7 +129,7 @@ class LatitudeCmdsetCharacter(CmdSet):
         self.add(sys_service.CmdSysService)
         self.add(sys_setattribute.CmdSysSetAttribute)
         self.add(sys_sethelp.CmdSysSetHelp)
-        self.add(sys_setobjalias.CmdSysSetObjAlias)
+        self.add(sys_alias.CmdSysAlias)
         self.add(sys_teleport.CmdSysTeleport)
         self.add(sys_time.CmdSysTime)
         self.add(sys_tunnel.CmdSysTunnel)
