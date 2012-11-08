@@ -26,8 +26,6 @@ class CmdSay(MuckCommand):
       say <message>
 
     Talk to those in your current location.
-
-    Use say/help to get extended configuration options.
     """
     key = "say"
     aliases = ['"']
