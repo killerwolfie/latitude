@@ -30,7 +30,7 @@ class CmdOOC(say.CmdSay):
             message = self.gen_say(self.args[1:])
         else:
             message = self.gen_say(self.args)
-        message = say.ANSI_HILITE + say.ANSI_WHITE + '<' + say.ANSI_RED + 'OOC' + say.ANSI_WHITE + '> ' + message
+        message = '{w<{rOOC{w> {n' + message
         if self.caller.location:
             # Call the speech hook on the location
             self.caller.location.at_say(self.caller, message)
