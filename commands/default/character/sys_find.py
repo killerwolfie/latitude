@@ -20,6 +20,6 @@ class CmdSysFind(default_cmds.CmdFind):
 
     key = "@find"
     aliases = "find, @search, search, @locate, locate"
-    locks = "cmd:pperm(find) or pperm(Custodians)"
+    locks = "cmd:pperm(find) or pperm(Janitors)"
     help_category = "--- Coder/Sysadmin ---"
 
