@@ -45,7 +45,6 @@ class CmdUnconnectedCreate(MuxCommand):
             session.msg(string)
             return
         playername, password = parts
-        print "playername '%s', password: '%s'" % (playername, password)
 
         # sanity checks
         if not re.findall('^[\w. @+-]+$', playername) or not (0 < len(playername) <= 30):
@@ -75,35 +74,45 @@ class CmdUnconnectedCreate(MuxCommand):
             permissions = settings.PERMISSION_PLAYER_DEFAULT
 
             try:
-                new_character = create.create_player(playername, None, password,
-                                                     permissions=permissions,
-                                                     character_typeclass=typeclass,
-                                                     character_location=default_home,
-                                                     character_home=default_home)
-            except Exception:
-                session.msg("There was an error creating the default Character/Player:\n%s\n If this problem persists, contact an admin.")
+                new_player = create.create_player(playername, None, password,
+                                                     permissions=permissions)
+
+
+            except Exception, e:
+                session.msg("There was an error creating the default Player/Character:\n%s\n If this problem persists, contact an admin." % e)
                 return
-            new_player = new_character.player
 
             # This needs to be called so the engine knows this player is logging in for the first time.
             # (so it knows to call the right hooks during login later)
             utils.init_new_player(new_player)
 
             # join the new player to the public channel
-#            pchanneldef = settings.CHANNEL_PUBLIC
-#            if pchanneldef:
-#                pchannel = Channel.objects.get_channel(pchanneldef[0])
-#                if not pchannel.connect_to(new_player):
-#                    string = "New player '%s' could not connect to public channel!" % new_player.key
-#                    logger.log_errmsg(string)
-
-            # allow only the character itself and the player to puppet this character (and Janitors).
-            new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Janitors) or pperm(Janitors)" %
-                                    (new_character.id, new_player.id))
+            pchanneldef = settings.CHANNEL_PUBLIC
+            if pchanneldef:
+                pchannel = Channel.objects.get_channel(pchanneldef[0])
+                if not pchannel.connect_to(new_player):
+                    string = "New player '%s' could not connect to public channel!" % new_player.key
+                    logger.log_errmsg(string)
 
 
-            # set a default description
-            new_character.db.desc = "This is a Player."
+            if MULTISESSION_MODE < 2:
+                # if we only allow one character, create one with the same name as Player
+                # (in mode 2, the character must be created manually once logging in)
+                new_character = create.create_object(typeclass, key=playername,
+                                          location=default_home, home=default_home,
+                                          permissions=permissions)
+                # set playable character list
+                new_player.db._playable_characters.append(new_character)
+
+                # allow only the character itself and the player to puppet this character (and Immortals).
+                new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" %
+                                        (new_character.id, new_player.id))
+
+                # If no description is set, set a default description
+                if not new_character.db.desc:
+                    new_character.db.desc = "This is a Player."
+                # We need to set this to have @ic auto-connect to this character
+                new_player.db._last_puppet = new_character
 
             # tell the caller everything went well.
             string = "A new account '%s' was created. Welcome!"
@@ -119,3 +128,4 @@ class CmdUnconnectedCreate(MuxCommand):
             string = "%s\nThis is a bug. Please e-mail an admin if the problem persists."
             session.msg(string % (traceback.format_exc()))
             logger.log_errmsg(traceback.format_exc())
+

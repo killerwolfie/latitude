@@ -48,10 +48,23 @@ class LatitudeExit(LatitudeObject, Exit):
         just before the more general at_object_creation.
         """
         super(LatitudeExit, self).basetype_setup()
-        self.locks.add(";".join(["puppet:false()", # would be weird to puppet an exit ...
-                                 "traverse:all()", # who can pass through exit by default
-                                 "traverse_follow:all()", # who can be carried through exit by default
-                                 "call:true()"]))   # using an exit is done by calling commands on it
+        self.locks.add(";".join([
+            "edit_appearance:resident()", # Allows users to modify this object's 'appearance' description
+            "edit_aura:resident()",       # Allows users to modify this object's 'aura' description
+            "edit_flavor:resident()",     # Allows users to modify this object's 'flavor' description
+            "edit_scent:resident()",      # Allows users to modify this object's 'scent' description
+            "edit_sound:resident()",      # Allows users to modify this object's 'sound' description
+            "edit_texture:resident()",    # Allows users to modify this object's 'texture' description
+            "edit_writing:resident()",    # Allows users to modify this object's 'writing' description
+            "rename:resident()",          # Allows users to rename the object
+            "link:resident()",            # Allows users to modify this object's destination (Not the same as 'claiming' the exit, which also changes the destination.)
+            "traverse:all()",             # Allows users to pass through the exit
+            "traverse_follow:all()",      # Allows users to be carried through the exit
+            "get:false()",                # Holding an exit doesn't really make sense
+            "drop:false()",               # Dropping an exit doesn't really make sense
+            "puppet:false()",             # It would be weird to puppet an exit
+            "call:true()",                # Using an exit is done by calling commands on it
+        ]))
 
     def at_object_creation(self):
         self.db.attr_gender = 'Object'

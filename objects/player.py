@@ -93,13 +93,27 @@ class LatitudePlayer(Player):
         just before the more general at_object_creation.
         """
         super(LatitudePlayer, self).basetype_setup()
-        self.locks.add("examine:pperm(Janitors)")
-        self.locks.add("edit:pperm(Janitors)")
-        self.locks.add("delete:pperm(Janitors)")
-        self.locks.add("boot:pperm(Janitors)")
+        # Clear any locks set by the default base
+        self.locks.replace('')
+        # Add some administrative locks.  These are used to control access to sensitive privilidged operations.
+        # The locks control whether a user can even attempt to perform an action on the object, so the same locks are defined for all objects even if they only apply to certain types of objects.
+        self.locks.add(";".join([
+            "admin_alias:pperm(Janitors)",     # Permits the use of administrative commands to modify the object's aliases
+            "admin_examine:pperm(Janitors)",   # Permits the use of administrative commands to examine the object and its properties
+            "admin_delete:pperm(Janitors)",    # Permits the use of administrative commands to delete the object
+            "admin_set:pperm(Janitors)",       # Permits the use of administrative commands to set properties on the object
+            "admin_rename:pperm(Janitors)",    # Permits the use of administrative commands to rename the object
+            "admin_typeclass:pperm(Janitors)", # Permits the use of administrative commands to change the typeclass of this object
+            "admin_perm:pperm(Janitors)",      # Permits the use of administrative commands to set 'permissions' on this object  (Also can't give permissions that exceed the permissions of the user)
+            "admin_script:pperm(Janitors)",    # Permits the use of administrative commands to attach scripts to this object
+            "admin_boot:pperm(Janitors)",      # Permits the use of administrative commands to boot the user
+            "admin_ban:pperm(Janitors)",       # Permits the use of administrative commands to ban the user
+            "friend_add:false()",              # Permits users to add this player as a friend automatically.
+            "friend_request:true()",           # Permits users to request to add this player as a friend.
+        ]))
         self.locks.add("msg:all()")
 
-    def at_post_login(self):
+    def at_post_login(self, sessid):
         if not self.character:
 	    # We logged in OOCly
-	    self.execute_cmd('look')
+	    self.execute_cmd('look', sessid=sessid)

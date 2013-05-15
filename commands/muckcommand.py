@@ -162,7 +162,7 @@ class MuckCommand(Command):
         string += "-" * 50
         self.caller.msg(string)
 
-class MuckCommandOOC(MuckCommand):
+class MuckPlayerCommand(MuckCommand):
     """
     This is an OOC version of the MuckCommand. Since OOC commands sit
     on Players rather than on Characters/Objects, we need to check
@@ -180,7 +180,7 @@ class MuckCommandOOC(MuckCommand):
         """
         We run the parent parser as usual, then fix the result
         """
-        super(MuckCommandOOC, self).parse()
+        super(MuckPlayerCommand, self).parse()
 
         if utils.inherits_from(self.caller, "src.objects.objects.Object"):
             # caller is an Object/Character

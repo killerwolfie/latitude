@@ -36,18 +36,15 @@ class CmdUnconnectedConnect(MuxCommand):
 
         session = self.caller
         args = self.args
-
-        parts = shlex.split(args)
-
-        playername = None
-	password = None
-
-        if len(parts) == 2:
-            playername = parts[0]
-            password = parts[1]
-        else:
+        # extract quoted parts
+        parts = [part.strip() for part in re.split(r"\"|\'", args) if part.strip()]
+        if len(parts) == 1:
+            # this was (hopefully) due to no quotes being found
+            parts = parts[0].split(None, 1)
+        if len(parts) != 2:
             session.msg("\n\r Usage (without <>): connect <name> <password>")
-            return()
+            return
+        playername, password = parts
 
         # Match account name and check password
         player = PlayerDB.objects.get_player_from_name(playername)
@@ -76,5 +73,10 @@ class CmdUnconnectedConnect(MuxCommand):
             session.execute_cmd("quit")
             return
 
-        # actually do the login. This will call all hooks.
-        session.session_login(player)
+        # actually do the login. This will call all other hooks:
+        #   session.at_login()
+        #   player.at_init()         # always called when object is loaded from disk
+        #   player.at_pre_login()
+        #   player.at_first_login()  # only once
+        #   player.at_post_login(sessid=sessid)
+        session.sessionhandler.login(session, player)

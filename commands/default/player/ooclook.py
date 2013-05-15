@@ -1,8 +1,8 @@
 from game.gamesrc.latitude.commands.default.character import look
-from src.commands.default.muxcommand import MuxCommandOOC
+from src.commands.default.muxcommand import MuxPlayerCommand
 from ev import default_cmds
 
-class CmdOOCLook(MuxCommandOOC, look.CmdLook):
+class CmdOOCLook(MuxPlayerCommand, look.CmdLook):
     """
     ooc look
 

@@ -26,6 +26,22 @@ class LatitudeCharacter(LatitudeObject, Character):
         just before the more general at_object_creation.
         """
         super(LatitudeCharacter, self).basetype_setup()
+        self.locks.add(";".join([
+            "edit_appearance:id(%s)" % (self.dbref), # Allows users to modify this object's 'appearance' description
+            "edit_aura:id(%s)" % (self.dbref),       # Allows users to modify this object's 'aura' description
+            "edit_flavor:id(%s)" % (self.dbref),     # Allows users to modify this object's 'flavor' description
+            "edit_scent:id(%s)" % (self.dbref),      # Allows users to modify this object's 'scent' description
+            "edit_sound:id(%s)" % (self.dbref),      # Allows users to modify this object's 'sound' description
+            "edit_texture:id(%s)" % (self.dbref),    # Allows users to modify this object's 'texture' description
+            "edit_writing:id(%s)" % (self.dbref),    # Allows users to modify this object's 'writing' description
+            "edit_gender:id(%s)" % (self.dbref),     # Allows users to modify this object's 'gender' description
+            "edit_species:id(%s)" % (self.dbref),    # Allows users to modify this object's 'species' description
+            "follow:none()",                         # Who can automatically follow
+            "lead:none()",                           # Who can automatically lead
+            "get:false()",                           # Nobody can pick up the character
+            "drop:true()",                           # Let's hope this doesn't get called
+            "call:false()",                          # No commands can be called on character from outside
+        ]))
 
     def at_after_move(self, source_location):
         if self.db.prefs_automap == None or self.db.prefs_automap:

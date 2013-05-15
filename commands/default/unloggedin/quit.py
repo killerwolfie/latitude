@@ -16,6 +16,6 @@ class CmdUnconnectedQuit(MuxCommand):
     def func(self):
         "Simply close the connection."
         session = self.caller
-        session.msg("Good bye! Disconnecting ...")
-        session.session_disconnect()
+        #session.msg("Good bye! Disconnecting ...")
+        session.sessionhandler.disconnect(session, "Good bye! Disconnecting ...")
 

@@ -17,8 +17,21 @@ class LatitudeRoom(LatitudeObject, Room):
         just before the more general at_object_creation.
         """
         super(LatitudeRoom, self).basetype_setup()
-        self.locks.add(";".join(["puppet:false()", # would be weird to puppet a room ...
-                                 "call:true()"])) # characters can call commands in the room
+        self.locks.add(";".join([
+            "edit_appearance:resident()", # Allows users to modify this object's 'appearance' description
+            "edit_aura:resident()",       # Allows users to modify this object's 'aura' description
+            "edit_flavor:resident()",     # Allows users to modify this object's 'flavor' description
+            "edit_scent:resident()",      # Allows users to modify this object's 'scent' description
+            "edit_sound:resident()",      # Allows users to modify this object's 'sound' description
+            "edit_texture:resident()",    # Allows users to modify this object's 'texture' description
+            "edit_writing:resident()",    # Allows users to modify this object's 'writing' description
+            "drop_into:resident()",       # Allows users to drop objects into this room (Requires 'drop' permission on the object as well.)
+            "place_exit:resident()",      # Allows users to create exits in this room 
+            "call:true()",                # Allow to call commands on this object (Used by the system itself)
+            "puppet:false()",             # It would be weird to puppet a room ...
+            "get:false()",                # Holding an room doesn't really make sense
+            "drop:false()",               # Dropping an room doesn't really make sense
+        ]))
 
     def at_object_creation(self):
         self.db.attr_gender = 'Object'

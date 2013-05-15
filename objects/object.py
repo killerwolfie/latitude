@@ -128,13 +128,66 @@ class LatitudeObject(Object):
         just before the more general at_object_creation.
         """
         super(LatitudeObject, self).basetype_setup()
-        self.locks.add(";".join(["control:pperm(Janitors)",   # edit locks/permissions, delete
-                                 "examine:pperm(Janitors)",   # examine properties
-                                 "edit:pperm(Janitors)",      # edit properties/attributes
-                                 "delete:pperm(Janitors)",    # delete object
-                                 "get:none()",                # pick up object
-                                 "call:false()",              # allow to call commands on this object
-                                 "puppet:id(%s) or pperm(Janitors)" % self.dbref])) # restricts puppeting of this object
+        # Clear the locks assigned by the built in Evennia base class
+        self.locks.replace("")
+        # Add some administrative locks.  These are used to control access to sensitive privilidged operations.
+        # The locks control whether a user can even attempt to perform an action on the object, so the same locks are defined for all objects even if they only apply to certain types of objects.
+        self.locks.add(";".join([
+            "admin_alias:pperm(Janitors)",     # Permits the use of administrative commands to modify the object's aliases
+            "admin_examine:pperm(Janitors)",   # Permits the use of administrative commands to examine the object and its properties
+            "admin_delete:pperm(Janitors)",    # Permits the use of administrative commands to delete the object
+            "admin_tel:pperm(Janitors)",       # Permits the use of administrative commands to teleport the object to other locations
+            "admin_telto:pperm(Janitors)",     # Permits the use of administrative commands to teleport objects into this object
+            "admin_set:pperm(Janitors)",       # Permits the use of administrative commands to set properties on the object
+            "admin_rename:pperm(Janitors)",    # Permits the use of administrative commands to rename the object
+            "admin_link:pperm(Janitors)",      # Permits the use of administrative commands to set the destination of this object
+            "admin_typeclass:pperm(Janitors)", # Permits the use of administrative commands to change the typeclass of this object
+            "admin_perm:pperm(Janitors)",      # Permits the use of administrative commands to set 'permissions' on this object
+            "admin_lock:pperm(Janitors)",      # Permits the use of administrative commands to change locks on this object
+            "admin_script:pperm(Janitors)",    # Permits the use of administrative commands to attach scripts to this object
+        ]))
+        # Set the default permissions which apply to all objects.
+        # This is sparse because the base object class is not intended to be used directly for objects in the world.
+        self.locks.add(";".join([
+            "call:false()",                  # allow to call commands on this object (Used by the system itself)
+            "puppet:id(%s) or pperm(Janitors)" % self.dbref,
+        ])) # restricts puppeting of this object
+
+    # ----- Lock Messages -----
+    def at_access_failure(self, accessing_obj, access_type):
+        # Check for a custom message property
+        if self.db.access_failure and access_type in self.db.access_failure:
+            if self.db.access_failure[access_type] != None:
+                accessing_obj.msg(self.db.access_failure[access_type])
+            return
+        # Ignore access types used directly by the Evennia engine
+        if access_type == 'call':
+            return
+        # Otherwise, create a default message
+        message_table = {
+            'get' : "{RYou can't pick that up",
+            'drop' : "{RYou can't drop that",
+            'rename' : "{RYou can't rename that object",
+            'edit' : "{RYou can't edit that object",
+            'edit_gender' : "{RYou can't edit the {rgender{R of that object",
+            'edit_appearance' : "{RYou can't edit the {rappearance{R of that object",
+            'edit_aura' : "{RYou can't edit the {raura{R of that object",
+            'edit_flavor' : "{RYou can't edit the {rflavor{R of that object",
+            'edit_scent' : "{RYou can't edit the {rscent{R of that object",
+            'edit_sound' : "{RYou can't edit the {rsound{R of that object",
+            'edit_texture' : "{RYou can't edit the {rtexture{R of that object",
+            'edit_writing' : "{RYou can't edit the {rwriting{R on that object",
+        }
+        if access_type in message_table:
+            message = message_table[access_type]
+        else:
+            message = '{RAccess denied ({r%s{R)' % (access_type)
+        accessing_obj.msg('{R[ %s{R ]' % message)
+
+    def at_access_success(self, accessing_obj, access_type):
+        # Check for a message property (sending nothing by default)
+        if self.db.access_failure and access_type in self.db.access_failure and self.db.access_failure[access_type] != None:
+            accessing_obj.msg(self.db.access_failure[access_type])
 
     # ----- Descriptions -----
     def return_appearance(self, looker):

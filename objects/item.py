@@ -13,5 +13,15 @@ class LatitudeItem(LatitudeObject):
         just before the more general at_object_creation.
         """
         super(LatitudeItem, self).basetype_setup()
-        self.locks.add(";".join(["get:all()",                # pick up object
-                                 "call:true()"]))            # allow to call commands on this object
+        self.locks.add(";".join([
+            "get:true()",              # Allows users to pick up the object 
+            "drop:true()",             # Allows users to put down the object (Requires 'drop_into' at your location as well)
+            "edit_appearance:holds()", # Allows users to modify this object's 'appearance' description
+            "edit_aura:holds()",       # Allows users to modify this object's 'aura' description
+            "edit_flavor:holds()",     # Allows users to modify this object's 'flavor' description
+            "edit_scent:holds()",      # Allows users to modify this object's 'scent' description
+            "edit_sound:holds()",      # Allows users to modify this object's 'sound' description
+            "edit_texture:holds()",    # Allows users to modify this object's 'texture' description
+            "edit_writing:holds()",    # Allows users to modify this object's 'writing' description
+            "call:false()",            # allow to call commands on this object (Used by the system itself)
+        ]))

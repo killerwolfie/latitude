@@ -30,7 +30,6 @@ from game.gamesrc.latitude.commands.default.character import sys_boot
 from game.gamesrc.latitude.commands.default.character import sys_copy
 from game.gamesrc.latitude.commands.default.character import sys_cpattr
 from game.gamesrc.latitude.commands.default.character import sys_create
-from game.gamesrc.latitude.commands.default.character import sys_debug
 from game.gamesrc.latitude.commands.default.character import sys_desc
 from game.gamesrc.latitude.commands.default.character import sys_destroy
 from game.gamesrc.latitude.commands.default.character import sys_dig
@@ -103,7 +102,6 @@ class LatitudeCmdsetCharacter(CmdSet):
         self.add(sys_copy.CmdSysCopy)
         self.add(sys_cpattr.CmdSysCpAttr)
         self.add(sys_create.CmdSysCreate)
-        self.add(sys_debug.CmdSysDebug)
         self.add(sys_desc.CmdSysDesc)
         self.add(sys_destroy.CmdSysDestroy)
         self.add(sys_dig.CmdSysDig)
