@@ -21,9 +21,10 @@ CUSTOM_SCREEN = \
                                                            latitude.muck.ca
                                                         Port: 23 SSL Port: 992
 
-      To connect to your character use 'connect <playername> <password>'
-          New here? To connect as a guest, use 'connect guest guest'
-        Or, To create a character use 'create <playername> <password>'
+        To log in to your account use 'connect <username> <password>'
+               or 'connect <username>|<charname> <password>'
+
+         Or, To create an account use 'create <username> <password>'
 
 {n"""
 
