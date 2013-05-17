@@ -95,25 +95,6 @@ class CmdUnconnectedCreate(MuxCommand):
                     logger.log_errmsg(string)
 
 
-            if MULTISESSION_MODE < 2:
-                # if we only allow one character, create one with the same name as Player
-                # (in mode 2, the character must be created manually once logging in)
-                new_character = create.create_object(typeclass, key=playername,
-                                          location=default_home, home=default_home,
-                                          permissions=permissions)
-                # set playable character list
-                new_player.db._playable_characters.append(new_character)
-
-                # allow only the character itself and the player to puppet this character (and Immortals).
-                new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Immortals) or pperm(Immortals)" %
-                                        (new_character.id, new_player.id))
-
-                # If no description is set, set a default description
-                if not new_character.db.desc:
-                    new_character.db.desc = "This is a Player."
-                # We need to set this to have @ic auto-connect to this character
-                new_player.db._last_puppet = new_character
-
             # tell the caller everything went well.
             string = "A new account '%s' was created. Welcome!"
             if " " in playername:

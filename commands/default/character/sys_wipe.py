@@ -15,6 +15,36 @@ class CmdSysWipe(default_cmds.CmdWipe):
     matching the given attribute-wildcard search string.
     """
     key = "@wipe"
-    locks = "cmd:pperm(wipe) or pperm(Custodians)"
+    locks = "cmd:pperm(command_sys_wipe) or pperm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+
+    def func(self):
+        """
+        inp is the dict produced in ObjManipCommand.parse()
+        """
+
+        caller = self.caller
+
+        if not self.args:
+            caller.msg("Usage: @wipe <object>[/attribute/attribute...]")
+            return
+
+        # get the attributes set by our custom parser
+        objname = self.lhs_objattr[0]['name']
+        attrs = self.lhs_objattr[0]['attrs']
+
+        obj = caller.search(objname)
+        if not obj:
+            return
+        if not attrs:
+            # wipe everything
+            for attr in obj.get_all_attributes():
+                attr.delete()
+            string = "Wiped all attributes on %s." % obj.name
+        else:
+            for attrname in attrs:
+                obj.attr(attrname, delete=True )
+            string = "Wiped attributes %s on %s."
+            string = string % (",".join(attrs), obj.name)
+        caller.msg(string)
 

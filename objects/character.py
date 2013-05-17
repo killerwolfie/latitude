@@ -27,6 +27,7 @@ class LatitudeCharacter(LatitudeObject, Character):
         """
         super(LatitudeCharacter, self).basetype_setup()
         self.locks.add(";".join([
+            "edit:id(%s)" % (self.dbref),            # Allows users to modify this object (required in addition to what is being edited, specifically)
             "edit_appearance:id(%s)" % (self.dbref), # Allows users to modify this object's 'appearance' description
             "edit_aura:id(%s)" % (self.dbref),       # Allows users to modify this object's 'aura' description
             "edit_flavor:id(%s)" % (self.dbref),     # Allows users to modify this object's 'flavor' description

@@ -16,6 +16,7 @@ class LatitudeItem(LatitudeObject):
         self.locks.add(";".join([
             "get:true()",              # Allows users to pick up the object 
             "drop:true()",             # Allows users to put down the object (Requires 'drop_into' at your location as well)
+            "edit:holds()",            # Allows users to modify this object (required in addition to what is being edited, specifically)
             "edit_appearance:holds()", # Allows users to modify this object's 'appearance' description
             "edit_aura:holds()",       # Allows users to modify this object's 'aura' description
             "edit_flavor:holds()",     # Allows users to modify this object's 'flavor' description

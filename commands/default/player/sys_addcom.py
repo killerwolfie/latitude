@@ -15,6 +15,6 @@ class CmdSysAddCom(default_cmds.CmdAddCom):
 
     key = "@addcom"
     aliases = []
-    help_category = "Communication"
-    locks = "cmd:not pperm(channel_banned)"
+    help_category = "--- Coder/Sysadmin ---"
+    locks = "cmd:pperm(command_sys_addcom) or pperm(Custodians)"
 

@@ -12,6 +12,6 @@ class CmdSysChannelCreate(default_cmds.CmdChannelCreate):
 
     key = "@ccreate"
     aliases = "channelcreate"
-    locks = "cmd:pperm(ccreate) or pperm(Custodians)"
+    locks = "cmd:pperm(command_sys_ccreate) or pperm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 

@@ -13,7 +13,7 @@ class CmdSysChannels(default_cmds.CmdChannels):
     Use 'comlist" to only view your current channel subscriptions.
     """
     key = "@channels"
-    aliases = ["@clist", "channels", "comlist", "chanlist", "channellist", "all channels"]
-    help_category = "Communication"
-    locks = "cmd: not pperm(channel_banned)"
+    aliases = []
+    help_category = "--- Coder/Sysadmin ---"
+    locks = "cmd:pperm(command_sys_channels) or pperm(Custodians)"
 

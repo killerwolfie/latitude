@@ -19,7 +19,7 @@ class CmdSysCemit(default_cmds.CmdCemit):
     """
 
     key = "@cemit"
-    aliases = ["@cmsg"]
-    locks = "cmd: not pperm(channel_banned)"
-    help_category = "Communication"
+    aliases = []
+    locks = "cmd:pperm(command_sys_cemit) or pperm(Custodians)"
+    help_category = "--- Coder/Sysadmin ---"
 

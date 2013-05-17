@@ -14,6 +14,6 @@ class CmdSysDelCom(default_cmds.CmdDelCom):
 
     key = "@delcom"
     aliases = []
-    help_category = "Communication"
-    locks = "cmd:not pperm(channel_banned)"
+    help_category = "--- Coder/Sysadmin ---"
+    locks = "cmd:pperm(command_sys_delcom) or pperm(Custodians)"
 

@@ -23,6 +23,6 @@ class CmdSysIMC2Chan(default_cmds.CmdIMC2Chan):
     """
 
     key = "@imc2chan"
-    locks = "cmd:serversetting(IMC2_ENABLED) and pperm(Custodians)"
+    locks = "cmd:serversetting(IMC2_ENABLED) and (pperm(command_sys_imc2chan) or pperm(Custodians))"
     help_category = "--- Coder/Sysadmin ---"
 

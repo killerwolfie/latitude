@@ -18,6 +18,7 @@ class LatitudeRoom(LatitudeObject, Room):
         """
         super(LatitudeRoom, self).basetype_setup()
         self.locks.add(";".join([
+            "edit:resident()",            # Allows users to modify this object (required in addition to what is being edited, specifically)
             "edit_appearance:resident()", # Allows users to modify this object's 'appearance' description
             "edit_aura:resident()",       # Allows users to modify this object's 'aura' description
             "edit_flavor:resident()",     # Allows users to modify this object's 'flavor' description

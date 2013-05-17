@@ -44,9 +44,6 @@ class CmdSysAlias(default_cmds.CmdSetObjAlias):
                 caller.msg("No aliases exist for '%s'." % obj.key)
             return
 
-        if not obj.access(caller, 'admin_alias'):
-            return
-
         if not self.rhs:
             # we have given an empty =, so delete aliases
             old_aliases = obj.aliases

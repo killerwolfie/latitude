@@ -26,7 +26,7 @@ class CmdSysExamine(default_cmds.ObjManipCommand):
     key = "@examine"
     aliases = []
     locks = "cmd:pperm(command_sys_examine) or perm(Janitors)"
-    help_category = "Building"
+    help_category = "=== Admin ==="
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     player_mode = False
@@ -182,9 +182,6 @@ class CmdSysExamine(default_cmds.ObjManipCommand):
             # If no arguments are provided, examine the invoker's location.
             if hasattr(caller, "location"):
                 obj = caller.location
-                if not obj.access(caller, 'admin_examine'):
-                #If we don't have special info access, just look at the object instead.
-                    return
                 # using callback for printing result whenever function returns.
                 cmdhandler.get_and_merge_cmdsets(obj).addCallback(get_cmdset_callback)
             else:
@@ -208,10 +205,6 @@ class CmdSysExamine(default_cmds.ObjManipCommand):
             else:
                 obj = caller.search(obj_name)
             if not obj:
-                continue
-
-            if not obj.access(caller, 'admin_examine'):
-                #If we don't have special info access, just look at the object instead.
                 continue
 
             if obj_attrs:

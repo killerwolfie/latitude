@@ -21,7 +21,57 @@ class CmdSysEmit(default_cmds.CmdEmit):
     to players respectively.
     """
     key = "@emit"
-    aliases = ["@pemit", "@remit"]
-    locks = "cmd:pperm(emit) or pperm(Janitors)"
+    aliases = ["@remit", "@pemit"]
+    locks = "cmd:pperm(command_sys_emit) or pperm(Janitors)"
     help_category = "=== Admin ==="
+
+    def func(self):
+        "Implement the command"
+
+        caller = self.caller
+        args = self.args
+
+        if not args:
+            string = "Usage: "
+            string += "\n@emit[/switches] [<obj>, <obj>, ... =] <message>"
+            string += "\n@remit           [<obj>, <obj>, ... =] <message>"
+            string += "\n@pemit           [<obj>, <obj>, ... =] <message>"
+            caller.msg(string)
+            return
+
+        rooms_only = 'rooms' in self.switches
+        players_only = 'players' in self.switches
+        send_to_contents = 'contents' in self.switches
+
+        # we check which command was used to force the switches
+        if self.cmdstring == '@remit':
+            rooms_only = True
+        elif self.cmdstring == '@pemit':
+            players_only = True
+
+        if not self.rhs:
+            message = self.args
+            objnames = [caller.location.key]
+        else:
+            message = self.rhs
+            objnames = self.lhslist
+
+        # send to all objects
+        for objname in objnames:
+            obj = caller.search(objname, global_search=True)
+            if not obj:
+                return
+            if rooms_only and not obj.location == None:
+                caller.msg("%s is not a room. Ignored." % objname)
+                continue
+            if players_only and not obj.has_player:
+                caller.msg("%s has no active player. Ignored." % objname)
+                continue
+            obj.msg(message)
+            if send_to_contents:
+                for content in obj.contents:
+                    content.msg(message)
+                caller.msg("Emitted to %s and its contents." % objname)
+            else:
+                caller.msg("Emitted to %s." % objname)
 

@@ -130,22 +130,6 @@ class LatitudeObject(Object):
         super(LatitudeObject, self).basetype_setup()
         # Clear the locks assigned by the built in Evennia base class
         self.locks.replace("")
-        # Add some administrative locks.  These are used to control access to sensitive privilidged operations.
-        # The locks control whether a user can even attempt to perform an action on the object, so the same locks are defined for all objects even if they only apply to certain types of objects.
-        self.locks.add(";".join([
-            "admin_alias:pperm(Janitors)",     # Permits the use of administrative commands to modify the object's aliases
-            "admin_examine:pperm(Janitors)",   # Permits the use of administrative commands to examine the object and its properties
-            "admin_delete:pperm(Janitors)",    # Permits the use of administrative commands to delete the object
-            "admin_tel:pperm(Janitors)",       # Permits the use of administrative commands to teleport the object to other locations
-            "admin_telto:pperm(Janitors)",     # Permits the use of administrative commands to teleport objects into this object
-            "admin_set:pperm(Janitors)",       # Permits the use of administrative commands to set properties on the object
-            "admin_rename:pperm(Janitors)",    # Permits the use of administrative commands to rename the object
-            "admin_link:pperm(Janitors)",      # Permits the use of administrative commands to set the destination of this object
-            "admin_typeclass:pperm(Janitors)", # Permits the use of administrative commands to change the typeclass of this object
-            "admin_perm:pperm(Janitors)",      # Permits the use of administrative commands to set 'permissions' on this object
-            "admin_lock:pperm(Janitors)",      # Permits the use of administrative commands to change locks on this object
-            "admin_script:pperm(Janitors)",    # Permits the use of administrative commands to attach scripts to this object
-        ]))
         # Set the default permissions which apply to all objects.
         # This is sparse because the base object class is not intended to be used directly for objects in the world.
         self.locks.add(";".join([

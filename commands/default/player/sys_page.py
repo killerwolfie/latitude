@@ -18,7 +18,7 @@ class CmdSysPage(default_cmds.CmdPage):
     """
 
     key = "@page"
-    aliases = ['page']
-    locks = "cmd:not pperm(page_banned)"
-    help_category = "Communication"
+    aliases = []
+    locks = "cmd:all()"
+    help_category = "General"
 

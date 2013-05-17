@@ -12,7 +12,7 @@ class CmdSysCset(default_cmds.CmdCset):
     """
 
     key = "@cset"
-    locks = "cmd:not pperm(channel_banned)"
-    aliases = ["@cclock"]
-    help_category = "Communication"
+    locks = "cmd:pperm(command_sys_cset) or pperm(Custodians)"
+    aliases = []
+    help_category = "--- Coder/Sysadmin ---"
 

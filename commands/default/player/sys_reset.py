@@ -13,7 +13,7 @@ class CmdSysReset(default_cmds.CmdReset):
     automatically restart again.
     """
     key = "@reset"
-    aliases = ['@reboot']
-    locks = "cmd:pperm(reload) or pperm(Custodians)"
+    aliases = []
+    locks = "cmd:pperm(command_sys_reset) or pperm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 

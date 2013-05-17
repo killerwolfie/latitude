@@ -10,6 +10,6 @@ class CmdSysCWho(default_cmds.CmdCWho):
     List who is connected to a given channel you have access to.
     """
     key = "@cwho"
-    locks = "cmd: not pperm(channel_banned)"
-    help_category = "Communication"
+    locks = "cmd:pperm(command_sys_cwho) or pperm(Custodians)"
+    help_category = "--- Coder/Sysadmin ---"
 

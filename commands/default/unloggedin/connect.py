@@ -6,6 +6,7 @@ import traceback
 import shlex
 from src.players.models import PlayerDB
 from src.server.models import ServerConfig
+from src.utils import search
 
 from src.commands.default.muxcommand import MuxCommand
 
@@ -37,14 +38,20 @@ class CmdUnconnectedConnect(MuxCommand):
         session = self.caller
         args = self.args
         # extract quoted parts
-        parts = [part.strip() for part in re.split(r"\"|\'", args) if part.strip()]
-        if len(parts) == 1:
-            # this was (hopefully) due to no quotes being found
-            parts = parts[0].split(None, 1)
-        if len(parts) != 2:
-            session.msg("\n\r Usage (without <>): connect <name> <password>")
+        parts = shlex.split(args)
+        if len(parts) == 2:
+            playername = parts[0]
+            password = parts[1]
+            # Check for | syntax
+            username_parts = playername.split('|')
+            if len(username_parts) == 2:
+                playername = username_parts[0]
+                charname = username_parts[1]
+            else:
+                charname = None
+        else:
+            session.msg("\n\r Usage (without <>): connect <username> <password>, or connect <username>|<character> <password>")
             return
-        playername, password = parts
 
         # Match account name and check password
         player = PlayerDB.objects.get_player_from_name(playername)
@@ -72,6 +79,25 @@ class CmdUnconnectedConnect(MuxCommand):
             session.msg(string)
             session.execute_cmd("quit")
             return
+
+        # If they've requested a character name, verify that they have puppet access.
+        if charname:
+            character = search.object_search(charname)
+            if not character:
+                session.msg("{rThat character name doesn't appear to be valid.{x")
+                return
+            character = character[0]
+            if not character.access(player, "puppet"):
+                string = "{rThat does not appear to be one of your characters.  Try logging in\n"
+                string += "without specifying a character name, and examine your list of available\n"
+                string += "characters.{x"
+                session.msg(string)
+                return
+        else:
+            character = None
+
+        # Spoof the _last_puppet so that the @ic command called at login will send you to the right character
+        player.db._last_puppet = character
 
         # actually do the login. This will call all other hooks:
         #   session.at_login()
