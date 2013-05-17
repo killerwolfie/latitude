@@ -22,7 +22,7 @@ class CmdSysEmit(default_cmds.CmdEmit):
     """
     key = "@emit"
     aliases = ["@remit", "@pemit"]
-    locks = "cmd:pperm(command_@emit) or pperm(Janitors)"
+    locks = "cmd:perm(command_@emit) or perm(Janitors)"
     help_category = "=== Admin ==="
 
     def func(self):

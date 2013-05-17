@@ -33,7 +33,7 @@ class CmdSysTypeclass(default_cmds.CmdTypeclass):
     """
 
     key = "@typeclass"
-    locks = "cmd:pperm(command_@typeclass) or pperm(Custodians)"
+    locks = "cmd:perm(command_@typeclass) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 
     def func(self):

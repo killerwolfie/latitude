@@ -15,5 +15,5 @@ class CmdSysDelCom(default_cmds.CmdDelCom):
     key = "@delcom"
     aliases = []
     help_category = "--- Coder/Sysadmin ---"
-    locks = "cmd:pperm(command_@delcom) or pperm(Custodians)"
+    locks = "cmd:perm(command_@delcom) or perm(Custodians)"
 

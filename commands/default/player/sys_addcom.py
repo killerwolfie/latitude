@@ -16,5 +16,5 @@ class CmdSysAddCom(default_cmds.CmdAddCom):
     key = "@addcom"
     aliases = []
     help_category = "--- Coder/Sysadmin ---"
-    locks = "cmd:pperm(command_@addcom) or pperm(Custodians)"
+    locks = "cmd:perm(command_@addcom) or perm(Custodians)"
 

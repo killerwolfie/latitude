@@ -36,6 +36,6 @@ class CmdSysBan(default_cmds.CmdBan):
 
     """
     key = "@ban"
-    locks = "cmd:pperm(command_@ban) or pperm(Janitors)"
+    locks = "cmd:perm(command_@ban) or perm(Janitors)"
     help_category="=== Admin ==="
 

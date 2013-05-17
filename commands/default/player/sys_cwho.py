@@ -10,6 +10,6 @@ class CmdSysCWho(default_cmds.CmdCWho):
     List who is connected to a given channel you have access to.
     """
     key = "@cwho"
-    locks = "cmd:pperm(command_@cwho) or pperm(Custodians)"
+    locks = "cmd:perm(command_@cwho) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 

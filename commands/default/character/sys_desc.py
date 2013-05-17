@@ -12,6 +12,6 @@ class CmdSysDesc(default_cmds.CmdDesc):
     describe the current room.
     """
     key = "@desc"
-    locks = "cmd:pperm(command_desc) or pperm(Custodians)"
+    locks = "cmd:perm(command_desc) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 

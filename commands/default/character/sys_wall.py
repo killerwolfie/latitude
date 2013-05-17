@@ -10,6 +10,6 @@ class CmdSysWall(default_cmds.CmdWall):
     Announces a message to all connected players.
     """
     key = "@wall"
-    locks = "cmd:pperm(command_@wall) or pperm(Janitors)"
+    locks = "cmd:perm(command_@wall) or perm(Janitors)"
     help_category = "=== Admin ==="
 

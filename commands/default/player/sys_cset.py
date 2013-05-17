@@ -12,7 +12,7 @@ class CmdSysCset(default_cmds.CmdCset):
     """
 
     key = "@cset"
-    locks = "cmd:pperm(command_@cset) or pperm(Custodians)"
+    locks = "cmd:perm(command_@cset) or perm(Custodians)"
     aliases = []
     help_category = "--- Coder/Sysadmin ---"
 

@@ -12,6 +12,6 @@ class CmdSysCdesc(default_cmds.CmdCdesc):
     """
 
     key = "@cdesc"
-    locks = "cmd:pperm(command_@cdesc) or pperm(Custodians)"
+    locks = "cmd:perm(command_@cdesc) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 

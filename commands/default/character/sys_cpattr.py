@@ -23,6 +23,6 @@ class CmdSysCpAttr(default_cmds.CmdCpAttr):
     you don't supply a source object, yourself is used.
     """
     key = "@cpattr"
-    locks = "cmd:pperm(command_@cpattr) or pperm(Custodians)"
+    locks = "cmd:perm(command_@cpattr) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 

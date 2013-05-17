@@ -28,5 +28,5 @@ class CmdSysSet(default_cmds.CmdSetAttribute):
     """
 
     key = "@set"
-    locks = "cmd:perm(command_@set) or pperm(Custodians)"
+    locks = "cmd:perm(command_@set) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"

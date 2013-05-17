@@ -23,6 +23,6 @@ class CmdSysPy(default_cmds.CmdPy):
     """
     key = "@py"
     aliases = ["!"]
-    locks = "cmd:pperm(command_@py) or pperm(Custodians)"
+    locks = "cmd:perm(command_@py) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 

@@ -21,6 +21,6 @@ class CmdSysIMCInfo(default_cmds.CmdIMCInfo):
 
     key = "@imcinfo"
     aliases = []
-    locks = "cmd:serversetting(IMC2_ENABLED) and (pperm(command_@imcinfo) or pperm(Custodians))"
+    locks = "cmd:serversetting(IMC2_ENABLED) and (perm(command_@imcinfo) or perm(Custodians))"
     help_category = "--- Coder/Sysadmin ---"
 

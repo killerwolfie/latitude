@@ -16,7 +16,7 @@ class CmdSysDelPlayer(default_cmds.MuxCommand):
     """
 
     key = "@delplayer"
-    locks = "cmd:pperm(command_@delplayer) or pperm(Janitors)"
+    locks = "cmd:perm(command_@delplayer) or perm(Janitors)"
     help_category = "=== Admin ==="
 
     def func(self):

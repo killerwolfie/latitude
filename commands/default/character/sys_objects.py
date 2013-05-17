@@ -13,6 +13,6 @@ class CmdSysObjects(default_cmds.CmdObjects):
     """
     key = "@objects"
     aliases = ["@listobjects", "@listobjs", '@stats', '@db']
-    locks = "cmd:pperm(command_@objects) or pperm(Custodians)"
+    locks = "cmd:perm(command_@objects) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 

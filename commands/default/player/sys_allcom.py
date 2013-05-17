@@ -15,6 +15,6 @@ class CmdSysAllCom(default_cmds.CmdAllCom):
     """
 
     key = "@allcom"
-    locks = "cmd:pperm(command_@allcom) or pperm(Custodians)"
+    locks = "cmd:perm(command_@allcom) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 

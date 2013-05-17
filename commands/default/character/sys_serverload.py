@@ -30,6 +30,6 @@ class CmdSysServerLoad(default_cmds.CmdServerLoad):
     """
     key = "@serverload"
     aliases = []
-    locks = "cmd:pperm(command_@serverload) or pperm(Janitors)"
+    locks = "cmd:perm(command_@serverload) or perm(Janitors)"
     help_category = "=== Admin ==="
 

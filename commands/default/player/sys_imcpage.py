@@ -13,6 +13,6 @@ class CmdSysIMCPage(default_cmds.CmdIMCTell):
 
     key = "@imcpage"
     aliases = []
-    locks = "cmd:serversetting(IMC2_ENABLED) and (pperm(command_@imcpage) or pperm(Custodians))"
+    locks = "cmd:serversetting(IMC2_ENABLED) and (perm(command_@imcpage) or perm(Custodians))"
     help_category = "--- Coder/Sysadmin ---"
 

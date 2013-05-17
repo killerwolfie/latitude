@@ -25,7 +25,7 @@ class CmdSysExamine(default_cmds.ObjManipCommand):
     """
     key = "@examine"
     aliases = []
-    locks = "cmd:pperm(command_@examine) or perm(Janitors)"
+    locks = "cmd:perm(command_@examine) or perm(Janitors)"
     help_category = "=== Admin ==="
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 

@@ -15,7 +15,7 @@ class CmdSysWipe(default_cmds.CmdWipe):
     matching the given attribute-wildcard search string.
     """
     key = "@wipe"
-    locks = "cmd:pperm(command_@wipe) or pperm(Custodians)"
+    locks = "cmd:perm(command_@wipe) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 
     def func(self):

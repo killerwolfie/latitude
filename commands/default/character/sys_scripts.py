@@ -23,6 +23,6 @@ class CmdSysScripts(default_cmds.CmdScripts):
     """
     key = "@scripts"
     aliases = []
-    locks = "cmd:pperm(command_@scripts) or pperm(Custodians)"
+    locks = "cmd:perm(command_@scripts) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 

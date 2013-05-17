@@ -34,7 +34,7 @@ class CmdSysLock(default_cmds.CmdLock, MuckCommand):
     """
     key = "@lock"
     aliases = []
-    locks = "cmd: pperm(command_@lock) or pperm(Custodians)"
+    locks = "cmd: perm(command_@lock) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 
     def func(self):

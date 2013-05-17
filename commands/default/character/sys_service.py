@@ -19,6 +19,6 @@ class CmdSysService(default_cmds.CmdService):
 
     key = "@service"
     aliases = ["@services"]
-    locks = "cmd:pperm(command_@service) or pperm(Custodian)"
+    locks = "cmd:perm(command_@service) or perm(Custodian)"
     help_category = "--- Coder/Sysadmin ---"
 
