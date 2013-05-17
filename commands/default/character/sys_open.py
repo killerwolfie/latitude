@@ -15,5 +15,5 @@ class CmdSysOpen(default_cmds.CmdOpen):
 
     """
     key = "@open"
-    locks = "cmd:pperm(open) or pperm(Custodians)"
+    locks = "cmd:pperm(command_@open) or pperm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"

@@ -20,6 +20,6 @@ class CmdSysCemit(default_cmds.CmdCemit):
 
     key = "@cemit"
     aliases = []
-    locks = "cmd:pperm(command_sys_cemit) or pperm(Custodians)"
+    locks = "cmd:pperm(command_@cemit) or pperm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 

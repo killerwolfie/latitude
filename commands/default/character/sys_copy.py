@@ -17,6 +17,6 @@ class CmdSysCopy(default_cmds.CmdCopy):
     """
 
     key = "@copy"
-    locks = "cmd:pperm(copy) or pperm(Custodians)"
+    locks = "cmd:pperm(command_@copy) or pperm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 

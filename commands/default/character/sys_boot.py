@@ -17,7 +17,7 @@ class CmdSysBoot(default_cmds.CmdBoot):
 
     key = "@boot"
     aliases = []
-    locks = "cmd:pperm(boot) or pperm(Janitors)"
+    locks = "cmd:pperm(commands_@boot) or pperm(Janitors)"
     help_category = "=== Admin ==="
 
     def func(self):

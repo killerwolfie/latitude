@@ -13,6 +13,6 @@ class CmdSysName(default_cmds.CmdName):
 
     key = "@name"
     aliases = ["@rename"]
-    locks = "cmd:pperm(rename) or pperm(Custodians)"
+    locks = "cmd:pperm(command_@name) or pperm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 

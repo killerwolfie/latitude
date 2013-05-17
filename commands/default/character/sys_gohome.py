@@ -11,5 +11,5 @@ class CmdSysGoHome(general.CmdHome):
     """
 
     key = "@gohome"
-    locks = "cmd:pperm(home) or pperm(Janitors)"
+    locks = "cmd:pperm(command_@gohome) or pperm(Janitors)"
     help_category = "--- Coder/Sysadmin ---"

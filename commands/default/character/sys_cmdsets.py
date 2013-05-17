@@ -12,6 +12,6 @@ class CmdSysCmdSets(default_cmds.CmdListCmdSets):
     """
     key = "@cmdsets"
     aliases = "@listcmsets"
-    locks = "cmd:pperm(listcmdsets) or pperm(Custodians)"
+    locks = "cmd:pperm(command_@cmdsets) or pperm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 

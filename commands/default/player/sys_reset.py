@@ -14,6 +14,6 @@ class CmdSysReset(default_cmds.CmdReset):
     """
     key = "@reset"
     aliases = []
-    locks = "cmd:pperm(command_sys_reset) or pperm(Custodians)"
+    locks = "cmd:pperm(command_@reset) or pperm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 

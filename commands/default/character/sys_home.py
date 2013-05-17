@@ -16,5 +16,5 @@ class CmdSysHome(building.CmdSetHome):
     """
 
     key = "@home"
-    locks = "cmd:pperm(@home) or pperm(Custodians)"
+    locks = "cmd:pperm(command_@home) or pperm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"

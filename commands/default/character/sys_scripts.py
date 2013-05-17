@@ -22,7 +22,7 @@ class CmdSysScripts(default_cmds.CmdScripts):
     Use @script for managing commands on objects.
     """
     key = "@scripts"
-    aliases = ["@globalscript", "@listscripts"]
-    locks = "cmd:pperm(listscripts) or pperm(Custodians)"
+    aliases = []
+    locks = "cmd:pperm(command_@scripts) or pperm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 

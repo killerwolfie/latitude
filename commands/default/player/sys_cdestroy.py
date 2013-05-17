@@ -12,5 +12,5 @@ class CmdSysCdestroy(default_cmds.CmdCdestroy):
 
     key = "@cdestroy"
     help_category = "--- Coder/Sysadmin ---"
-    locks = "cmd:pperm(command_sys_cdestroy) or pperm(Custodians)"
+    locks = "cmd:pperm(command_@cdestroy) or pperm(Custodians)"
 

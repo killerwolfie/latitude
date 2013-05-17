@@ -15,6 +15,6 @@ class CmdSysCBoot(default_cmds.CmdCBoot):
     """
 
     key = "@cboot"
-    locks = "cmd:pperm(command_sys_cboot) or pperm(Custodians)"
+    locks = "cmd:pperm(command_@cboot) or pperm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 

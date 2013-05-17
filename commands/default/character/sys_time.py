@@ -10,6 +10,6 @@ class CmdSysTime(default_cmds.CmdTime):
     Server local time.
     """
     key = "@time"
-    locks = "cmd:pperm(time) or pperm(Players)"
+    locks = "cmd:all()"
     help_category = "Information"
 

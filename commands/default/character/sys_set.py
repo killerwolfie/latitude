@@ -1,6 +1,6 @@
 from ev import default_cmds
 
-class CmdSysSetAttribute(default_cmds.CmdSetAttribute):
+class CmdSysSet(default_cmds.CmdSetAttribute):
     """
     @set - set attributes
 
@@ -28,5 +28,5 @@ class CmdSysSetAttribute(default_cmds.CmdSetAttribute):
     """
 
     key = "@set"
-    locks = "cmd:perm(set) or pperm(Custodians)"
+    locks = "cmd:perm(command_@set) or pperm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"

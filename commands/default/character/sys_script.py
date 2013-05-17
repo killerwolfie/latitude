@@ -21,6 +21,6 @@ class CmdSysScript(default_cmds.CmdScript):
 
     key = "@script"
     aliases = "@addscript"
-    locks = "cmd:pperm(script) or pperm(Custodians)"
+    locks = "cmd:pperm(command_@script) or pperm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 

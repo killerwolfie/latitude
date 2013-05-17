@@ -17,7 +17,7 @@ class CmdSysAlias(default_cmds.CmdSetObjAlias):
 
     key  = "@alias"
     aliases = []
-    locks = "cmd:pperm(command_sys_alias) or pperm(Custodians)"
+    locks = "cmd:pperm(command_@alias) or pperm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 
     def func(self):

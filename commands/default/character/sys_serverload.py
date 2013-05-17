@@ -28,8 +28,8 @@ class CmdSysServerLoad(default_cmds.CmdServerLoad):
     memory used for this type of cache is also displayed.
 
     """
-    key = "@server"
-    aliases = ["@serverload", "@serverprocess"]
-    locks = "cmd:pperm(list) or pperm(Janitors)"
+    key = "@serverload"
+    aliases = []
+    locks = "cmd:pperm(command_@serverload) or pperm(Janitors)"
     help_category = "=== Admin ==="
 

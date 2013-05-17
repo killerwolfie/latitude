@@ -16,6 +16,6 @@ class CmdSysBatchCommands(default_cmds.CmdBatchCommands):
 
     """
     key = "@batchcommands"
-    locks = "cmd:pperm(batchcommands) or superuser()"
+    locks = "cmd:superuser()"
     help_category = "--- Coder/Sysadmin ---"
 

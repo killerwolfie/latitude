@@ -14,6 +14,6 @@ class CmdSysUnban(default_cmds.CmdUnban):
 
     """
     key = "@unban"
-    locks = "cmd:pperm(unban) or pperm(Janitors)"
+    locks = "cmd:pperm(command_@unban) or pperm(Janitors)"
     help_category="=== Admin ==="
 

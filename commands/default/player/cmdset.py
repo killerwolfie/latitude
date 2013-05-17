@@ -10,11 +10,12 @@ from game.gamesrc.latitude.commands.default.player import sys_3who
 from game.gamesrc.latitude.commands.default.player import sys_addcom
 from game.gamesrc.latitude.commands.default.player import sys_allcom
 from game.gamesrc.latitude.commands.default.player import sys_cboot
+from game.gamesrc.latitude.commands.default.player import sys_ccreate
 from game.gamesrc.latitude.commands.default.player import sys_cdesc
 from game.gamesrc.latitude.commands.default.player import sys_cdestroy
 from game.gamesrc.latitude.commands.default.player import sys_cemit
-from game.gamesrc.latitude.commands.default.player import sys_ccreate
 from game.gamesrc.latitude.commands.default.player import sys_channels
+from game.gamesrc.latitude.commands.default.player import sys_charcreate
 from game.gamesrc.latitude.commands.default.player import sys_cset
 from game.gamesrc.latitude.commands.default.player import sys_cwho
 from game.gamesrc.latitude.commands.default.player import sys_delcom
@@ -54,11 +55,12 @@ class LatitudeCmdsetPlayer(CmdSet):
         self.add(sys_addcom.CmdSysAddCom)
         self.add(sys_allcom.CmdSysAllCom)
         self.add(sys_cboot.CmdSysCBoot)
+        self.add(sys_ccreate.CmdSysChannelCreate)
         self.add(sys_cdesc.CmdSysCdesc)
         self.add(sys_cdestroy.CmdSysCdestroy)
         self.add(sys_cemit.CmdSysCemit)
-        self.add(sys_ccreate.CmdSysChannelCreate)
         self.add(sys_channels.CmdSysChannels)
+        self.add(sys_charcreate.CmdSysCharCreate)
         self.add(sys_cset.CmdSysCset)
         self.add(sys_cwho.CmdSysCWho)
         self.add(sys_delcom.CmdSysDelCom)

@@ -19,7 +19,7 @@ class CmdSysDestroy(default_cmds.MuxCommand):
     """
 
     key = "@destroy"
-    locks = "cmd:pperm(command_sys_destroy) or pperm(Custodians)"
+    locks = "cmd:pperm(command_@destroy) or pperm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 
     def func(self):

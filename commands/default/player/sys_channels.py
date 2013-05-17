@@ -15,5 +15,5 @@ class CmdSysChannels(default_cmds.CmdChannels):
     key = "@channels"
     aliases = []
     help_category = "--- Coder/Sysadmin ---"
-    locks = "cmd:pperm(command_sys_channels) or pperm(Custodians)"
+    locks = "cmd:pperm(command_@channels) or pperm(Custodians)"
 

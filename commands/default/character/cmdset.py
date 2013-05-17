@@ -53,7 +53,7 @@ from game.gamesrc.latitude.commands.default.character import sys_script
 from game.gamesrc.latitude.commands.default.character import sys_scripts
 from game.gamesrc.latitude.commands.default.character import sys_serverload
 from game.gamesrc.latitude.commands.default.character import sys_service
-from game.gamesrc.latitude.commands.default.character import sys_setattribute
+from game.gamesrc.latitude.commands.default.character import sys_set
 from game.gamesrc.latitude.commands.default.character import sys_sethelp
 from game.gamesrc.latitude.commands.default.character import sys_alias
 from game.gamesrc.latitude.commands.default.character import sys_teleport
@@ -125,7 +125,7 @@ class LatitudeCmdsetCharacter(CmdSet):
         self.add(sys_scripts.CmdSysScripts)
         self.add(sys_serverload.CmdSysServerLoad)
         self.add(sys_service.CmdSysService)
-        self.add(sys_setattribute.CmdSysSetAttribute)
+        self.add(sys_set.CmdSysSet)
         self.add(sys_sethelp.CmdSysSetHelp)
         self.add(sys_alias.CmdSysAlias)
         self.add(sys_teleport.CmdSysTeleport)

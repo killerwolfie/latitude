@@ -12,6 +12,6 @@ class CmdSysNewPassword(default_cmds.CmdNewPassword):
 
     key = "@newpassword"
     aliases = []
-    locks = "cmd:pperm(command_newpassword) or pperm(Janitors)"
+    locks = "cmd:pperm(command_@newpassword) or pperm(Janitors)"
     help_category = "=== Admin ==="
 

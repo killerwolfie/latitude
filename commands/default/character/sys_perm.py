@@ -17,7 +17,7 @@ class CmdSysPerm(default_cmds.CmdPerm):
     """
     key = "@perm"
     aliases = "@setperm"
-    locks = "cmd:pperm(command_sys_perm) or pperm(Custodians)"
+    locks = "cmd:pperm(command_@perm) or pperm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 
     def func(self):

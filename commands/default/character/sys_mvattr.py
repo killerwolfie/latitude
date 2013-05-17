@@ -17,6 +17,6 @@ class CmdSysMvAttr(default_cmds.CmdMvAttr):
     you don't supply a source object, yourself is used.
     """
     key = "@mvattr"
-    locks = "cmd:pperm(mvattr) or pperm(Custodians)"
+    locks = "cmd:pperm(command_@mvattr) or pperm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 

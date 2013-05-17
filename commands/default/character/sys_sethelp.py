@@ -29,6 +29,6 @@ class CmdSysSetHelp(default_cmds.CmdSetHelp):
     """
     key = "@sethelp"
     aliases = []
-    locks = "cmd:perm(PlayerHelpers)"
+    locks = "cmd:perm(command_@sethelp) or pperm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 

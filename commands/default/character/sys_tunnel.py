@@ -28,7 +28,7 @@ class CmdSysTunnel(default_cmds.CmdTunnel):
     """
 
     key = "@tunnel"
-    locks = "cmd: pperm(tunnel) or pperm(Custodians)"
+    locks = "cmd:pperm(command_@tunnel) or pperm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
 
     # store the direction, full name and its opposite
