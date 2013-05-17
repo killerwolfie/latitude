@@ -53,4 +53,16 @@ class LatitudeCharacter(LatitudeObject, Character):
     def at_post_login(self):
         super(LatitudeCharacter, self).at_post_login() # For now call the default handler which unstows the character
 
-        self.at_after_move(None) # Logging in counts as moving into a location.  Perform all the looking around and position tracking involved in that.
+    def at_pre_puppet(self, player):
+        if self.location:
+            self.location.msg_contents("%s has entered the game." % self.name, exclude=[self])
+
+    def at_post_puppet(self):
+        if self.db.prefs_automap == None or self.db.prefs_automap:
+	    self.execute_cmd('map')
+        self.execute_cmd('look')
+
+    def at_post_unpuppet(self, player):
+        if self.location:
+            self.location.msg_contents("%s has left the game." % self.name, exclude=[self])
+

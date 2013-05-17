@@ -83,11 +83,7 @@ class CmdSysIC(default_cmds.MuxPlayerCommand):
         if player.puppet_object(sessid, new_character):
             player.db._last_puppet = new_character
             if not new_character.location:
-                # this might be due to being hidden away at logout; check
-                loc = new_character.db.prelogout_location
-                if not loc: # still no location; use home
-                    loc = new_character.home
-                new_character.location = loc
+                new_character.location = new_character.db.home
                 new_character.location.at_object_receive(new_character, new_character.location)
         else:
             self.msg("{rYou cannot become {C%s{n." % new_character.name)
