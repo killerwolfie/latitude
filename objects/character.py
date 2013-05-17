@@ -26,6 +26,7 @@ class LatitudeCharacter(LatitudeObject, Character):
         just before the more general at_object_creation.
         """
         super(LatitudeCharacter, self).basetype_setup()
+        self.permissions = ['Player'] # This is the default permissions that a quelled administrator will want
         self.locks.add(";".join([
             "edit:id(%s)" % (self.dbref),            # Allows users to modify this object (required in addition to what is being edited, specifically)
             "edit_appearance:id(%s)" % (self.dbref), # Allows users to modify this object's 'appearance' description
