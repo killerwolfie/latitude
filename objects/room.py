@@ -134,21 +134,20 @@ class LatitudeRoom(LatitudeObject, Room):
             if mark_friends_of:
 	        if mark_friends_of.player:
 		    mark_friends_of = mark_friends_of.player
-		friends = mark_friends_of.db.friends_list
+		friend_players = mark_friends_of.db.friends_list
+                friends = []
+                if friend_players:
+                    for friend_player in friend_players:
+                        friends += friend_player.get_all_puppets()
 		if friends:
 		    for friend in friends:
-		        if not friend.sessions: # Offline
-			    continue
-			if not friend.character: # Not IC.  This will need to be modified to handle multi-character connections.
-			    continue
-                        friend_char = friend.character
-                        if friend_char.location and friend_char.location.db.area_id == area.dbref and friend_char.location.db.area_map_x and friend_char.location.db.area_map_y:
-			    location = (friend_char.location.db.area_map_x, friend_char.location.db.area_map_y)
+                        if friend.location and friend.location.db.area_id == area.dbref and friend.location.db.area_map_x and friend.location.db.area_map_y:
+			    location = (friend.location.db.area_map_x, friend.location.db.area_map_y)
 			    if friend.sessions:
 			        prio = friend.sessions[0].cmd_last_visible - now
 		            else:
 			        prio = time.mktime(friend.user.last_login.timetuple()) - now
-			    marker = {'type' : 'Friend', 'legend' : friend_char.key, 'prio' : -1}
+			    marker = {'type' : 'Friend', 'legend' : friend.key, 'prio' : -1}
 			    if location in marks:
 			        marks[location].append(marker)
 			    else:
