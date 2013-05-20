@@ -39,7 +39,7 @@ class CmdSay(MuckCommand):
             self.caller.location.at_say(self.caller, message)
             self.caller.location.msg_contents(message)
         else:
-            self.caller.msg(message)
+            self.msg(message)
 
     def gen_say(self, say_string):
         # Determine verb

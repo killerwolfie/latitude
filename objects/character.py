@@ -61,6 +61,7 @@ class LatitudeCharacter(LatitudeObject, Character):
         if self.db.prefs_automap == None or self.db.prefs_automap:
 	    self.execute_cmd('map')
         self.execute_cmd('look')
+        self.execute_cmd('@friends')
 
     def at_post_unpuppet(self, player):
         if self.location:
