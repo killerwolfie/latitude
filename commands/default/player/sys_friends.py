@@ -63,7 +63,7 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
     def cmd_online(self):
         online_friends = []
         for friend_char in sorted(self.caller.get_friend_characters(online_only=True), key=lambda char: char.key.lower()):
-            online_friends.append('{c%s{n ({c%s{n)' % (friend_char.key, friend_char.db.owner.key))
+            online_friends.append('{c%s{n ({c%s{n)' % (friend_char.key, friend_char.db.owner))
         if online_friends:
             self.msg('Online friends: ' + "{n, ".join(online_friends))
         else:

@@ -1,4 +1,4 @@
-from ev import default_cmds, create_object, settings
+from ev import default_cmds, create_object, settings, search_player, search_object, utils
 
 class CmdSysCharCreate(default_cmds.MuxPlayerCommand):
     """
@@ -27,12 +27,20 @@ class CmdSysCharCreate(default_cmds.MuxPlayerCommand):
         key = self.args
         # Verify that the account has a free character slot
         max_characters = player.max_characters()
-        playable_characters = player.db.get_playable_characters()
+        playable_characters = player.get_playable_characters()
         if not player.is_superuser and len(playable_characters) >= max_characters:
             self.msg("You may only create a maximum of %i characters." % max_characters)
             return
         # Verify that the character name is not already taken
-
+        for existing_object in search_object(key, attribute_name='key'):
+            if utils.inherits_from(existing_object, "src.objects.objects.Character"):
+                self.msg("That character name is already taken.")
+                return
+        # Verify that this is not the name of a player, unless it's your own
+        if key.lower() != player.key.lower():
+            if search_player(key):
+                self.msg("That name is already taken by a player account.")
+                return
         # create the character
         from src.objects.models import ObjectDB
 
@@ -45,7 +53,7 @@ class CmdSysCharCreate(default_cmds.MuxPlayerCommand):
         # only allow creator (and admins) to puppet this char
         new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Janitors)" % (new_character.id, player.id))
         # Set this new character as owned by this player
-        new_character.db.owner = player
+        new_character.db.owner = player.key
         # Configure the character as a new character in the world
         new_character.db.desc = "This is a Player."
         # Inform the user that we're done.

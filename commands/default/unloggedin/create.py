@@ -12,6 +12,8 @@ from src.comms.models import Channel
 from src.utils import create, logger, utils
 from src.commands.default.muxcommand import MuxCommand
 
+from ev import search_object
+
 class CmdUnconnectedCreate(MuxCommand):
     """
     Create a new account.
@@ -55,10 +57,17 @@ class CmdUnconnectedCreate(MuxCommand):
             return
         # strip excessive spaces in playername
         playername = re.sub(r"\s+", " ", playername).strip()
+        # Verify this player doesn't already exist
         if PlayerDB.objects.filter(user__username__iexact=playername) or User.objects.filter(username__iexact=playername):
             # player already exists (we also ignore capitalization here)
             session.msg("Sorry, there is already a player with the name '%s'." % playername)
             return
+        # Verify that this player name does not match an existing character name
+        for existing_object in search_object(playername, attribute_name='key'):
+            if utils.inherits_from(existing_object, "src.objects.objects.Character"):
+                session.msg("Sorry, there is already a character with the name '%s'." % playername)
+                return
+        # Security check the password
         if not re.findall('^[\w. @+-]+$', password) or not (3 < len(password)):
             string = "\n\r Password should be longer than 3 characers. Letters, spaces, digits and @\.\+\-\_ only."
             string += "\nFor best security, make it longer than 8 characters. You can also use a phrase of"

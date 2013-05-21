@@ -1,4 +1,4 @@
-from ev import default_cmds
+from ev import default_cmds, settings
 
 class CmdSysDestroy(default_cmds.MuxCommand):
     """

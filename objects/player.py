@@ -56,16 +56,16 @@ class LatitudePlayer(Player):
         characters = []
         for character in character_candidates:
             # Verify that we are the owner of this object
-            if not character.db.owner == self.key:
+            if not character.db.owner.lower() == self.key.lower():
                 continue
             # Verify that this is actually a character object
             if not utils.inherits_from(character, "src.objects.objects.Character"):
                 continue
             # Verify that, among character objects, this one has a unique name
-#            if len([char for char in ev.search_object(character.key, attribute_name='key') if utils.inherits_from(char, "src.objects.objects.Character")]) != 1:
-#                continue
+            if len([char for char in ev.search_object(character.key, attribute_name='key') if utils.inherits_from(char, "src.objects.objects.Character")]) != 1:
+                continue
             # Verify this doesn't match the name of any player, unless that player is self
-            if character.key != self.key:
+            if character.key.lower() != self.key.lower():
                 if ev.search_player(character.key):
                     continue
             characters.append(character)
