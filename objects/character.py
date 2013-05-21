@@ -1,4 +1,4 @@
-from ev import Character
+from ev import Character, search_player
 from game.gamesrc.latitude.objects.object import LatitudeObject
 
 class LatitudeCharacter(LatitudeObject, Character):
@@ -67,3 +67,18 @@ class LatitudeCharacter(LatitudeObject, Character):
         if self.location:
             self.location.msg_contents("%s has left the game." % self.name, exclude=[self])
 
+    def get_owner(self):
+        # Grab the owner name
+        owner = self.db.owner
+        if not owner:
+            return None
+        # Grab the owner player object
+        owner = search_player(owner)
+        if not owner:
+            return None
+        owner = owner[0]
+        # Make sure this character is one of this player's legitimate characters
+        if not self in owner.get_playable_characters():
+            return None
+        # All is well.  Return the player.
+        return owner
