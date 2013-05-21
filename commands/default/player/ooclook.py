@@ -26,7 +26,7 @@ class CmdOOCLook(MuxPlayerCommand):
         "Hook method for when an argument is given."
         player = self.caller
         key = self.args.lower()
-        chars = dict((utils.to_str(char.key.lower()), char) for char in player.db._playable_characters)
+        chars = dict((utils.to_str(char.key.lower()), char) for char in player.get_playable_characters())
         looktarget = chars.get(key)
         if looktarget:
             self.msg(looktarget.return_appearance(player))
@@ -40,7 +40,7 @@ class CmdOOCLook(MuxPlayerCommand):
         player = self.caller
         sessid = self.sessid
         # get all our characters and sessions
-        characters = player.db._playable_characters
+        characters = player.get_playable_characters()
         sessions = player.get_all_sessions()
 
         # text shown when looking in the ooc area

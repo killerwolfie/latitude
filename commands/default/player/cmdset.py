@@ -28,6 +28,7 @@ from game.gamesrc.latitude.commands.default.player import sys_imc2chan
 from game.gamesrc.latitude.commands.default.player import sys_imcinfo
 from game.gamesrc.latitude.commands.default.player import sys_imcpage
 from game.gamesrc.latitude.commands.default.player import sys_irc2chan
+from game.gamesrc.latitude.commands.default.player import sys_merge
 from game.gamesrc.latitude.commands.default.player import sys_newpassword
 from game.gamesrc.latitude.commands.default.player import sys_ooc
 from game.gamesrc.latitude.commands.default.player import sys_page
@@ -75,6 +76,7 @@ class LatitudeCmdsetPlayer(CmdSet):
         self.add(sys_imcinfo.CmdSysIMCInfo)
         self.add(sys_imcpage.CmdSysIMCPage)
         self.add(sys_irc2chan.CmdSysIRC2Chan)
+        self.add(sys_merge.CmdSysMerge)
         self.add(sys_newpassword.CmdSysNewPassword)
         self.add(sys_ooc.CmdSysOOC)
         self.add(sys_page.CmdSysPage)

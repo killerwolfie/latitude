@@ -1,5 +1,6 @@
 from ev import default_cmds
 from src.utils import search
+from ev import settings
 
 class CmdSysIC(default_cmds.MuxPlayerCommand):
     """
@@ -8,62 +9,41 @@ class CmdSysIC(default_cmds.MuxPlayerCommand):
     Usage:
       @ic <character>
 
-    Go in-character (IC) as a given Character.
-
-    This will attempt to "become" a different object assuming you have
-    the right to do so. Note that it's the PLAYER character that puppets
-    characters/objects and which needs to have the correct permission!
-
-    You cannot become an object that is already controlled by another
-    player. In principle <character> can be any in-game object as long
-    as you the player have access right to puppet it.
+    Go in-character (IC) as a given Character.  This is how you 'become' a given character from the list of characters associated with your account.
     """
 
     key = "@ic"
     locks = "cmd:all()" # must be all() or different puppeted objects won't be able to access it.
-    aliases = "@puppet"
+    aliases = []
     help_category = "General"
 
     def func(self):
-        """
-        Main puppet method
-        """
         player = self.caller
-        sessid = self.sessid
-        anyobj = 'anyobj' in [switch.lower() for switch in self.switches]
-
-        new_character = None
-        if not self.args:
-            new_character = player.db._last_puppet
-            if not new_character:
+        playable_characters = self.caller.get_playable_characters()
+        # Determine which character to occupy
+        if self.args:
+            for character in playable_characters:
+                if self.args.lower() == character.key.lower():
+                    self.puppet(character)
+                    return
+            self.msg('That is not a valid character selection.')
+        else:
+            if player.db._last_puppet and player.db._last_puppet in playable_characters:
+                self.puppet(player.db._last_puppet)
+                return
+            else:
                 # Trying to become @ic without specifying a character
-                if player.get_puppet(sessid):
+                if player.get_puppet(self.sessid):
                     self.msg("Usage: @ic <character>")
                 else:
                     # We're currently OOC.  Perform an OOC look instead, so the user can see the character select / account management menu.
-                    player.execute_cmd("look", sessid=sessid)
+                    player.execute_cmd("look", sessid=self.sessid)
                 return
-        if not new_character:
-            if player.db._playable_characters:
-                # Search through your list of characters first
-                for playable_character in player.db._playable_characters:
-                    if self.args.lower() == playable_character.key.lower():
-                        new_character = playable_character
-                        break
-        if not new_character:
-            if anyobj:
-                # search for a matching character
-                new_character = search.object_search(self.args)
-                if new_character:
-                    new_character = new_character[0]
-                else:
-                    self.msg("That is not a valid character choice.")
-                    return
-            else:
-                self.msg("That's not one of your playable characters.")
-                return
+
+    def puppet(self, new_character):
+        player = self.caller
         # permission checks
-        if player.get_puppet(sessid) == new_character:
+        if player.get_puppet(self.sessid) == new_character:
             self.msg("{RYou already act as {c%s{n." % new_character.name)
             return
         if new_character.player:
@@ -80,7 +60,7 @@ class CmdSysIC(default_cmds.MuxPlayerCommand):
             # main acccess check
             self.msg("{rYou may not become %s.{n" % new_character.name)
             return
-        if player.puppet_object(sessid, new_character):
+        if player.puppet_object(self.sessid, new_character):
             player.db._last_puppet = new_character
             if not new_character.location:
                 new_character.location = new_character.db.home

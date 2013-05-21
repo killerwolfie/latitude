@@ -1,4 +1,5 @@
 from ev import search_script
+from ev import search_player
 import re
 import random
 import sys
@@ -134,24 +135,28 @@ class LatitudeRoom(LatitudeObject, Room):
             if mark_friends_of:
 	        if mark_friends_of.player:
 		    mark_friends_of = mark_friends_of.player
-		friend_players = mark_friends_of.db.friends_list
-                friends = []
-                if friend_players:
-                    for friend_player in friend_players:
-                        friends += friend_player.get_all_puppets()
-		if friends:
-		    for friend in friends:
-                        if friend.location and friend.location.db.area_id == area.dbref and friend.location.db.area_map_x and friend.location.db.area_map_y:
-			    location = (friend.location.db.area_map_x, friend.location.db.area_map_y)
-			    if friend.sessions:
-			        prio = friend.sessions[0].cmd_last_visible - now
-		            else:
-			        prio = time.mktime(friend.user.last_login.timetuple()) - now
-			    marker = {'type' : 'Friend', 'legend' : friend.key, 'prio' : -1}
-			    if location in marks:
-			        marks[location].append(marker)
-			    else:
-			        marks[location] = [ marker ]
+                for friend in mark_friends_of.get_friend_characters(online_only=True):
+                    if friend.location and friend.location.db.area_id == area.dbref and friend.location.db.area_map_x and friend.location.db.area_map_y:
+                        location = (friend.location.db.area_map_x, friend.location.db.area_map_y)
+                        if friend.db.owner:
+                            friend_owner = search_player(friend.db.owner)
+                            if friend_owner:
+                                friend_owner = friend_owner[0]
+                        else:
+                            friend_owner = None
+                        # Determine the best prio
+                        if friend.sessions:
+                            prio = friend.sessions[0].cmd_last_visible - now
+                        elif friend_owner:
+                            prio = time.mktime(friend_owner.user.last_login.timetuple()) - now
+                        else:
+                            prio = float('-inf')
+                        # Add the marker
+                        marker = {'type' : 'Friend', 'legend' : friend.key, 'prio' : prio}
+                        if location in marks:
+                            marks[location].append(marker)
+                        else:
+                            marks[location] = [ marker ]
             # Make sure all the marks are sorted
 	    for location in marks.keys():
 	        marks[location].sort(key=lambda item: item['prio'], reverse=True)

@@ -27,9 +27,8 @@ class CmdSysCharCreate(default_cmds.MuxPlayerCommand):
         key = self.args
         # Verify that the account has a free character slot
         max_characters = player.max_characters()
-        if not player.is_superuser and \
-            (player.db._playable_characters and
-                len(player.db._playable_characters) >= max_characters):
+        playable_characters = player.db.get_playable_characters()
+        if not player.is_superuser and len(playable_characters) >= max_characters:
             self.msg("You may only create a maximum of %i characters." % max_characters)
             return
         # Verify that the character name is not already taken
@@ -45,8 +44,8 @@ class CmdSysCharCreate(default_cmds.MuxPlayerCommand):
                                              home=default_home, permissions=permissions)
         # only allow creator (and admins) to puppet this char
         new_character.locks.add("puppet:id(%i) or pid(%i) or perm(Janitors)" % (new_character.id, player.id))
-        # Add the new character to this player's list
-        player.db._playable_characters.append(new_character)
+        # Set this new character as owned by this player
+        new_character.db.owner = player
         # Configure the character as a new character in the world
         new_character.db.desc = "This is a Player."
         # Inform the user that we're done.

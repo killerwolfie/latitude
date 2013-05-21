@@ -1,7 +1,7 @@
 from ev import default_cmds
 from src.utils import prettytable
 
-class CmdSysFriends(default_cmds.MuxCommand):
+class CmdSysFriends(default_cmds.MuxPlayerCommand):
     """
     @friends
 
@@ -61,36 +61,27 @@ class CmdSysFriends(default_cmds.MuxCommand):
         self.msg("Invalid '%s' command.  See 'help %s' for usage" % (self.cmdstring, self.key))
 
     def cmd_online(self):
-        player = self.caller.player
-
         online_friends = []
-        if player.db.friends_list:
-            for friend in sorted(player.db.friends_list, key=lambda friend_player: str(friend_player).lower()):
-                if friend.db._playable_characters:
-                    for friend_char in friend.db._playable_characters:
-                        # Skip characters if they have 'opted out' from the friend system
-                        if friend_char.db.friends_optout:
-                            continue
-                        if friend_char.sessid:
-                            online_friends.append('{c%s{n ({c%s{n)' % (friend_char.key, friend.key))
+        for friend_char in sorted(self.caller.get_friend_characters(online_only=True), key=lambda char: char.key.lower()):
+            online_friends.append('{c%s{n ({c%s{n)' % (friend_char.key, friend_char.db.owner.key))
         if online_friends:
             self.msg('Online friends: ' + "{n, ".join(online_friends))
         else:
             self.msg('None of your friends are currently online.')
 
     def cmd_list(self):
-        player = self.caller.player
-
-        if not player.db.friends_list:
+        friends = self.caller.get_friend_players()
+        if not friends:
             self.msg('You have no friends :(')
         else:
-            for friend in sorted(player.db.friends_list, key=lambda friend_player: str(friend_player).lower()):
+            for friend in sorted(friends, key=lambda friend_player: str(friend_player).lower()):
                 self.msg('+ ' + (friend.sessions and '{c' or '{C') + friend.key)
                 # Produce a list of this friend's characters
-                if friend.db._playable_characters:
+                friend_playable_characters = friend.get_playable_characters()
+                if friend_playable_characters:
                     friend_chars_online = []
                     friend_chars_offline = []
-                    for char in friend.db._playable_characters:
+                    for char in friend_playable_characters:
                         # Don't include characters if they have 'opted out' from the friend system
                         if char.db.friends_optout:
                             continue
