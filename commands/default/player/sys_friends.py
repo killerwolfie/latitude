@@ -81,26 +81,32 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
             self.msg('You have no friends :(')
         else:
             for friend in sorted(friends, key=lambda friend_player: str(friend_player).lower()):
-                # Produce a list of this friend's characters
                 friend_playable_characters = friend.get_playable_characters()
-                # List the characters, unless there is only one character, and it has the same name as the player.
-                if friend_playable_characters:
-                        friend_chars_online = []
-                        friend_chars_offline = []
-                        for char in friend_playable_characters:
-                            # Don't include characters if they have 'opted out' from the friend system
-                            if char.db.friends_optout:
-                                continue
-                            if char.sessid:
-                                friend_chars_online.append('{n  - {c' + char.key)
-                            else:
-                                friend_chars_offline.append('{n  - {C' + char.key)
-                        friend_chars_online.sort()
-                        friend_chars_offline.sort()
-                # Output the resulting entry
-                self.msg('+ ' + (friend_chars_online and '{c' or '{C') + friend.key)
-                if friend_chars_online or friend_chars_offline:
-                    if not (len(friend_playable_characters) == 1 and friend_playable_characters[0].key.lower() == friend.key.lower()):
+                if not friend_playable_characters:
+                    continue
+                if len(friend_playable_characters) == 1 and friend_playable_characters[0].key.lower() == friend.key.lower():
+                    # If this player only has one character and it matches the name of the player exactly, then output a condensed entry
+                    friend_char = friend_playable_characters[0]
+                    if friend_char.db.friends_optout:
+                        continue
+                    self.msg('+ ' + (friend_char.sessid and '{c' or '{C') + friend_char.key)
+                else:
+                    # List the characters, unless there is only one character, and it has the same name as the player.
+                    friend_chars_online = []
+                    friend_chars_offline = []
+                    for char in friend_playable_characters:
+                        # Don't include characters if they have 'opted out' from the friend system
+                        if char.db.friends_optout:
+                            continue
+                        if char.sessid:
+                            friend_chars_online.append('{n  - {c' + char.key)
+                        else:
+                            friend_chars_offline.append('{n  - {C' + char.key)
+                    friend_chars_online.sort()
+                    friend_chars_offline.sort()
+                    # Output the resulting entry
+                    self.msg('+ ' + (friend_chars_online and '{c' or '{C') + friend.key)
+                    if friend_chars_online or friend_chars_offline:
                         self.msg("\n".join(friend_chars_online + friend_chars_offline))
         for character in self.caller.get_playable_characters():
             if character.db.friends_optout:

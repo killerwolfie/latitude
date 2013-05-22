@@ -48,6 +48,8 @@ class CmdUnconnectedCreate(MuxCommand):
             return
         playername, password = parts
 
+        # Drop the player name to lowercase
+        playername = playername.lower()
         # sanity checks
         if not re.findall('^[\w. @+-]+$', playername) or not (0 < len(playername) <= 30):
             # this echoes the restrictions made by django's auth module (except not
