@@ -34,10 +34,18 @@ class LatitudePlayer(Player):
         Returns whether the user appears to be online.
         This is different from whether they're actually online, and takes 'friend system' privacy into account.
         """
+        # If we're actually offline then we'll show that way.
+        if not self.sessions:
+            return False
+        # If we have any un-hidden puppets, then we'll show as online
         for char in self.get_all_puppets():
             if char.db.friends_optout:
                 continue
             return True
+        # If we have no puppets, then we'll show as online.
+        if not self.get_all_puppets():
+            return True
+        # Looks like we do have puppets, but they're all hidden.  Show as offline.
         return False
 
     def max_characters(self):
@@ -93,7 +101,7 @@ class LatitudePlayer(Player):
             return False
         return self in player.db.friends_list and player in self.db.friends_list
 
-    def get_friend_players(self):
+    def get_friend_players(self, online_only=False):
         """
         Get a list of this player's friend players.  (Friendship is always mutual)
         """
@@ -107,7 +115,8 @@ class LatitudePlayer(Player):
         friend_players = set()
         for friend in self.db.friends_list:
             if self.is_friends_with(friend):
-                friend_players.add(friend)
+                if not online_only or friend.shows_online():
+                    friend_players.add(friend)
         return friend_players
 
     def get_friend_characters(self, online_only=False):
@@ -121,7 +130,7 @@ class LatitudePlayer(Player):
             for friend_character in friend_player.get_playable_characters(online_only=online_only):
                 if friend_character.db.friends_optout:
                     continue
-                if online_only and not (friend_character.sessid or friend_character.player):
+                if online_only and not (friend_character.shows_online() or friend_character.player):
                     continue
                 friend_characters.add(friend_character)
         return friend_characters

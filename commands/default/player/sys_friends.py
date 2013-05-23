@@ -68,6 +68,9 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
         online_friends = []
         for friend_char in sorted(self.caller.get_friend_characters(online_only=True), key=lambda char: char.key.lower()):
             online_friends.append('{c%s{n ({c%s{n)' % (friend_char.key, friend_char.db.owner))
+        for friend in self.caller.get_friend_players(online_only=True):
+            if not friend.get_all_puppets(): # @ooc friend
+                online_friends.append('{c%s{n' % (friend.key))
         if online_friends:
             self.msg('Online friends: ' + "{n, ".join(online_friends))
         else:
@@ -89,7 +92,7 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
                     friend_char = friend_playable_characters[0]
                     if friend_char.db.friends_optout:
                         continue
-                    self.msg('+ ' + (friend_char.sessid and '{c' or '{C') + friend_char.key)
+                    self.msg('+ ' + (friend.shows_online() and '{c' or '{C') + friend_char.key)
                 else:
                     # List the characters, unless there is only one character, and it has the same name as the player.
                     friend_chars_online = []
@@ -98,7 +101,7 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
                         # Don't include characters if they have 'opted out' from the friend system
                         if char.db.friends_optout:
                             continue
-                        if char.sessid:
+                        if char.shows_online():
                             friend_chars_online.append('{n  - {c' + char.key)
                         else:
                             friend_chars_offline.append('{n  - {C' + char.key)
