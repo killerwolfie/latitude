@@ -61,11 +61,22 @@ class LatitudeCharacter(LatitudeObject, Character):
         if self.db.prefs_automap == None or self.db.prefs_automap:
 	    self.execute_cmd('map')
         self.execute_cmd('look')
-        self.execute_cmd('@friends')
+        # Alert all your friends :D
+        if not self.db.friends_optout:
+            for friend in self.player.get_friend_players():
+                if friend.sessions:
+                    friend.msg('Your friend %s (%s) has just entered the game.' % (self.key, self.player.key))
 
     def at_post_unpuppet(self, player):
         if self.location:
             self.location.msg_contents("%s has left the game." % self.name, exclude=[self])
+
+    def shows_online(self):
+        """
+        Returns whether the character appears to be online.
+        This could potentially be used to protect privacy when users request it, but for now it just returns whether they're puppeted.
+        """
+        return(bool(self.sessid))
 
     def get_owner(self):
         # Grab the owner name

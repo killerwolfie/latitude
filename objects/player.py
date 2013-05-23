@@ -25,6 +25,20 @@ class LatitudePlayer(Player):
         # Call @ic.  This will cause it to connect to the most recently puppeted object, by default
         # The connect command can (and probably does) modify the value of the most recently puppeted object to change the behavior of this call
         self.execute_cmd("@ic/nousage", sessid=sessid)
+        self.execute_cmd("@friends", sessid=sessid)
+        if self.db.msg_unseen:
+            self.msg('{GYou have unread messages.  Type "@page" to read them.  See "help @page" for more information.')
+
+    def shows_online(self):
+        """
+        Returns whether the user appears to be online.
+        This is different from whether they're actually online, and takes 'friend system' privacy into account.
+        """
+        for char in self.get_all_puppets():
+            if char.db.friends_optout:
+                continue
+            return True
+        return False
 
     def max_characters(self):
         """

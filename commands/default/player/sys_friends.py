@@ -1,5 +1,5 @@
-from ev import default_cmds
-from game.gamesrc.latitude.utils.search import match_player, match_character
+from ev import default_cmds, utils
+from game.gamesrc.latitude.utils.search import match, match_character
 
 class CmdSysFriends(default_cmds.MuxPlayerCommand):
     """
@@ -114,13 +114,16 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
    
     def cmd_add(self, targetname):
         player = self.caller
-        target = match_player(targetname, exact=True)
+        target = match(targetname, exact=True)
+        if hasattr(target, 'get_owner'):
+            target = target.get_owner()
         if not target:
             self.msg('Player not found.')
             return
         # Check if this player is already a friend
         if target in player.get_friend_players():
-            self.msg('%s is already your friend.' % target.key)
+            self.msg('"%s" is already your friend.' % target.key)
+            return
         # Add the player to the friend list if needed
         if player in target.db.friends_list:
             # Already in the target's friend list.  Mutual friendship begins!  Bunnies and rainbows.
@@ -136,7 +139,9 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
 
     def cmd_del(self, targetname):
         player = self.caller
-        target = match_player(targetname, exact=True)
+        target = match(targetname, exact=True)
+        if hasattr(target, 'get_owner'):
+            target = target.get_owner()
         if not target:
             self.msg('Player not found.')
             return
