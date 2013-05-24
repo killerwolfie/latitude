@@ -64,7 +64,7 @@ class LatitudeCharacter(LatitudeObject, Character):
         # Alert all your friends :D
         if not self.db.friends_optout:
             for friend in self.player.get_friend_players():
-                if friend.sessions:
+                if friend.shows_online(): # Don't alert friends who show offline.
                     friend.msg('Your friend %s (%s) has just entered the game.' % (self.key, self.player.key))
 
     def at_post_unpuppet(self, player):

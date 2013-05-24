@@ -22,7 +22,7 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
     """
 
     key = "@page"
-    aliases = ['page']
+    aliases = ['p', 'page']
     locks = "cmd:all()"
     help_category = "General"
 
@@ -34,9 +34,9 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
         elif (not self.switches or self.switches == ['last']) and self.args.isdigit():
             self.cmd_last(num=int(self.args))
         elif not self.switches and self.lhs and self.rhs:
-            self.cmd_page(targetstr=self.lhs, message=self.rhs, mail_offline=False)
+            self.cmd_page(targetstr=self.lhs, message=self.rhs, mail=False)
         elif self.switches == ['mail'] and self.lhs and self.rhs:
-            self.cmd_page(targetstr=self.lhs, message=self.rhs, mail_offline=True)
+            self.cmd_page(targetstr=self.lhs, message=self.rhs, mail=True)
         else:
             # Unrecognized command
             self.msg("Invalid '%s' command.  See 'help %s' for usage." % (self.cmdstring, self.key))
@@ -79,7 +79,7 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
                 output.append("{n---- {nMessage sent at %s{n ----\n{n%s" % (utils.datetime_format(page.date_sent), page.message))
         self.msg("\n\n".join(output))
 
-    def cmd_page(self, targetstr, message, mail_offline=False):
+    def cmd_page(self, targetstr, message, mail=False):
         player = self.caller
         sender = player.get_puppet(self.sessid) or player
         # Identify the recipients
@@ -110,6 +110,7 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
         # Convert the requested names into character/player objects
         receivers = set()
         for targetname in targetstr.split(','):
+            targetname = targetname.strip()
             receiver = match(targetname)
             if receiver:
                 receivers.add(receiver)
@@ -117,14 +118,14 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
                 self.msg('{RCould not find "%s", cancelling message.' % (targetname))
                 return
         # Verify that everyone is online
-        if not mail_offline:
+        if not mail:
             for receiver in receivers:
                 if not receiver.shows_online():
                     self.msg('{R"%s" is not currently online.  Cancelling message.' % (receiver.key))
                     self.msg("{RIf you want to send a message to someone who's offline, use '%s/mail', and they will be alerted the next time they log in." % (self.key))
                     self.msg("{RSee help %s for details" % (self.key))
                     return
-        # Generate message header, to store the 'to' and 'from' before they get converted into player objects
+        # Generate message header, to store the 'to' and 'from' as provided.  (The recievers and sender field of the Msg object will be the player, and never a character)
         header = {
             'from' : sender.key,
             'to' : [obj.key for obj in receivers],
@@ -132,24 +133,38 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
         header = pickle.dumps(header)
         # Construct the message text itself.  Must be called before the sender and receiver are converted into players.
         message = self.gen_message_text(sender, receivers, message)
-        # Convert the sender and receivers into player objects
-        if hasattr(sender, 'get_owner'):
-            sender = sender.get_owner()
-        receivers = list(set([obj.get_owner() for obj in receivers if hasattr(obj, 'get_owner')]))
         # Create the persistent message object
-        msg_object = create_message(player, message, receivers=receivers, header=header)
-        # Tell the players they got a message.
+        receiver_players = set()
         for receiver in receivers:
-            if receiver.sessions:
-                # Player is olnise
-                receiver.msg(message)
+            if utils.inherits_from(receiver, "src.objects.objects.Character"):
+                receiver_players.add(receiver.get_owner())
             else:
-                # Player is offline
-                if not receiver.db.msg_unseen:
-                    receiver.db.msg_unseen = []
-                receiver.db.msg_unseen.append(msg_object)
-        if not sender in receivers:
-            sender.msg(message)
+                receiver_players.add(receiver)
+        msg_object = create_message(player, message, receivers=receiver_players, header=header)
+        # If this is a 'mail' then deliver the message into their 'unseen' list.
+        if mail:
+            for receiver_player in receiver_players:
+                if not receiver_player.db.msg_unseen:
+                    receiver_player.db.msg_unseen = []
+                receiver_player.db.msg_unseen.append(msg_object)
+        # Tell the players they got a message.
+        if mail:
+            for receiver_player in receiver_players:
+                receiver_player.msg("You've received a page mail.  Use \"@page\" to view it.")
+            if player not in receiver_players:
+                self.msg('Page mail sent.')
+        else:
+            # To eliminate duplicates, produce a set() of sessid/player pairs.
+            msg_targets = set()
+            msg_targets.add((player, self.sessid))
+            for receiver in receivers:
+                if utils.inherits_from(receiver, "src.objects.objects.Character"):
+                    msg_targets.add((receiver.player, receiver.sessid))
+                else: # Player
+                    for session in receiver.get_all_sessions():
+                        msg_targets.add((receiver, session.sessid))
+            for msg_target in msg_targets:
+                msg_target[0].msg(message, sessid=msg_target[1])
 
     def gen_message_text(self, sender, receivers, raw_message):
         """
@@ -158,6 +173,7 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
         message = raw_message
         # Create a page pose if it startes with a :
         if message.startswith(":"):
-            message = "%s %s" % (player.key, message.strip(':').strip())
-        message = '%s pages, "%s" to %s.' % (sender.key, message, conj_join([obj.key for obj in receivers], 'and'))
+            message = "In a page pose to %s, %s %s" % (conj_join([obj.key for obj in receivers], 'and'), sender.key, message.strip(':').strip())
+        else:
+            message = '%s pages, "%s" to %s.' % (sender.key, message, conj_join([obj.key for obj in receivers], 'and'))
         return message

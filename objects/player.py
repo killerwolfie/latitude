@@ -134,3 +134,12 @@ class LatitudePlayer(Player):
                     continue
                 friend_characters.add(friend_character)
         return friend_characters
+
+    def get_friends_optout(self):
+        """
+        Returns whether any currently connected characters are opped out from the friend system.
+        """
+        for char in self.get_all_puppets():
+            if char.db.friends_optout:
+                return True
+        return False

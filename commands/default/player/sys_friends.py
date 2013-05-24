@@ -179,10 +179,9 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
             self.msg('"%s" has opted back into the friend system.' % (target.key))
 
     def check_optout(self):
-        optout_characters = set([str(char) for char in self.caller.get_all_puppets() if char.db.friends_optout])
-        if optout_characters:
-            self.msg('{RSorry.  One or more of your currently connected characters are opting out of the friend system.  ({r%s{R)' % ", ".join(optout_characters))
-            self.msg('{RTo continue using the friend system, either disconnect those characters, or remove the "opt out" flag with:')
+        if not self.caller.shows_online():
+            self.msg('{RSorry.  All of your currently connected characters are opting out of the friend system.  ({r%s{R)' % ", ".join(optout_characters))
+            self.msg('{RTo continue using the friend system, you need to connect at least one character without the "opt out" flag, or you can remove it with:')
             self.msg('{r  @friends optout=!<character>')
             return False
         return True

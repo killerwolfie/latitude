@@ -43,6 +43,10 @@ class CmdMap(default_cmds.MuxCommand):
 
     def func(self):
         if self.caller.location:
-            self.caller.msg(self.caller.location.return_map(mark_friends_of=self.caller))
+            if self.caller.get_owner().shows_online():
+                self.caller.msg(self.caller.location.return_map(mark_friends_of=self.caller))
+            else:
+                # If the player is 'hiding' then hide friend markers for privacy
+                self.caller.msg(self.caller.location.return_map())
 	else:
 	    self.caller.msg("You have no location to find on the map!")
