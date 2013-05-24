@@ -128,7 +128,7 @@ class EditObj(object):
         # Store settings
         self.caller = caller
         self.obj = obj.typeclass # 'isinstance' is used, requiring typeclass, not DB classes
-        self.fields = list(fields)
+        self.fields = list()
         self.confirm = confirm
         self.key = key
         # Initialize state
@@ -138,13 +138,15 @@ class EditObj(object):
         self.edited_name = None
         # Create an editor object to contain a text buffer to be used as needed
         self.editor = lineeditor.LineEditor(caller, maxchars=10, maxlines=3, color=True, key='')
+        # Copy in the fields
+        for field in fields:
+            self.fields.append(dict(field))
         # Validate fields and add defaults if needed
         for field in self.fields:
             if field['type'] in DEFAULTS:
                 for def_attr, def_val in DEFAULTS[field['type']].items():
                     if not def_attr in field:
                         field[def_attr] = def_val
-        caller.msg(self.fields, data={'raw' : True})
         # Create and attach the editor cmdset to the user
         cmdset = CmdsetEditObj()
         cmd_entry = CmdEditObj()
