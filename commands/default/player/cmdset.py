@@ -22,6 +22,7 @@ from game.gamesrc.latitude.commands.default.player import sys_delcom
 from game.gamesrc.latitude.commands.default.player import sys_delplayer
 from game.gamesrc.latitude.commands.default.player import sys_encoding
 from game.gamesrc.latitude.commands.default.player import sys_friends
+from game.gamesrc.latitude.commands.default.player import sys_gametime
 from game.gamesrc.latitude.commands.default.player import sys_help
 from game.gamesrc.latitude.commands.default.player import sys_ic
 from game.gamesrc.latitude.commands.default.player import sys_imc2chan
@@ -71,6 +72,7 @@ class LatitudeCmdsetPlayer(CmdSet):
 	self.add(sys_help.CmdSysHelp)
         self.add(sys_encoding.CmdSysEncoding)
         self.add(sys_friends.CmdSysFriends)
+        self.add(sys_gametime.CmdSysGameTime)
         self.add(sys_ic.CmdSysIC)
         self.add(sys_imc2chan.CmdSysIMC2Chan)
         self.add(sys_imcinfo.CmdSysIMCInfo)

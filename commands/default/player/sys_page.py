@@ -33,9 +33,9 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
             return
         elif (not self.switches or self.switches == ['last']) and self.args.isdigit():
             self.cmd_last(num=int(self.args))
-        elif not self.switches and self.lhs and self.rhs:
+        elif not self.switches and self.rhs:
             self.cmd_page(targetstr=self.lhs, message=self.rhs, mail=False)
-        elif self.switches == ['mail'] and self.lhs and self.rhs:
+        elif self.switches == ['mail'] and self.rhs:
             self.cmd_page(targetstr=self.lhs, message=self.rhs, mail=True)
         else:
             # Unrecognized command
@@ -83,7 +83,24 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
         player = self.caller
         sender = player.get_puppet(self.sessid) or player
         # Identify the recipients
-        if targetstr.lower() == '#r':
+        if not targetstr:
+            # Grab the last page that we sent to
+            lastpages = Msg.objects.get_messages_by_sender(player, exclude_channel_messages=True)
+            if not lastpages:
+                self.msg('{RCould not re-send to previous recipient: No pages sent.')
+            lastpages.sort(cmp=lambda x, y: cmp(x.date_sent, y.date_sent))
+            # Extract the header
+            header = lastpages[-1].header
+            if not header:
+                self.msg("{RCould not re-send to previous recipient: Your last page didn't have any sender information.")
+                return
+            header = pickle.loads(header)
+            if not 'from' in header or not 'to' in header:
+                self.msg("{RCould not re-send to previous recipient: Your last page didn't have any sender/recipients.")
+                return
+            new_targets = set(header['to'])
+            targetstr = ','.join(new_targets)
+        elif targetstr.lower() == '#r':
             # Grab the last received page
             lastpages = Msg.objects.get_messages_by_receiver(player)
             if not lastpages:
