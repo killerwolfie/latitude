@@ -16,7 +16,7 @@ class CmdWhisper(say.CmdSay):
     """
 
     key = "whisper"
-    aliases = ['w']
+    aliases = ['w ']
     locks = "cmd:all()"
     help_category = "Actions"
 
