@@ -53,18 +53,16 @@ class LatitudeExitDeadbolt(LatitudeExit):
 		    return()
 
         # Apply lock
-	exit_name = self.return_situational_name()
-	
 	if self.db.deadbolt_two_way:
 	    for reverse_exit in reverse_exits:
 	        reverse_exit.locks.add(change_to)
 		# If we've gotten this far, the reverse exit must have a location.
-		reverse_exit.location.msg_contents('%s %s %s from the other side.' % (locker.key, msg_verb_tp, exit_name), exclude=[locker])
+		reverse_exit.location.msg_contents(self.objsub('&1N %s &0c from the other side.' % (msg_verb_tp), locker))
 
 	self.locks.add(change_to)
 	if self.location:
-	    self.location.msg_contents('%s %s %s.' % (locker.key, msg_verb_tp, exit_name), exclude=[locker])
-	    locker.msg('You %s %s.' % (msg_verb_sp, exit_name))
+	    self.location.msg_contents(self.objsub('&1N %s &0c.' % (msg_verb_tp), locker), exclude=[locker])
+	    locker.msg(self.objsub('You %s &0c.' % (msg_verb_sp), locker))
 
     def at_failed_traverse(self, traversing_object):
         traversing_object.msg('Looks like that way is locked.')

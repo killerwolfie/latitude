@@ -16,6 +16,10 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
         Displays all the friends currently in your list.  Also lists any
         opt-outs you may have in place.
 
+      @friends/whereis <character>
+        Shows you some details on the whereabouts of another character, if
+        they're on your friend list.
+
       @friends add=<player/character>
         Add a player to your friend list.
         You can specify the player or the character name, but either way, the
@@ -40,25 +44,33 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
 
     key = "@friends"
     locks = "cmd:all()"
-    aliases = ['wf']
+    aliases = ['wf', '@whereis', 'whereis']
     help_category = "General"
 
     def func(self):
-        if not self.switches and not self.args:
-            self.cmd_online()
-            return
-        elif self.switches == [ 'list' ] and not self.args:
-            self.cmd_list()
-            return
-        elif not self.switches and self.lhs == 'add' and self.rhs:
-            self.cmd_add(self.rhs)
-            return
-        elif not self.switches and self.lhs == 'del' and self.rhs:
-            self.cmd_del(self.rhs)
-            return
-        elif not self.switches and self.lhs == 'optout' and self.rhs:
-            self.cmd_optout(self.rhs)
-            return
+        if self.cmdstring.lower() == '@whereis' or self.cmdstring.lower() == 'whereis':
+            if not self.switches and self.args:
+                self.cmd_whereis(self.args)
+                return
+        else:
+            if not self.switches and not self.args:
+                self.cmd_online()
+                return
+            elif self.switches == [ 'list' ] and not self.args:
+                self.cmd_list()
+                return
+            elif self.switches == [ 'whereis' ] and self.args:
+                self.cmd_whereis(self.args)
+                return
+            elif not self.switches and self.lhs == 'add' and self.rhs:
+                self.cmd_add(self.rhs)
+                return
+            elif not self.switches and self.lhs == 'del' and self.rhs:
+                self.cmd_del(self.rhs)
+                return
+            elif not self.switches and self.lhs == 'optout' and self.rhs:
+                self.cmd_optout(self.rhs)
+                return
         # Unrecognized command
         self.msg("Invalid '%s' command.  See 'help %s' for usage" % (self.cmdstring, self.key))
 
@@ -121,7 +133,7 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
         if hasattr(target, 'get_owner'):
             target = target.get_owner()
         if not target:
-            self.msg('Player not found.')
+            self.msg('{RPlayer not found.')
             return
         # Check if this player is already a friend
         if target in player.get_friend_players():
@@ -146,7 +158,7 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
         if hasattr(target, 'get_owner'):
             target = target.get_owner()
         if not target:
-            self.msg('Player not found.')
+            self.msg('{RPlayer not found.')
             return
         if target in player.get_friend_players():
             if target in player.db.friends_list:
@@ -167,7 +179,7 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
             optout = True
             target = match_character(targetname, exact=True)
         if not target:
-            self.msg('Player not found.')
+            self.msg('{RPlayer not found.')
             return
         if target.get_owner() != self.caller:
             self.msg('"%s" is not one of your characters.' % (target.key))
@@ -178,9 +190,41 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
         else:
             self.msg('"%s" has opted back into the friend system.' % (target.key))
 
+    def cmd_whereis(self, targetname):
+        friend = match_character(targetname, exact=False)
+        if not friend:
+            self.msg('{RCharacter not found.')
+            return
+#        if not friend in self.caller.get_friend_characters(online_only=False):
+#            self.msg('{R%s is not on your friend list.' % (friend.key))
+#            return
+        friend_location = friend.location
+        if not friend_location:
+            # TODO: Once it's implemented, we'll have to check for 'wandering' here, and report the region as their location.
+            self.msg("Your friend doesn't appear to be anywhere in particular.")
+        else:
+            friend_map = friend.return_map()
+            friend_area = friend_location.get_area()
+            if friend_area:
+                friend_region = friend_area.get_region()
+            else:
+                friend_region = None
+            if friend_map:
+                self.msg(friend_map)
+            location_tree = []
+            for location in [friend_location, friend_area, friend_region]:
+                location_name = None
+                if hasattr(location, 'objsub_w'):
+                    location_name = location.objsub_w()
+                elif hasattr(location, 'get_name_within'):
+                    location_name = location.get_name_within()
+                if location_name:
+                    location_tree.append(location_name)
+            self.msg("%s is %s." % (friend.key, ", ".join(location_tree)))
+
     def check_optout(self):
         if not self.caller.shows_online():
-            self.msg('{RSorry.  All of your currently connected characters are opting out of the friend system.  ({r%s{R)' % ", ".join(optout_characters))
+            self.msg('{RSorry.  All of your currently connected characters are opting out of the friend system.')
             self.msg('{RTo continue using the friend system, you need to connect at least one character without the "opt out" flag, or you can remove it with:')
             self.msg('{r  @friends optout=!<character>')
             return False

@@ -69,11 +69,6 @@ class LatitudeExit(LatitudeObject, Exit):
 
     def at_object_creation(self):
         self.db.attr_gender = 'Object'
-	self.db.pronoun_absolute = "that direction's"
-	self.db.pronoun_subjective = "that direction"
-	self.db.pronoun_objective = "that direction"
-	self.db.pronoun_posessive = "that direction's"
-	self.db.pronoun_reflexive = "that direction"
 
     def reverse_exits(self):
         """
@@ -133,3 +128,34 @@ class LatitudeExit(LatitudeObject, Exit):
         """
         leader.msg('%s seems to have lost you, and is no longer following you.' % follower.key)
         follower.msg('%s moves off, but you find yourself unable to follow.' % leader.key)
+
+    # ---- Object based string substitution ----
+    # A - Absolute Pronoun
+    def objsub_a(self):
+        if self.db.objsub_a:
+	    return(str(self.db.objsub_a))
+	return("that direction's")
+
+    # O - Objective Pronoun
+    def objsub_o(self):
+        if self.db.objsub_o:
+	    return(str(self.db.objsub_o))
+	return('that direction')
+
+    # P - Posessive Pronoun
+    def objsub_p(self):
+        if self.db.objsub_p:
+	    return(str(self.db.objsub_p))
+	return("that direction's")
+
+    # R - Reflexive Pronoun
+    def objsub_r(self):
+        if self.db.objsub_r:
+	    return(str(self.db.objsub_r))
+	return("that direction")
+
+    # S - Subjective Pronoun
+    def objsub_s(self):
+        if self.db.objsub_s:
+	    return(str(self.db.objsub_s))
+	return("that direction")

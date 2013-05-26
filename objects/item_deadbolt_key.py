@@ -15,7 +15,7 @@ class LatitudeItemDeadboltKey(LatitudeItem):
         for target in targets:
             # First ensure this target matches this lock
             if not target.access(self, 'lock'): # Using 'self' instead of the user.  The user would check all the keys the guy has.  We just want to check this one.
-                user.msg("This isn't the right key for %s." % target.return_situational_name())
+                user.msg(self.objsub("This isn't the right key for &2c.", user, target))
                 continue
             # Perform the lock/unlock based on whether the user can currently traverse the exit
             if target.access(user, 'traverse'):

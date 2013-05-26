@@ -37,12 +37,6 @@ class LatitudeRoom(LatitudeObject, Room):
 
     def at_object_creation(self):
         self.db.attr_gender = 'Object'
-	self.db.pronoun_absolute = "this room's"
-	self.db.pronoun_subjective = "this room"
-	self.db.pronoun_objective = "this room"
-	self.db.pronoun_posessive = "this room's"
-	self.db.pronoun_reflexive = "this room"
-        self.db.situational_name = "this room"
 
     def return_appearance_name(self, looker):
         return ('%cn%ch%cw' + self.key)
@@ -110,15 +104,22 @@ class LatitudeRoom(LatitudeObject, Room):
 
     # ----- Maps -----
     def return_map(self, print_location=False, mark_self=True, mark_friends_of=None):
-        if not (self.db.area_id != None and self.db.area_map_num != None):
-	    return None
         try:
 	    # Grab the time at which this call was made, so if the call takes a while it doesn't drift our 'idle time' calculations
 	    now = time.time()
 	    # Grab the map
-	    area = search_script(self.db.area_id)[0]
-	    region = search_script(area.db.region)[0]
+	    area = self.get_area()
+            if not area:
+                return None
+	    region = area.get_region()
+            if not region:
+                return None
+            area_map_num = self.db.area_map_num
+            if area_map_num == None:
+                return None
 	    map_data = area.get_attribute('maps')[self.db.area_map_num]['map_data']
+            if not map_data:
+                return None
             # Parse the map data's color codes and create a canvas
             canvas = evennia_color.EvenniaColorCanvas()
             canvas.evennia_import(map_data)
@@ -214,3 +215,45 @@ class LatitudeRoom(LatitudeObject, Room):
 	    filename = os.path.split(sys.exc_info()[2].tb_frame.f_code.co_filename)[1]
             line = sys.exc_info()[2].tb_lineno
 	    return '{R[Error displaying map (%s:%d): %s]{n' % (filename, line, str(e))
+
+    def get_area(self):
+        area_id = self.db.area_id
+        if area_id:
+            # Sanity check the area_id first
+            if area_id[0] != '#' or not area_id[1:].isdigit():
+                area_id = None
+        if area_id:
+            return(search_script(area_id)[0])
+        else:
+            return(None)
+
+    # ---- Object based string substitution ----
+    # A - Absolute Pronoun
+    def objsub_a(self):
+        if self.db.objsub_a:
+	    return(str(self.db.objsub_a))
+	return("this room's")
+
+    # O - Objective Pronoun
+    def objsub_o(self):
+        if self.db.objsub_o:
+	    return(str(self.db.objsub_o))
+	return('this room')
+
+    # P - Posessive Pronoun
+    def objsub_p(self):
+        if self.db.objsub_p:
+	    return(str(self.db.objsub_p))
+	return("this room's")
+
+    # R - Reflexive Pronoun
+    def objsub_r(self):
+        if self.db.objsub_r:
+	    return(str(self.db.objsub_r))
+	return("this room")
+
+    # S - Subjective Pronoun
+    def objsub_s(self):
+        if self.db.objsub_s:
+	    return(str(self.db.objsub_s))
+	return("this room")

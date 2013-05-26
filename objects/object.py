@@ -1,127 +1,9 @@
-"""
-
-Template for Objects
-
-Copy this module up one level and name it as you like, then
-use it as a template to create your own Objects.
-
-To make the default commands default to creating objects of your new
-type (and also change the "fallback" object used when typeclass
-creation fails), change settings.BASE_OBJECT_TYPECLASS to point to
-your new class, e.g.
-
-settings.BASE_OBJECT_TYPECLASS = "game.gamesrc.objects.myobj.MyObj"
-
-Note that objects already created in the database will not notice
-this change, you have to convert them manually e.g. with the
-@typeclass command.
-
-"""
 from ev import Object
 from ev import Exit
 from ev import Room
+import re
 
 class LatitudeObject(Object):
-    """
-    This is the root typeclass object, implementing an in-game Evennia
-    game object, such as having a location, being able to be
-    manipulated or looked at, etc. If you create a new typeclass, it
-    must always inherit from this object (or any of the other objects
-    in this file, since they all actually inherit from BaseObject, as
-    seen in src.object.objects).
-
-    The BaseObject class implements several hooks tying into the game
-    engine. By re-implementing these hooks you can control the
-    system. You should never need to re-implement special Python
-    methods, such as __init__ and especially never __getattribute__ and
-    __setattr__ since these are used heavily by the typeclass system
-    of Evennia and messing with them might well break things for you.
-
-
-    * Base properties defined/available on all Objects
-
-     key (string) - name of object
-     name (string)- same as key
-     aliases (list of strings) - aliases to the object. Will be saved to database as AliasDB entries but returned as strings.
-     dbref (int, read-only) - unique #id-number. Also "id" can be used.
-     dbobj (Object, read-only) - link to database model. dbobj.typeclass points back to this class
-     typeclass (Object, read-only) - this links back to this class as an identified only. Use self.swap_typeclass() to switch.
-     date_created (string) - time stamp of object creation
-     permissions (list of strings) - list of permission strings
-
-     player (Player) - controlling player (will also return offline player)
-     location (Object) - current location. Is None if this is a room
-     home (Object) - safety start-location
-     sessions (list of Sessions, read-only) - returns all sessions connected to this object
-     has_player (bool, read-only)- will only return *connected* players
-     contents (list of Objects, read-only) - returns all objects inside this object (including exits)
-     exits (list of Objects, read-only) - returns all exits from this object, if any
-     destination (Object) - only set if this object is an exit.
-     is_superuser (bool, read-only) - True/False if this user is a superuser
-
-    * Handlers available
-
-     locks - lock-handler: use locks.add() to add new lock strings
-     db - attribute-handler: store/retrieve database attributes on this self.db.myattr=val, val=self.db.myattr
-     ndb - non-persistent attribute handler: same as db but does not create a database entry when storing data
-     scripts - script-handler. Add new scripts to object with scripts.add()
-     cmdset - cmdset-handler. Use cmdset.add() to add new cmdsets to object
-     nicks - nick-handler. New nicks with nicks.add().
-
-    * Helper methods (see src.objects.objects.py for full headers)
-
-     search(ostring, global_search=False, attribute_name=None, use_nicks=False, location=None, ignore_errors=False, player=False)
-     execute_cmd(raw_string)
-     msg(message, from_obj=None, data=None)
-     msg_contents(message, exclude=None, from_obj=None, data=None)
-     move_to(destination, quiet=False, emit_to_obj=None, use_destination=True)
-     copy(new_key=None)
-     delete()
-     is_typeclass(typeclass, exact=False)
-     swap_typeclass(new_typeclass, clean_attributes=False, no_default=True)
-     access(accessing_obj, access_type='read', default=False)
-     check_permstring(permstring)
-
-    * Hooks (these are class methods, so their arguments should also start with self):
-
-     basetype_setup()     - only called once, used for behind-the-scenes setup. Normally not modified.
-     basetype_posthook_setup() - customization in basetype, after the object has been created; Normally not modified.
-
-     at_object_creation() - only called once, when object is first created. Object customizations go here.
-     at_object_delete() - called just before deleting an object. If returning False, deletion is aborted. Note that all objects
-                          inside a deleted object are automatically moved to their <home>, they don't need to be removed here.
-
-     at_init()            - called whenever typeclass is cached from memory, at least once every server restart/reload
-     at_cmdset_get()      - this is called just before the command handler requests a cmdset from this object
-     at_first_login()     - (player-controlled objects only) called once, the very first time user logs in.
-     at_pre_login()       - (player-controlled objects only) called every time the user connects, after they have identified, before other setup
-     at_post_login()      - (player-controlled objects only) called at the end of login, just before setting the player loose in the world.
-     at_disconnect()      - (player-controlled objects only) called just before the user disconnects (or goes linkless)
-     at_server_reload()   - called before server is reloaded
-     at_server_shutdown() - called just before server is fully shut down
-
-     at_before_move(destination)             - called just before moving object to the destination. If returns False, move is cancelled.
-     announce_move_from(destination)         - called in old location, just before move, if obj.move_to() has quiet=False
-     announce_move_to(source_location)       - called in new location, just after move, if obj.move_to() has quiet=False
-     at_after_move(source_location)          - always called after a move has been successfully performed.
-     at_object_leave(obj, target_location)   - called when an object leaves this object in any fashion
-     at_object_receive(obj, source_location) - called when this object receives another object
-
-     at_before_traverse(traversing_object)                 - (exit-objects only) called just before an object traverses this object
-     at_after_traverse(traversing_object, source_location) - (exit-objects only) called just after a traversal has happened.
-     at_failed_traverse(traversing_object)      - (exit-objects only) called if traversal fails and property err_traverse is not defined.
-
-     at_msg_receive(self, msg, from_obj=None, data=None) - called when a message (via self.msg()) is sent to this obj.
-                                                           If returns false, aborts send.
-     at_msg_send(self, msg, to_obj=None, data=None) - called when this objects sends a message to someone via self.msg().
-
-     return_appearance(looker) - describes this object. Used by "look" command by default
-     at_desc(looker=None)      - called by 'look' whenever the appearance is requested.
-     at_get(getter)            - called after object has been picked up. Does not stop pickup.
-     at_drop(dropper)          - called when this object has been dropped.
-     at_say(speaker, message)  - by default, called if an object inside this object speaks
-
-    """
     def basetype_setup(self):
         """
         This sets up the default properties of an Object,
@@ -261,7 +143,7 @@ class LatitudeObject(Object):
         if self.db.desc_scent:
 	    return self.db.desc_scent
 	else:
-	    return self.return_situational_name().capitalize() + " doesn't seem to have any descernable scent."
+	    return self.objsub("&0C doesn't seem to have any descernable scent.")
 
     def return_texture(self, looker):
         """
@@ -270,7 +152,7 @@ class LatitudeObject(Object):
         if self.db.desc_texture:
 	    return self.db.desc_texture
 	else:
-	    return self.return_situational_name().capitalize() + " doesn't seem to have any descernable texture."
+	    return self.objsub("&0C doesn't seem to have any descernable texture.")
 
     def return_flavor(self, looker):
         """
@@ -279,7 +161,7 @@ class LatitudeObject(Object):
         if self.db.desc_flavor:
 	    return self.db.desc_flavor
 	else:
-	    return self.return_situational_name().capitalize() + " doesn't seem to have any descernable flavor."
+	    return self.objsub("&0C doesn't seem to have any descernable flavor.")
 
     def return_sound(self, looker):
         """
@@ -288,7 +170,7 @@ class LatitudeObject(Object):
         if self.db.desc_sound:
 	    return self.db.desc_sound
 	else:
-	    return self.return_situational_name().capitalize() + " doesn't seem to have any descernable sound."
+	    return self.objsub("&0C doesn't seem to have any descernable sound.")
 
     def return_aura(self, looker):
         """
@@ -297,7 +179,7 @@ class LatitudeObject(Object):
         if self.db.desc_aura:
 	    return self.db.desc_aura
 	else:
-	    return self.return_situational_name().capitalize() + " doesn't seem to have any descernable aura."
+	    return self.objsub("&0C doesn't seem to have any descernable aura.")
 
     def return_writing(self, looker):
         """
@@ -306,20 +188,7 @@ class LatitudeObject(Object):
         if self.db.desc_writing:
 	    return self.db.desc_writing
 	else:
-	    return self.return_situational_name().capitalize() + " doesn't seem to have any descernable writing."
-
-    def return_situational_name(self):
-        """
-        A situational name is used by alerts that are sent to other players.
-        In almost all cases, a character's name should be their situational name, but for objects it's often not.
-        Examples:
-            Object: 'Water Fountain' would return 'the water fountain'
-            Exit: '[E]astern Gate' would return 'the eastern gate'
-            Room: Most rooms would return 'this room'
-        """
-        if self.db.desc_situational_name:
-            return self.db.desc_situational_name
-        return self.key
+	    return self.objsub("&0C doesn't seem to have any descernable writing.")
 
     # ----- Maps -----
     def return_map(self, mark_friends_of=None):
@@ -330,73 +199,6 @@ class LatitudeObject(Object):
 	if hasattr(room, 'return_map'):
 	    return room.return_map(mark_friends_of)
 	return None
-
-    # ----- Pronoun Substitution -----
-    def return_pronoun_reflexive(self):
-        if self.db.desc_pronoun_reflexive:
-	    return(self.db.desc_pronoun_reflexive)
-	if self.is_male():
-	    return('himself')
-	if self.is_female():
-	    return('herself')
-        if self.is_herm():
-	    return('hirself')
-	if self.is_neuter():
-	    return('itself')
-	return(self.key)
-
-    def return_pronoun_posessive(self):
-        if self.db.desc_pronoun_posessive:
-	    return(self.db.desc_pronoun_posessive)
-	if self.is_male():
-	    return('his')
-	if self.is_female():
-	    return('her')
-        if self.is_herm():
-	    return('hir')
-	if self.is_neuter():
-	    return('its')
-	return(self.key + "'s")
-
-    def return_pronoun_objective(self):
-        if self.db.desc_pronoun_objective:
-	    return(self.db.desc_pronoun_objective)
-	if self.is_male():
-	    return('him')
-	if self.is_female():
-	    return('her')
-        if self.is_herm():
-	    return('hir')
-	if self.is_neuter():
-	    return('it')
-	return(self.key)
-
-    def return_pronoun_subjective(self):
-        if self.db.desc_pronoun_subjective:
-	    return(self.db.desc_pronoun_subjective)
-	if self.is_male():
-	    return('he')
-	if self.is_female():
-	    return('she')
-        if self.is_herm():
-	    return('shi')
-	if self.is_neuter():
-	    return('it')
-	return(self.key)
-
-    def return_pronoun_absolute(self):
-        if self.db.desc_pronoun_absolute:
-	    return(self.db.desc_pronoun_absolute)
-	if self.is_male():
-	    return('his')
-	if self.is_female():
-	    return('hers')
-        if self.is_herm():
-	    return('hirs')
-	if self.is_neuter():
-	    return('its')
-	return(self.key + "'s")
-
     # ----- Gender -----
     def is_male(self):
         if self.db.attr_gender:
@@ -423,21 +225,25 @@ class LatitudeObject(Object):
         pass
 
     def at_desc_scent(self, looker):
-        pass
+        if not looker.location or (not looker.location == self.location and not looker.location == self):
+            return()
+        self.msg(self.objsub('&1N just smelled you!', looker))
+        if looker.location:
+            looker.location.msg_contents(self.objsub('&1N just smelled &0c.', looker), exclude=[self, looker])
 
     def at_desc_flavor(self, looker):
         if not looker.location or (not looker.location == self.location and not looker.location == self):
             return()
-        self.msg('%s just smelled you!' % (looker.key))
+        self.msg(self.objsub('&1N just tasted you!', looker))
         if looker.location:
-            looker.location.msg_contents('%s just smelled %s.' % (looker.key, self.return_situational_name()))
+            looker.location.msg_contents(self.objsub('&1N just tasted &0c.', looker), exclude=[self, looker])
 
     def at_desc_texture(self, looker):
         if not looker.location or (not looker.location == self.location and not looker.location == self):
             return()
-        self.msg('%s just smelled you!' % (looker.key))
+        self.msg(self.objsub('&1N just felt you!', looker))
         if looker.location:
-            looker.location.msg_contents('%s just smelled %s.' % (looker.key, self.return_situational_name()))
+            looker.location.msg_contents(self.objsub('&1N just felt &0c.', looker), exclude=[self, looker])
 
     def at_desc_sound(self, looker):
         pass
@@ -533,3 +339,165 @@ class LatitudeObject(Object):
         # Clear any pending follow or lead requests
         del self.db.follow_wantfollow
         del self.db.follow_wantlead
+
+    # ----- Object based string substitution -----
+    def objsub(self, template, *args):
+        def repl(codeseq):
+            # Determine which object we're asking for a substitution
+            objnum = int(codeseq.group(1))
+            if objnum == 0:
+                subobj = self
+            elif objnum <= len(args):
+                subobj = args[objnum - 1]
+            else:
+                return(codeseq.group(0))
+            # Determine whether we're capitalizing or not
+            if codeseq.group(2).isupper():
+                capitalize = True
+                code = codeseq.group(2).lower()
+            else:
+                capitalize = False
+                code = codeseq.group(2)
+            # Determine what to substitute, and get the substitution
+            if hasattr(subobj, 'objsub_' + code):
+                retval = getattr(subobj, 'objsub_' + code)()
+            else:
+                retval = subobj.objsub_other(code)
+            # If the function returns 'None' then we want to ignore this substitution
+            if retval == None:
+                return codeseq.group(0)
+            # Capitalize if necessary, and return the value.
+            if capitalize:
+                retval = retval[0].upper() + retval[1:]
+            return retval
+        return re.sub(r'&([0-9])([a-zA-Z])', repl, template)
+    
+    # A - Absolute Pronoun
+    def objsub_a(self):
+        if self.db.objsub_a:
+	    return(str(self.db.objsub_a))
+	if self.is_male():
+	    return('his')
+	if self.is_female():
+	    return('hers')
+        if self.is_herm():
+	    return('hirs')
+	if self.is_neuter():
+	    return('its')
+	return(self.key + "'s")
+
+    # C - Casual Name
+    def objsub_c(self):
+        """
+        The casual name is used to order to casually refer to the object.
+
+        Examples:
+            Object: 'Water Fountain' would return 'the water fountain'
+            Exit: '[E]astern Gate' would return 'the eastern gate'
+            Room: Most rooms would return 'this room'
+
+        In almost all cases, a character's name should be their casual name, but for objects it's often not.
+        """
+        if self.db.objsub_c:
+	    return(str(self.db.objsub_c))
+        return self.key
+
+    # N - Object Name
+    def objsub_n(self):
+        """
+        This is the proper name of the object.
+        Even though it's possible to override this, it would probably be bad, because it's used to identify the object to other players.
+        It would allow a character to masquerade as another character, for example.  Not good.
+        """
+        if self.db.objsub_n:
+	    return(str(self.db.objsub_n))
+        return self.key
+
+    # O - Objective Pronoun
+    def objsub_o(self):
+        if self.db.objsub_o:
+	    return(str(self.db.objsub_o))
+	if self.is_male():
+	    return('him')
+	if self.is_female():
+	    return('her')
+        if self.is_herm():
+	    return('hir')
+	if self.is_neuter():
+	    return('it')
+	return(self.key)
+
+    # P - Posessive Pronoun
+    def objsub_p(self):
+        if self.db.objsub_p:
+	    return(str(self.db.objsub_p))
+	if self.is_male():
+	    return('his')
+	if self.is_female():
+	    return('her')
+        if self.is_herm():
+	    return('hir')
+	if self.is_neuter():
+	    return('its')
+	return(self.key + "'s")
+
+    # R - Reflexive Pronoun
+    def objsub_r(self):
+        if self.db.objsub_r:
+	    return(str(self.db.objsub_r))
+	if self.is_male():
+	    return('himself')
+	if self.is_female():
+	    return('herself')
+        if self.is_herm():
+	    return('hirself')
+	if self.is_neuter():
+	    return('itself')
+	return(self.key)
+
+    # S - Subjective Pronoun
+    def objsub_s(self):
+        if self.db.objsub_s:
+	    return(str(self.db.objsub_s))
+	if self.is_male():
+	    return('he')
+	if self.is_female():
+	    return('she')
+        if self.is_herm():
+	    return('shi')
+	if self.is_neuter():
+	    return('it')
+	return(self.key)
+
+    # W - Within Name
+    def objsub_w(self):
+        """
+        The within name describes the state of being within the object.
+
+        Examples:
+            Character/NPC: in Ted's pocket
+            Room: at the southern doors
+            Areas: in the Pleasantville Shopping Mall <-- Technically not an object, but also has within names
+            Regions: on the moon <-- Technically not an object, but also has within names
+
+        This can be used to generate a sentence (Combined with the casual name):
+            That's a pencil, in Ted's pocket, at the southern doors, in the Pleasantville Shopping Mall, on the moon.
+        """
+        if self.db.objsub_w:
+	    return(str(self.db.objsub_w))
+        return 'in ' + self.key
+
+    # Other
+    def objsub_other(self, code):
+        # Since untrusted strings generate calls to this function, be rigorous about what to accept.
+        if not isinstance(code, basestring):
+            raise TypeError
+        if not len(code) == 1:
+            raise ValueError
+        if not code.islower():
+            raise ValueError
+        # Check for a property with the value
+        if self.has_attribute('objsub_' + code):
+            return(str(self.get_attribute('objsub_' + code)))
+        # Otherwise return None, which should cause the substitution to be ignored
+        return(None)
