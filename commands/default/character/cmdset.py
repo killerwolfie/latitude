@@ -68,6 +68,7 @@ from game.gamesrc.latitude.commands.default.character import sys_wipe
 from game.gamesrc.latitude.commands.default.character import taste
 from game.gamesrc.latitude.commands.default.character import unlock
 from game.gamesrc.latitude.commands.default.character import use
+from game.gamesrc.latitude.commands.default.character import whisper
 
 class LatitudeCmdsetCharacter(CmdSet):
     key = "Character"
@@ -140,6 +141,7 @@ class LatitudeCmdsetCharacter(CmdSet):
 	self.add(taste.CmdTaste)
 	self.add(unlock.CmdUnlock)
 	self.add(use.CmdUse)
+	self.add(whisper.CmdWhisper)
 
         #self.add(menusystem.CmdMenuTest())
         #self.add(lineeditor.CmdEditor())

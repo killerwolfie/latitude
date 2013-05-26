@@ -254,6 +254,12 @@ class LatitudeObject(Object):
     def at_desc_writing(self, looker):
         pass
 
+    def at_say(self, speaker, message):
+        pass
+
+    def at_whisper(self, speaker, message):
+        pass
+
     # ----- Player Actions -----
     def action_use(self, user):
         """
