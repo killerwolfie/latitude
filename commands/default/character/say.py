@@ -52,7 +52,8 @@ class CmdSay(MuckCommand):
 	return self.get_color_name() + self.caller.name + ' ' + self.colorize(verb + ', "' + say_string + '"')
 
     def gen_pose(self, pose_string):
-        # TODO: No-space detection
+        if [chk for chk in ["'s ", '-', ', ', ': ', ' '] if pose_string.startswith(chk)]:
+            return(self.get_color_name() + self.caller.name + self.colorize(pose_string))
         return(self.get_color_name() + self.caller.name + ' ' + self.colorize(pose_string))
 
     def get_says(self):
