@@ -1,6 +1,5 @@
-import ev
-from ev import Player
-from ev import utils
+from ev import Player, utils, search_object, search_player
+import time
 
 class LatitudePlayer(Player):
     def basetype_setup(self):
@@ -22,6 +21,16 @@ class LatitudePlayer(Player):
         self.execute_cmd("@friends", sessid=sessid)
         if self.db.msg_unseen:
             self.msg('{GYou have unread messages.  Type "@page" to read them.  See "help @page" for more information.')
+        # Update same statistics
+        self.db.stats_last_login_time = time.time()
+        if self.db.stats_times_login:
+            self.db.stats_times_login += 1
+        else:
+            self.db.stats_times_login = 1
+
+    def at_disconnect(self, reason=None):
+        # Update some statistics
+        self.db.stats_last_logout_time = time.time()
 
     def shows_online(self):
         """
@@ -68,7 +77,7 @@ class LatitudePlayer(Player):
         if online_only:
             character_candidates = self.get_all_puppets()
         else:
-            character_candidates = ev.search_object(self.key, attribute_name='owner') # TODO: Try searching by typeclass here for speed
+            character_candidates = search_object(self.key, attribute_name='owner') # TODO: Try searching by typeclass here for speed
         characters = []
         for character in character_candidates:
             # Verify that we are the owner of this object
@@ -78,11 +87,11 @@ class LatitudePlayer(Player):
             if not utils.inherits_from(character, "src.objects.objects.Character"):
                 continue
             # Verify that, among character objects, this one has a unique name
-            if len([char for char in ev.search_object(character.key, attribute_name='key') if utils.inherits_from(char, "src.objects.objects.Character")]) != 1:
+            if len([char for char in search_object(character.key, attribute_name='key') if utils.inherits_from(char, "src.objects.objects.Character")]) != 1:
                 continue
             # Verify this doesn't match the name of any player, unless that player is self
             if character.key.lower() != self.key.lower():
-                if ev.search_player(character.key):
+                if search_player(character.key):
                     continue
             characters.append(character)
         return characters

@@ -1,5 +1,6 @@
 from ev import Character, search_player
 from game.gamesrc.latitude.objects.object import LatitudeObject
+import time
 
 class LatitudeCharacter(LatitudeObject, Character):
     """
@@ -44,6 +45,9 @@ class LatitudeCharacter(LatitudeObject, Character):
             "drop:true()",                           # Let's hope this doesn't get called
             "call:false()",                          # No commands can be called on character from outside
         ]))
+        # Empty stats
+        self.set_attribute('stats_last_unpuppet_time', None)
+        self.set_attribute('stats_last_puppet_time', None)
 
     def at_after_move(self, source_location):
         if self.db.prefs_automap == None or self.db.prefs_automap:
@@ -56,6 +60,13 @@ class LatitudeCharacter(LatitudeObject, Character):
     def at_pre_puppet(self, player):
         if self.location:
             self.location.msg_contents("%s has entered the game." % self.name, exclude=[self])
+        # Update puppet statistics
+        self.db.stats_last_puppet_time = time.time()
+        self.db.stats_last_puppet_player = player
+        if self.db.stats_times_puppeted:
+            self.db.stats_times_puppeted += 1
+        else:
+            self.db.stats_times_puppeted = 1
 
     def at_post_puppet(self):
         if self.db.prefs_automap == None or self.db.prefs_automap:
@@ -70,6 +81,8 @@ class LatitudeCharacter(LatitudeObject, Character):
     def at_post_unpuppet(self, player):
         if self.location:
             self.location.msg_contents("%s has left the game." % self.name, exclude=[self])
+        # Update puppet statistics
+        self.db.stats_last_unpuppet_time = time.time()
 
     def shows_online(self):
         """
