@@ -13,6 +13,9 @@ class LatitudePlayer(Player):
         # Create friend system variables
         self.db.friends_list = set()
         self.db.friends_requests = set()
+        # Empty stats
+        self.set_attribute('stats_last_login_time', None)
+        self.set_attribute('stats_last_logout_time', None)
 
     def at_post_login(self, sessid):
         # Call @ic.  This will cause it to connect to the most recently puppeted object, by default
