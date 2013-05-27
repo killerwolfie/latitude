@@ -17,10 +17,8 @@ from game.gamesrc.latitude.commands.default.character import map
 from game.gamesrc.latitude.commands.default.character import pose
 from game.gamesrc.latitude.commands.default.character import read
 from game.gamesrc.latitude.commands.default.character import say
-from game.gamesrc.latitude.commands.default.character import ooc
 from game.gamesrc.latitude.commands.default.character import sense
 from game.gamesrc.latitude.commands.default.character import smell
-from game.gamesrc.latitude.commands.default.character import spoof
 from game.gamesrc.latitude.commands.default.character import start
 from game.gamesrc.latitude.commands.default.character import stop
 from game.gamesrc.latitude.commands.default.character import sys_about
@@ -48,6 +46,7 @@ from game.gamesrc.latitude.commands.default.character import sys_mvattr
 from game.gamesrc.latitude.commands.default.character import sys_name
 from game.gamesrc.latitude.commands.default.character import sys_nick
 from game.gamesrc.latitude.commands.default.character import sys_objects
+from game.gamesrc.latitude.commands.default.character import sys_oocsay
 from game.gamesrc.latitude.commands.default.character import sys_open
 from game.gamesrc.latitude.commands.default.character import sys_perm
 from game.gamesrc.latitude.commands.default.character import sys_py
@@ -57,6 +56,7 @@ from game.gamesrc.latitude.commands.default.character import sys_serverload
 from game.gamesrc.latitude.commands.default.character import sys_service
 from game.gamesrc.latitude.commands.default.character import sys_set
 from game.gamesrc.latitude.commands.default.character import sys_sethelp
+from game.gamesrc.latitude.commands.default.character import sys_spoof
 from game.gamesrc.latitude.commands.default.character import sys_alias
 from game.gamesrc.latitude.commands.default.character import sys_teleport
 from game.gamesrc.latitude.commands.default.character import sys_tunnel
@@ -88,13 +88,11 @@ class LatitudeCmdsetCharacter(CmdSet):
 	self.add(lock.CmdLock)
 	self.add(look.CmdLook)
 	self.add(map.CmdMap)
-	self.add(ooc.CmdOOC)
 	self.add(pose.CmdPose)
 	self.add(read.CmdRead)
 	self.add(say.CmdSay)
 	self.add(sense.CmdSense)
 	self.add(smell.CmdSmell)
-	self.add(spoof.CmdSpoof)
 	self.add(start.CmdStart)
 	self.add(stop.CmdStop)
         self.add(sys_about.CmdSysAbout)
@@ -122,6 +120,7 @@ class LatitudeCmdsetCharacter(CmdSet):
         self.add(sys_name.CmdSysName)
         self.add(sys_nick.CmdSysNick)
         self.add(sys_objects.CmdSysObjects)
+        self.add(sys_oocsay.CmdSysOOCSay)
         self.add(sys_open.CmdSysOpen)
         self.add(sys_perm.CmdSysPerm)
         self.add(sys_py.CmdSysPy)
@@ -131,6 +130,7 @@ class LatitudeCmdsetCharacter(CmdSet):
         self.add(sys_service.CmdSysService)
         self.add(sys_set.CmdSysSet)
         self.add(sys_sethelp.CmdSysSetHelp)
+	self.add(sys_spoof.CmdSysSpoof)
         self.add(sys_alias.CmdSysAlias)
         self.add(sys_teleport.CmdSysTeleport)
         self.add(sys_tunnel.CmdSysTunnel)

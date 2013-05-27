@@ -1,18 +1,20 @@
 from game.gamesrc.latitude.commands.default.character import say
 
-class CmdSpoof(say.CmdSay):
+class CmdSysSpoof(say.CmdSay):
     """
     spoof - Allows you to make a freeform pose to the room.
     Usage:
       spoof <freeform text>
 
-    Example (If your username is Tom):
-      spoof The parade has started! [Tom]
+    Example:
+      spoof The parade has started!
+      -> others will see:
+      ( The parade has started! )
     """
-    key = "spoof"
+    key = "@spoof"
     locks = "cmd:all()"
-    help_category = "Actions"
-    aliases = []
+    help_category = "General"
+    aliases = ['spoof']
     arg_regex = r"\s.*?|$"
 
     def func(self):

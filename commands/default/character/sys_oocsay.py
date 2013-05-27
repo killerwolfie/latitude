@@ -1,6 +1,6 @@
 from game.gamesrc.latitude.commands.default.character import say
 
-class CmdOOC(say.CmdSay):
+class CmdSysOOCSay(say.CmdSay):
     """
     @oocsay - Speak or pose with an Out of Character marker.
     Use this to make sure people can tell you're not roleplaying.
