@@ -6,9 +6,10 @@ class CmdSysGameTime(default_cmds.MuxPlayerCommand):
     """
 
     key = "@gametime"
-    aliases = ['mucktime']
+    aliases = ['mucktime', '@time']
     locks = "cmd:all()"
     help_category = "General"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     moon_names = {
         'new' : '{xNew{n',

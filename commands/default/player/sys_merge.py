@@ -16,6 +16,7 @@ class CmdSysMerge(default_cmds.MuxCommand):
     locks = "cmd:perm(command_@merge) or perm(Janitors)"
     aliases = []
     help_category = "=== Admin ==="
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):
         player_names = shlex.split(self.args)

@@ -4,7 +4,7 @@ This module contains commands that are used for player communication.
 """
 
 import re
-from game.gamesrc.latitude.commands.muckcommand import MuckCommand
+from ev import default_cmds
 
 color_names = {
     'black' : '%cx',
@@ -20,7 +20,7 @@ color_names = {
     'hilite' : '%ch',
 }
 
-class CmdSay(MuckCommand):
+class CmdSay(default_cmds.MuxCommand):
     """
     Usage:
       say <message>
@@ -30,6 +30,7 @@ class CmdSay(MuckCommand):
     key = "say"
     aliases = ['"']
     locks = "cmd:all()"
+#    arg_regex = r"\s.*?|$"
     help_category = "Actions"
 
     def func(self):

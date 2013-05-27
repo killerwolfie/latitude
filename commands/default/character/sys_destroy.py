@@ -21,6 +21,7 @@ class CmdSysDestroy(default_cmds.MuxCommand):
     key = "@destroy"
     locks = "cmd:perm(command_@destroy) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):
         "Implements the command."

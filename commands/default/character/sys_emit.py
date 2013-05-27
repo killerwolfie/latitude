@@ -24,6 +24,7 @@ class CmdSysEmit(default_cmds.CmdEmit):
     aliases = ["@remit", "@pemit"]
     locks = "cmd:perm(command_@emit) or perm(Janitors)"
     help_category = "=== Admin ==="
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):
         "Implement the command"

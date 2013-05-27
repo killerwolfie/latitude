@@ -21,6 +21,8 @@ from game.gamesrc.latitude.commands.default.character import ooc
 from game.gamesrc.latitude.commands.default.character import sense
 from game.gamesrc.latitude.commands.default.character import smell
 from game.gamesrc.latitude.commands.default.character import spoof
+from game.gamesrc.latitude.commands.default.character import start
+from game.gamesrc.latitude.commands.default.character import stop
 from game.gamesrc.latitude.commands.default.character import sys_about
 from game.gamesrc.latitude.commands.default.character import sys_access
 from game.gamesrc.latitude.commands.default.character import sys_ban
@@ -57,7 +59,6 @@ from game.gamesrc.latitude.commands.default.character import sys_set
 from game.gamesrc.latitude.commands.default.character import sys_sethelp
 from game.gamesrc.latitude.commands.default.character import sys_alias
 from game.gamesrc.latitude.commands.default.character import sys_teleport
-from game.gamesrc.latitude.commands.default.character import sys_time
 from game.gamesrc.latitude.commands.default.character import sys_tunnel
 from game.gamesrc.latitude.commands.default.character import sys_typeclass
 from game.gamesrc.latitude.commands.default.character import sys_unban
@@ -94,6 +95,8 @@ class LatitudeCmdsetCharacter(CmdSet):
 	self.add(sense.CmdSense)
 	self.add(smell.CmdSmell)
 	self.add(spoof.CmdSpoof)
+	self.add(start.CmdStart)
+	self.add(stop.CmdStop)
         self.add(sys_about.CmdSysAbout)
         self.add(sys_access.CmdSysAccess)
         self.add(sys_ban.CmdSysBan)
@@ -130,7 +133,6 @@ class LatitudeCmdsetCharacter(CmdSet):
         self.add(sys_sethelp.CmdSysSetHelp)
         self.add(sys_alias.CmdSysAlias)
         self.add(sys_teleport.CmdSysTeleport)
-        self.add(sys_time.CmdSysTime)
         self.add(sys_tunnel.CmdSysTunnel)
         self.add(sys_typeclass.CmdSysTypeclass)
         self.add(sys_unban.CmdSysUnban)

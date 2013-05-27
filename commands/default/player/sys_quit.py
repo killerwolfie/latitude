@@ -11,4 +11,5 @@ class CmdSysQuit(default_cmds.CmdQuit):
     """
     key = "@quit"
     locks = "cmd:all()"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

@@ -38,4 +38,5 @@ class CmdSysBan(default_cmds.CmdBan):
     key = "@ban"
     locks = "cmd:perm(command_@ban) or perm(Janitors)"
     help_category="=== Admin ==="
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

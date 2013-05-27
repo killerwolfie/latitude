@@ -19,6 +19,7 @@ class CmdSysAlias(default_cmds.CmdSetObjAlias):
     aliases = []
     locks = "cmd:perm(command_@alias) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):
         "Set the aliases."

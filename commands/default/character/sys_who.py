@@ -18,6 +18,7 @@ class CmdSysWho(default_cmds.MuxCommand):
     locks = "cmd:all()"
     aliases = ['who', 'ws']
     help_category = "Information"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     # auto_help = False      # uncomment to deactive auto-help for this command.
     # arg_regex = r"\s.*?|$" # optional regex detailing how the part after

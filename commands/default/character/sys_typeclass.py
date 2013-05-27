@@ -35,6 +35,7 @@ class CmdSysTypeclass(default_cmds.CmdTypeclass):
     key = "@typeclass"
     locks = "cmd:perm(command_@typeclass) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):
         "Implements command"

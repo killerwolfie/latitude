@@ -24,4 +24,5 @@ class CmdSysDig(default_cmds.CmdDig):
     key = "@dig"
     locks = "cmd:perm(command_@dig) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

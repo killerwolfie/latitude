@@ -32,4 +32,5 @@ class CmdSysServerLoad(default_cmds.CmdServerLoad):
     aliases = []
     locks = "cmd:perm(command_@serverload) or perm(Janitors)"
     help_category = "=== Admin ==="
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

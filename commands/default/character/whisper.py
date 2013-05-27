@@ -1,5 +1,6 @@
 from game.gamesrc.latitude.commands.default.character import say
 import random
+import re
 
 class CmdWhisper(say.CmdSay):
     """
@@ -10,7 +11,7 @@ class CmdWhisper(say.CmdSay):
           Speak softly to nobody in particular.  The other people in the room
           may or may not hear you.
 
-      whisper <object>=<text>
+      whisper <text> to <object> (or whisper <object>=<text>)
           Whisper a message to a specific object (which could be a character)
           in the room.  Only that character or object will hear your message.
     """
@@ -19,6 +20,7 @@ class CmdWhisper(say.CmdSay):
     aliases = ['w ']
     locks = "cmd:all()"
     help_category = "Actions"
+    arg_regex = r"\s.*?|$"
 
     def func(self):
         character = self.caller
@@ -27,8 +29,13 @@ class CmdWhisper(say.CmdSay):
             target = character.search(self.lhs)
             raw_message = self.rhs
         else:
-            target = None
-            raw_message = self.args
+            match = re.search(r'^(.*)\s+to\s+(\S*)$', self.args)
+            if match:
+                target = character.search(match.group(2))
+                raw_message = match.group(1)
+            else:
+                target = None
+                raw_message = self.args
         # Sanity check
         if target == character:
             self.msg('They say talking to yourself is a sign of genius.')
@@ -48,7 +55,7 @@ class CmdWhisper(say.CmdSay):
                 for con in character.location.contents:
                     if con == character:
                         continue
-                    if random.random() < 0.6:
+                    if random.random() < 0.4:
                         con.msg(character.objsub('{n&0N whispers %s{n.' % (message), target))
                     else:
                         con.msg(character.objsub('{n&0N whispers something.', target))

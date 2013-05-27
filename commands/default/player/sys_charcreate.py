@@ -17,6 +17,7 @@ class CmdSysCharCreate(default_cmds.MuxPlayerCommand):
     aliases = []
     locks = "cmd:all()"
     help_category = "General"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):
         "create the new character"

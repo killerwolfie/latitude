@@ -12,5 +12,6 @@ class CmdDrop(default_cmds.CmdDrop):
     """
 
     key = "drop"
+    arg_regex = r"\s.*?|$"
     locks = "cmd:all()"
     help_category = "Actions"

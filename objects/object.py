@@ -43,12 +43,15 @@ class LatitudeObject(Object):
             'edit_sound' : "{RYou can't edit the {rsound{R of that object",
             'edit_texture' : "{RYou can't edit the {rtexture{R of that object",
             'edit_writing' : "{RYou can't edit the {rwriting{R on that object",
+            'follow' : None, # Follow system handles this by sending a follow request.
+            'lead' : None, # Follow system handles this by sending a lead request.
         }
         if access_type in message_table:
             message = message_table[access_type]
         else:
             message = '{RAccess denied ({r%s{R)' % (access_type)
-        accessing_obj.msg('{R[ %s{R ]' % message)
+        if message:
+            accessing_obj.msg('{R[ %s{R ]' % message)
 
     def at_access_success(self, accessing_obj, access_type):
         # Check for a message property (sending nothing by default)
@@ -300,6 +303,18 @@ class LatitudeObject(Object):
         The definition of locking is left up to the object creator.
         """
         unlocker.msg("You can't unlock that!")
+
+    def action_stop(self, stopper):
+        """
+        This action is called when a player attempts to 'stop' the object.
+        """
+        stopper.msg("You can't stop that.")
+
+    def action_start(self, starter):
+        """
+        This action is called when a player attempts to 'start' the object
+        """
+        starter.msg("You can't start that.")
 
     # ----- Utilities -----
     def containing_room(self):

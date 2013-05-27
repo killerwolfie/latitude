@@ -34,4 +34,5 @@ class CmdSysNick(default_cmds.CmdNick):
     key = "@nick"
     aliases = ["nicks"]
     locks = "cmd:all()"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

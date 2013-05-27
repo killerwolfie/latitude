@@ -14,10 +14,7 @@ class CmdSys3Who(default_cmds.MuxCommand):
     locks = "cmd:all()"
     aliases = ['3w']
     help_category = "Information"
-
-    # auto_help = False      # uncomment to deactive auto-help for this command.
-    # arg_regex = r"\s.*?|$" # optional regex detailing how the part after
-                             # the cmdname must look to match this command.
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):
         char_num = 0

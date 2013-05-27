@@ -16,6 +16,7 @@ class CmdSysIC(default_cmds.MuxPlayerCommand):
     locks = "cmd:all()" # must be all() or different puppeted objects won't be able to access it.
     aliases = []
     help_category = "General"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):
         player = self.caller

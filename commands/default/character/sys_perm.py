@@ -19,6 +19,7 @@ class CmdSysPerm(default_cmds.CmdPerm):
     aliases = "@setperm"
     locks = "cmd:perm(command_@perm) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):
         "Implement function"

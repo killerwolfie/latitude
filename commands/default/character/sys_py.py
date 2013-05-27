@@ -25,4 +25,5 @@ class CmdSysPy(default_cmds.CmdPy):
     aliases = ["!"]
     locks = "cmd:perm(command_@py) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

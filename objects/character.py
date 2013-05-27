@@ -38,8 +38,8 @@ class LatitudeCharacter(LatitudeObject, Character):
             "edit_writing:id(%s)" % (self.dbref),    # Allows users to modify this object's 'writing' description
             "edit_gender:id(%s)" % (self.dbref),     # Allows users to modify this object's 'gender' description
             "edit_species:id(%s)" % (self.dbref),    # Allows users to modify this object's 'species' description
-            "follow:none()",                         # Who can automatically follow
-            "lead:none()",                           # Who can automatically lead
+            "follow:owner_lock(default_follow)",     # Who can automatically follow
+            "lead:owner_lock(default_lead)",         # Who can automatically lead
             "get:false()",                           # Nobody can pick up the character
             "drop:true()",                           # Let's hope this doesn't get called
             "call:false()",                          # No commands can be called on character from outside
@@ -93,3 +93,26 @@ class LatitudeCharacter(LatitudeObject, Character):
             return None
         # All is well.  Return the player.
         return owner
+
+    # ---- Actions ----
+    def action_stop(self, stopper):
+        if self == stopper:
+            # Stopping yourself.  Stop following
+            leader = self.db.follow_following
+            # Ensure we're ready to clear the follow
+            if not leader:
+                self.msg("You're not currently following anyone.")
+                return
+            # Clear the follow
+            del self.db.follow_following
+            self.msg(self.objsub('You stop following &1n.', leader))
+            leader.msg(self.objsub('&0N stops following you.', leader))
+        else:
+            # Stopping someone else.  Stop leading.
+            if not self.db.follow_following == stopper:
+                stopper.msg(self.objsub("&0N isn't following you.", stopper))
+                return
+            del self.db.follow_following
+            stopper.msg(self.objsub('You stop leading &0n.', stopper))
+            self.msg(self.objsub('&1n stops leading you.', stopper))
+

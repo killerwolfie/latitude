@@ -14,4 +14,5 @@ class CmdSysDesc(default_cmds.CmdDesc):
     key = "@desc"
     locks = "cmd:perm(command_desc) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

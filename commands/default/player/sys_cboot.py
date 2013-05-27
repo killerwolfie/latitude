@@ -17,4 +17,5 @@ class CmdSysCBoot(default_cmds.CmdCBoot):
     key = "@cboot"
     locks = "cmd:perm(command_@cboot) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

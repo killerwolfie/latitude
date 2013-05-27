@@ -34,6 +34,7 @@ from game.gamesrc.latitude.commands.default.player import sys_newpassword
 from game.gamesrc.latitude.commands.default.player import sys_ooc
 from game.gamesrc.latitude.commands.default.player import sys_page
 from game.gamesrc.latitude.commands.default.player import sys_password
+from game.gamesrc.latitude.commands.default.player import sys_pref
 from game.gamesrc.latitude.commands.default.player import sys_quell
 from game.gamesrc.latitude.commands.default.player import sys_quit
 from game.gamesrc.latitude.commands.default.player import sys_reload
@@ -83,6 +84,7 @@ class LatitudeCmdsetPlayer(CmdSet):
         self.add(sys_ooc.CmdSysOOC)
         self.add(sys_page.CmdSysPage)
         self.add(sys_password.CmdSysPassword)
+        self.add(sys_pref.CmdSysPref)
         self.add(sys_quell.CmdSysQuell)
         self.add(sys_quit.CmdSysQuit)
         self.add(sys_reload.CmdSysReload)

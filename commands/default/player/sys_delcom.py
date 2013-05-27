@@ -16,4 +16,5 @@ class CmdSysDelCom(default_cmds.CmdDelCom):
     aliases = []
     help_category = "--- Coder/Sysadmin ---"
     locks = "cmd:perm(command_@delcom) or perm(Custodians)"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

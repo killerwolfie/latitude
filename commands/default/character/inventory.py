@@ -14,3 +14,4 @@ class CmdInventory(default_cmds.CmdInventory):
     aliases = ["inv"]
     locks = "cmd:all()"
     help_category = 'Actions'
+    arg_regex = r"\s.*?|$"

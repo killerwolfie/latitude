@@ -17,4 +17,5 @@ class CmdSysAllCom(default_cmds.CmdAllCom):
     key = "@allcom"
     locks = "cmd:perm(command_@allcom) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

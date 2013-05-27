@@ -19,4 +19,5 @@ class CmdSysMvAttr(default_cmds.CmdMvAttr):
     key = "@mvattr"
     locks = "cmd:perm(command_@mvattr) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

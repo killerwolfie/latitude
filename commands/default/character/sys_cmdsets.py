@@ -14,4 +14,5 @@ class CmdSysCmdSets(default_cmds.CmdListCmdSets):
     aliases = "@listcmsets"
     locks = "cmd:perm(command_@cmdsets) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

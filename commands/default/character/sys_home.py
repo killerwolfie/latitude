@@ -18,3 +18,4 @@ class CmdSysHome(building.CmdSetHome):
     key = "@home"
     locks = "cmd:perm(command_@home) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"

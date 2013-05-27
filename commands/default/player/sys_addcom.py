@@ -17,4 +17,5 @@ class CmdSysAddCom(default_cmds.CmdAddCom):
     aliases = []
     help_category = "--- Coder/Sysadmin ---"
     locks = "cmd:perm(command_@addcom) or perm(Custodians)"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

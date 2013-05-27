@@ -13,4 +13,5 @@ class CmdSysShutdown(default_cmds.CmdShutdown):
     key = "@shutdown"
     locks = "cmd:perm(commandy_@shutdown) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

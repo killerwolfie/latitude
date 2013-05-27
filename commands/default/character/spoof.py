@@ -13,6 +13,7 @@ class CmdSpoof(say.CmdSay):
     locks = "cmd:all()"
     help_category = "Actions"
     aliases = []
+    arg_regex = r"\s.*?|$"
 
     def func(self):
         message = '%ch%cw( %cn' + self.args.replace('%', '%%').replace('{', '{{') + '%ch%cw )'

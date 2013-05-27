@@ -12,4 +12,5 @@ class CmdSysWall(default_cmds.CmdWall):
     key = "@wall"
     locks = "cmd:perm(command_@wall) or perm(Janitors)"
     help_category = "=== Admin ==="
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

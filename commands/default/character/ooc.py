@@ -2,26 +2,28 @@ from game.gamesrc.latitude.commands.default.character import say
 
 class CmdOOC(say.CmdSay):
     """
-    ooc - Speak or pose with an Out of Character marker.
+    @oocsay - Speak or pose with an Out of Character marker.
+    Use this to make sure people can tell you're not roleplaying.
+
     Usage:
-      pose <pose text>
-      pose's <pose text>
+        @oocsay <text>
+        @oocsay :<pose>
 
     Example:
-      ooc Hello, there!
+      @oocsay Hello, there!
        -> others will see:
-      (OOC) Tom says, "Hello, there!"
-    Example 2:
-      ooc :waves.
-       -> others will see:
-      (OOC) Tom waves.
+      <OOC> Tom says, "Hello, there!"
 
-    Prepend OOC to a pose or statment.
+    Example 2:
+      @oocsay :waves.
+       -> others will see:
+      <OOC> Tom waves.
     """
-    key = "ooc"
+    key = "@oocsay"
     locks = "cmd:all()"
-    help_category = "Actions"
-    aliases = []
+    help_category = "General"
+    aliases = ['ooc']
+    arg_regex = r"\s.*?|$"
 
     def func(self):
         if self.args.startswith(':'):

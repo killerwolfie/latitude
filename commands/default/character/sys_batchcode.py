@@ -22,4 +22,5 @@ class CmdSysBatchCode(default_cmds.CmdBatchCode):
     key = "@batchcode"
     locks = "cmd:superuser()"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

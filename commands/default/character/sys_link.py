@@ -23,4 +23,5 @@ class CmdSysLink(default_cmds.CmdLink):
     key = "@link"
     locks = "cmd:perm(command_@link) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

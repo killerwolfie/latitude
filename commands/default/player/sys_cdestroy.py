@@ -13,4 +13,5 @@ class CmdSysCdestroy(default_cmds.CmdCdestroy):
     key = "@cdestroy"
     help_category = "--- Coder/Sysadmin ---"
     locks = "cmd:perm(command_@cdestroy) or perm(Custodians)"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

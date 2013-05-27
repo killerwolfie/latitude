@@ -11,4 +11,5 @@ class CmdSysPassword(default_cmds.CmdPassword):
     """
     key = "@password"
     locks = "cmd:all()"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

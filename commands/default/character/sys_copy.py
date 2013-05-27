@@ -19,4 +19,5 @@ class CmdSysCopy(default_cmds.CmdCopy):
     key = "@copy"
     locks = "cmd:perm(command_@copy) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

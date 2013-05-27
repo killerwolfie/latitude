@@ -18,6 +18,7 @@ class CmdSysDelPlayer(default_cmds.MuxCommand):
     key = "@delplayer"
     locks = "cmd:perm(command_@delplayer) or perm(Janitors)"
     help_category = "=== Admin ==="
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):
         "Implements the command."

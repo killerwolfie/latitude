@@ -1,12 +1,12 @@
-from game.gamesrc.latitude.commands.muckcommand import MuckCommand
+from ev import default_cmds
 
-class CmdLook(MuckCommand):
+class CmdLook(default_cmds.MuxCommand):
     """
     look
 
     Usage:
       look
-      look <obj>
+      look ['at'] <obj>
 
     Visually observes your location or objects in your vicinity.
     """
@@ -25,6 +25,8 @@ class CmdLook(MuckCommand):
         """
         caller = self.caller
         args = self.args
+        if args.lower().startswith('at '):
+            args = args[3:].strip()
         if args:
             # Use search to handle duplicate/nonexistant results.
             looking_at_obj = caller.search(args, use_nicks=True)

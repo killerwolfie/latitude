@@ -20,6 +20,7 @@ class CmdPose(say.CmdSay):
     key = "pose"
     aliases = [':']
     locks = "cmd:all()"
+#    arg_regex=r"\s.*?|$"
     help_category = "Actions"
 
     def func(self):

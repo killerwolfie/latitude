@@ -14,4 +14,5 @@ class CmdSysNewPassword(default_cmds.CmdNewPassword):
     aliases = []
     locks = "cmd:perm(command_@newpassword) or perm(Janitors)"
     help_category = "=== Admin ==="
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

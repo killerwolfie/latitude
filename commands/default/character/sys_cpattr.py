@@ -25,4 +25,5 @@ class CmdSysCpAttr(default_cmds.CmdCpAttr):
     key = "@cpattr"
     locks = "cmd:perm(command_@cpattr) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

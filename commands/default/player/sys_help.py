@@ -15,3 +15,4 @@ class CmdSysHelp(default_cmds.CmdHelp):
     key = '@help'
     aliases = [ 'help' ]
     locks = "cmd:all()"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"

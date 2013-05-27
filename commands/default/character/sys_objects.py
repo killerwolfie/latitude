@@ -15,4 +15,5 @@ class CmdSysObjects(default_cmds.CmdObjects):
     aliases = ["@listobjects", "@listobjs", '@stats', '@db']
     locks = "cmd:perm(command_@objects) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

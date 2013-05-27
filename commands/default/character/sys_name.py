@@ -15,4 +15,5 @@ class CmdSysName(default_cmds.CmdName):
     aliases = ["@rename"]
     locks = "cmd:perm(command_@name) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

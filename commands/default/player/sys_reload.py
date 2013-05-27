@@ -14,4 +14,5 @@ class CmdSysReload(default_cmds.CmdReload):
     key = "@reload"
     locks = "cmd:perm(command_@reload) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

@@ -13,3 +13,4 @@ class CmdSysAccess(default_cmds.CmdAccess):
     key = "@access"
     locks = "cmd:all()"
     help_category = "Information"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"

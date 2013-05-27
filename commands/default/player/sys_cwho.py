@@ -12,4 +12,5 @@ class CmdSysCWho(default_cmds.CmdCWho):
     key = "@cwho"
     locks = "cmd:perm(command_@cwho) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

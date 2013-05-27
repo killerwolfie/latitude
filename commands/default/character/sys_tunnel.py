@@ -30,6 +30,7 @@ class CmdSysTunnel(default_cmds.CmdTunnel):
     key = "@tunnel"
     locks = "cmd:perm(command_@tunnel) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     # store the direction, full name and its opposite
     directions = {"n" : ("north", "s"),

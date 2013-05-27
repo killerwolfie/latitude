@@ -30,3 +30,4 @@ class CmdSysSet(default_cmds.CmdSetAttribute):
     key = "@set"
     locks = "cmd:perm(command_@set) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"

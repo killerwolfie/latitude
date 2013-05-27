@@ -14,3 +14,4 @@ class CmdGet(default_cmds.CmdGet):
     aliases = ['take']
     locks = "cmd:all()"
     help_category = "Actions"
+    arg_regex = r"\s.*?|$"

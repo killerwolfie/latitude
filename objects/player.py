@@ -11,12 +11,6 @@ class LatitudePlayer(Player):
         super(LatitudePlayer, self).basetype_setup()
         # Clear any locks set by the default base
         self.locks.replace('')
-        # Add some administrative locks.  These are used to control access to sensitive privilidged operations.
-        # The locks control whether a user can even attempt to perform an action on the object, so the same locks are defined for all objects even if they only apply to certain types of objects.
-        self.locks.add(";".join([
-            "friend_add:false()",              # Permits users to add this player as a friend automatically.
-            "friend_request:true()",           # Permits users to request to add this player as a friend.
-        ]))
         # Create friend system variables
         self.db.friends_list = set()
         self.db.friends_requests = set()

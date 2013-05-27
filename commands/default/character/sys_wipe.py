@@ -17,6 +17,7 @@ class CmdSysWipe(default_cmds.CmdWipe):
     key = "@wipe"
     locks = "cmd:perm(command_@wipe) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):
         """

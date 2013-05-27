@@ -26,4 +26,5 @@ class CmdSysCreate(default_cmds.CmdCreate):
     key = "@create"
     locks = "cmd:perm(command_@create) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

@@ -30,22 +30,19 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
       @friends del=<player/character>
         Remove a player from your friend list.
 
-      @friends optout=[!]<player/character>
-        Specify one of your own characters (or your player) to opt out of the
-        friend system.  Opting out a character will make that character
-        invisible to your friends, but that character will also be unable to
-        use the friend list or any benefits of the friend system, and friend
-        requests using that character name will be automatically rejected.
-        Opting out your player causes the same effect for all your characters,
-        and all friend requests will be automatically rejected.  Use ! to
-        remove the opt-out flag from one of your characters or your player.
-
+      @friends optout=[!]<character>
+        Specify one of your own characters to opt out of the friend system.
+        Opting out a character will make that character invisible to your
+        friends.  The system will try its best to conseal the fact that this
+        character belongs to you.
+        Use ! to remove the opt-out flag from one of your characters.
     """
 
     key = "@friends"
     locks = "cmd:all()"
     aliases = ['wf', '@whereis', 'whereis']
     help_category = "General"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):
         if self.cmdstring.lower() == '@whereis' or self.cmdstring.lower() == 'whereis':

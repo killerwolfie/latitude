@@ -14,4 +14,5 @@ class CmdSysChannelCreate(default_cmds.CmdChannelCreate):
     aliases = "channelcreate"
     locks = "cmd:perm(command_@ccreate) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

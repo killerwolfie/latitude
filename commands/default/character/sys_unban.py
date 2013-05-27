@@ -16,4 +16,5 @@ class CmdSysUnban(default_cmds.CmdUnban):
     key = "@unban"
     locks = "cmd:perm(command_@unban) or perm(Janitors)"
     help_category="=== Admin ==="
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

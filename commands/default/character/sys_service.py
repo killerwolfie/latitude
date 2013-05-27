@@ -19,6 +19,6 @@ class CmdSysService(default_cmds.CmdService):
 
     key = "@service"
     aliases = ["@services"]
-    locks = "cmd:perm(command_@service) or perm(Custodian)"
+    locks = "cmd:perm(command_@service) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
-
+    arg_regex = r"(/\w+?(\s|$))|\s|$"

@@ -1,7 +1,6 @@
 from ev import default_cmds
-from game.gamesrc.latitude.commands.muckcommand import MuckCommand
 
-class CmdSysLock(default_cmds.CmdLock, MuckCommand):
+class CmdSysLock(default_cmds.CmdLock):
     """
     lock - assign a lock definition to an object
 
@@ -36,6 +35,7 @@ class CmdSysLock(default_cmds.CmdLock, MuckCommand):
     aliases = []
     locks = "cmd: perm(command_@lock) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):
         "Sets up the command"

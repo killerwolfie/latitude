@@ -24,3 +24,4 @@ class CmdSysQuell(default_cmds.CmdQuell):
     aliases =["@unquell"]
     locks = "cmd:pperm(Janitors)"
     help_category = "=== Admin ==="
+    arg_regex = r"(/\w+?(\s|$))|\s|$"

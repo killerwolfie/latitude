@@ -15,4 +15,5 @@ class CmdSysUnLink(default_cmds.CmdUnLink):
     key = "@unlink"
     locks = "cmd:perm(command_@unlink) or perm(Custodians)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

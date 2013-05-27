@@ -19,4 +19,5 @@ class CmdSysTeleport(default_cmds.CmdTeleport):
     aliases = "@teleport"
     locks = "cmd:perm(command_@teleport) or perm(Janitors)"
     help_category = "=== Admin ==="
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 

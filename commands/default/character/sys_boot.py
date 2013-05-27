@@ -19,6 +19,7 @@ class CmdSysBoot(default_cmds.CmdBoot):
     aliases = []
     locks = "cmd:perm(commands_@boot) or perm(Janitors)"
     help_category = "=== Admin ==="
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):
         "Implementing the function"

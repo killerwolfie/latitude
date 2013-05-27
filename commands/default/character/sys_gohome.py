@@ -13,3 +13,4 @@ class CmdSysGoHome(general.CmdHome):
     key = "@gohome"
     locks = "cmd:perm(command_@gohome) or perm(Janitors)"
     help_category = "--- Coder/Sysadmin ---"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"

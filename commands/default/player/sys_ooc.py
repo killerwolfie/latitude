@@ -16,6 +16,7 @@ class CmdSysOOC(default_cmds.CmdOOC):
     locks = "cmd:all()" # this must be all(), or different puppeted objects won't be able to access it.
     aliases = "@unpuppet"
     help_category = "General"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):
         "Implement function"

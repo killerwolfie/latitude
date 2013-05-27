@@ -25,3 +25,4 @@ class CmdSysEncoding(default_cmds.CmdEncoding):
     aliases = "@encode"
     locks = "cmd:all()"
     help_category = "General"
+    arg_regex = r"(/\w+?(\s|$))|\s|$"
