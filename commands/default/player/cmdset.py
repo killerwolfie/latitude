@@ -42,6 +42,7 @@ from game.gamesrc.latitude.commands.default.player import sys_reload
 from game.gamesrc.latitude.commands.default.player import sys_reset
 from game.gamesrc.latitude.commands.default.player import sys_rss2chan
 from game.gamesrc.latitude.commands.default.player import sys_shutdown
+from game.gamesrc.latitude.commands.default.player import sys_who
 
 class LatitudeCmdsetPlayer(CmdSet):
     """
@@ -93,4 +94,5 @@ class LatitudeCmdsetPlayer(CmdSet):
         self.add(sys_reset.CmdSysReset)
         self.add(sys_rss2chan.CmdSysRSS2Chan)
         self.add(sys_shutdown.CmdSysShutdown)
+        self.add(sys_who.CmdSysWho)
 

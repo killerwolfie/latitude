@@ -59,6 +59,24 @@ class LatitudeObject(Object):
             accessing_obj.msg(self.db.access_failure[access_type])
 
     # ----- Descriptions -----
+    def return_title(self, looker):
+        """
+        Returns the name of this object, styled (With colors, etc.) to help identify
+        the type of the object.  This is used when displaying lists of objects, or
+        examining the object data, or any other situation where it would be convenient
+        to be able to identify the type of an object at a glance. (@who, @examine,
+        inventory, the contents of rooms when doing a 'look', etc.)
+
+        * This can also be used to create special glasses for administrators, where
+        when you see the title of an object, it's accompanied by its database ID, or
+        other technical details.
+
+        * This can also be used to see at a glance whether a user is online or not.
+        """
+        # You shouldn't create any Objects directly.  This is meant to be a pure base class.
+        # So, make an accordingly ominous looking name.
+        return '{x<<' + self.key + '>>'
+
     def return_appearance(self, looker):
         """
         Describes the appearance of this object.  Used by the "look" command.
@@ -113,16 +131,15 @@ class LatitudeObject(Object):
         """
 	Return a descriptive list of the contents held by this object.
 	"""
-        visible = (con for con in self.contents if con != looker)
+        visible = [con for con in self.contents if con != looker]
         exits, users, things = [], [], []
         for con in visible:
-            key = con.key
             if isinstance(con, Exit):
 	        exits.append(con.key)
             elif con.player:
-                users.append("{c%s{n" % key)
+                users.append(con.return_title(looker))
             else:
-                things.append(key)
+                things.append(con.return_title(looker))
         if users or things:
             string = self.return_appearance_contents_header(looker)
             if users:

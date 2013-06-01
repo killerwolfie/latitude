@@ -38,6 +38,9 @@ class LatitudeRoom(LatitudeObject, Room):
     def at_object_creation(self):
         self.db.attr_gender = 'Object'
 
+    def return_title(self, looker):
+        return '{w' + self.key
+
     def return_appearance_name(self, looker):
         return ('%cn%ch%cw' + self.key)
 

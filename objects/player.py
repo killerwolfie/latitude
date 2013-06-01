@@ -35,24 +35,67 @@ class LatitudePlayer(Player):
         # Update some statistics
         self.db.stats_last_logout_time = time.time()
 
-    def shows_online(self):
+    def return_title(self, looker):
         """
-        Returns whether the user appears to be online.
-        This is different from whether they're actually online, and takes 'friend system' privacy into account.
+        Returns the name of this player, styled (With colors, etc.) to help identify
+        the type of the object.  This is used for compatibility with
+        LatitudeObject.return_title() objects.  For more details, look there.
+        """
+        # You shouldn't create any Objects directly.  This is meant to be a pure base class.
+        # So, make an accordingly ominous looking name.
+        if self.status_online():
+            return '{m' + self.key
+        else:
+            return '{M' + self.key
+
+    def status_online(self):
+        """
+        Returns the amount of time a player has been online.
+
+        It takes 'friend system' privacy into account, returning 'None' if only private characters are puppeted.
         """
         # If we're actually offline then we'll show that way.
         if not self.sessions:
-            return False
+            return None
         # If we have any un-hidden puppets, then we'll show as online
-        for char in self.get_all_puppets():
-            if char.db.friends_optout:
-                continue
-            return True
-        # If we have no puppets, then we'll show as online.
-        if not self.get_all_puppets():
-            return True
-        # Looks like we do have puppets, but they're all hidden.  Show as offline.
-        return False
+        puppets = self.get_all_puppets()
+        if puppets:
+            only_optout = True
+            for char in puppets:
+                if not char.db.friends_optout:
+                    only_optout = False
+                    break
+        else:
+            # If we have no puppets, then we'll show as online.
+            only_optout = False
+        if only_optout:
+            return None
+        # Looks like we're online and we want to show that way.  Return seconds online of the longest lived session.
+        now = time.time()
+        online_time = float('-inf')
+        for session in self.sessions:
+            session_online = now - session.conn_time
+            if session_online > online_time:
+                online_time = session_online
+        return online_time
+
+    def status_idle(self):
+        """
+        Returns the idle time of the player, in seconds.
+
+        Returns None if the player is offline.
+        """
+        if self.status_online():
+            now = time.time()
+            idle_time = float('inf')
+            # Return the session with the lowest idle time
+            for session in self.sessions:
+                session_idle = now - session.cmd_last_visible
+                if session_idle < idle_time:
+                    idle_time = session_idle
+            return idle_time
+        else:
+            return None
 
     def max_characters(self):
         """
@@ -121,7 +164,7 @@ class LatitudePlayer(Player):
         friend_players = set()
         for friend in self.db.friends_list:
             if self.is_friends_with(friend):
-                if not online_only or friend.shows_online():
+                if not online_only or friend.status_online():
                     friend_players.add(friend)
         return friend_players
 
@@ -136,7 +179,7 @@ class LatitudePlayer(Player):
             for friend_character in friend_player.get_playable_characters(online_only=online_only):
                 if friend_character.db.friends_optout:
                     continue
-                if online_only and not (friend_character.shows_online() or friend_character.player):
+                if online_only and not (friend_character.status_online() or friend_character.player):
                     continue
                 friend_characters.add(friend_character)
         return friend_characters

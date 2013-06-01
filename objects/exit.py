@@ -70,6 +70,9 @@ class LatitudeExit(LatitudeObject, Exit):
     def at_object_creation(self):
         self.db.attr_gender = 'Object'
 
+    def return_title(self, looker):
+        return '{x' + self.key
+
     def reverse_exits(self):
         """
 	Finds the exit on the other side which leads back here.

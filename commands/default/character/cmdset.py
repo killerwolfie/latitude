@@ -64,7 +64,6 @@ from game.gamesrc.latitude.commands.default.character import sys_typeclass
 from game.gamesrc.latitude.commands.default.character import sys_unban
 from game.gamesrc.latitude.commands.default.character import sys_unlink
 from game.gamesrc.latitude.commands.default.character import sys_wall
-from game.gamesrc.latitude.commands.default.character import sys_who
 from game.gamesrc.latitude.commands.default.character import sys_wipe
 from game.gamesrc.latitude.commands.default.character import taste
 from game.gamesrc.latitude.commands.default.character import unlock
@@ -138,7 +137,6 @@ class LatitudeCmdsetCharacter(CmdSet):
         self.add(sys_unban.CmdSysUnban)
         self.add(sys_unlink.CmdSysUnLink)
         self.add(sys_wall.CmdSysWall)
-        self.add(sys_who.CmdSysWho)
         self.add(sys_wipe.CmdSysWipe)
 	self.add(taste.CmdTaste)
 	self.add(unlock.CmdUnlock)

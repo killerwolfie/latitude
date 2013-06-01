@@ -76,7 +76,7 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
             return
         online_friends = []
         for friend_char in sorted(self.caller.get_friend_characters(online_only=True), key=lambda char: char.key.lower()):
-            online_friends.append('{c%s{n ({c%s{n)' % (friend_char.key, friend_char.db.owner))
+            online_friends.append('{n%s{n (%s{n)' % (friend_char.return_title(self.caller), friend_char.get_owner().return_title(self.caller)))
         for friend in self.caller.get_friend_players(online_only=True):
             if not friend.get_all_puppets(): # @ooc friend
                 online_friends.append('{c%s{n' % (friend.key))
@@ -101,7 +101,7 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
                     friend_char = friend_playable_characters[0]
                     if friend_char.db.friends_optout:
                         continue
-                    self.msg('+ ' + (friend.shows_online() and '{c' or '{C') + friend_char.key)
+                    self.msg('+ ' + friend_char.return_title(self.caller))
                 else:
                     # List the characters, unless there is only one character, and it has the same name as the player.
                     friend_chars_online = []
@@ -110,14 +110,11 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
                         # Don't include characters if they have 'opted out' from the friend system
                         if char.db.friends_optout:
                             continue
-                        if char.shows_online():
-                            friend_chars_online.append('{n  - {c' + char.key)
-                        else:
-                            friend_chars_offline.append('{n  - {C' + char.key)
+                        friend_chars_online.append('{n  - ' + char.return_title(self.caller))
                     friend_chars_online.sort()
                     friend_chars_offline.sort()
                     # Output the resulting entry
-                    self.msg('+ ' + (friend_chars_online and '{c' or '{C') + friend.key)
+                    self.msg('+ ' + friend.return_title(self.caller))
                     if friend_chars_online or friend_chars_offline:
                         self.msg("\n".join(friend_chars_online + friend_chars_offline))
         for character in self.caller.get_playable_characters():
@@ -220,7 +217,7 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
             self.msg("%s is %s." % (friend.key, ", ".join(location_tree)))
 
     def check_optout(self):
-        if not self.caller.shows_online():
+        if not self.caller.status_online():
             self.msg('{RSorry.  All of your currently connected characters are opting out of the friend system.')
             self.msg('{RTo continue using the friend system, you need to connect at least one character without the "opt out" flag, or you can remove it with:')
             self.msg('{r  @friends optout=!<character>')

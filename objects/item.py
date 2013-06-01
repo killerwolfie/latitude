@@ -5,7 +5,7 @@ from game.gamesrc.latitude.objects.object import LatitudeObject
 
 class LatitudeItem(LatitudeObject):
     """
-    This type of object is similar to the base object class, except that it's considered inanimate, and something that could potentially be picked up and stored in a character inventory.
+    This type of object is similar to the base Object class, except that it's considered inanimate, and something that could potentially be picked up and stored in a character inventory.
     """
     def basetype_setup(self):
         """
@@ -26,3 +26,6 @@ class LatitudeItem(LatitudeObject):
             "edit_writing:holds()",    # Allows users to modify this object's 'writing' description
             "call:false()",            # allow to call commands on this object (Used by the system itself)
         ]))
+
+    def return_title(self, looker):
+        return '{G' + self.key

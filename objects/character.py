@@ -75,7 +75,7 @@ class LatitudeCharacter(LatitudeObject, Character):
         # Alert all your friends :D
         if not self.db.friends_optout:
             for friend in self.player.get_friend_players():
-                if friend.shows_online(): # Don't alert friends who show offline.
+                if friend.status_online(): # Don't alert friends who show offline.
                     friend.msg('Your friend %s (%s) has just entered the game.' % (self.key, self.player.key))
 
     def at_post_unpuppet(self, player):
@@ -84,12 +84,32 @@ class LatitudeCharacter(LatitudeObject, Character):
         # Update puppet statistics
         self.db.stats_last_unpuppet_time = time.time()
 
-    def shows_online(self):
+    def return_title(self, looker):
+        if self.status_online():
+            return '{c' + self.key
+        else:
+            return '{C' + self.key
+
+    def status_online(self):
         """
         Returns whether the character appears to be online.
         This could potentially be used to protect privacy when users request it, but for now it just returns whether they're puppeted.
         """
-        return(bool(self.sessid))
+        if self.sessid:
+            return time.time() - self.player.get_session(sessid=self.sessid).conn_time
+        else:
+            return None
+
+    def status_idle(self):
+        """
+        Returns the idle time of the character, in seconds.
+
+        Returns None if the character is offline.
+        """
+        if self.status_online():
+            return time.time() - self.player.get_session(sessid=self.sessid).cmd_last_visible
+        else:
+            return None
 
     def get_owner(self):
         # Grab the owner name

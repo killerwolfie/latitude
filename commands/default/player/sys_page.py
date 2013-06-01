@@ -138,7 +138,7 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
         # Verify that everyone is online
         if not mail:
             for receiver in receivers:
-                if not receiver.shows_online():
+                if not receiver.status_online():
                     self.msg('{R"%s" is not currently online.  Cancelling message.' % (receiver.key))
                     self.msg("{RIf you want to send a message to someone who's offline, use '%s/mail', and they will be alerted the next time they log in." % (self.key))
                     self.msg("{RSee help %s for details" % (self.key))

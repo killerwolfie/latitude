@@ -21,7 +21,7 @@ class CmdMap(default_cmds.MuxCommand):
             self.msg('You cartographize "%s"!  (Maybe you meant just "map"?)' % (self.args))
             return
         if self.caller.location:
-            if self.caller.get_owner().shows_online():
+            if self.caller.get_owner().status_online():
                 self.caller.msg(self.caller.location.return_map(mark_friends_of=self.caller))
             else:
                 # If the player is 'hiding' then hide friend markers for privacy
