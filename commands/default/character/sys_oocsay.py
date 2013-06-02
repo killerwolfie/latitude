@@ -21,7 +21,7 @@ class CmdSysOOCSay(say.CmdSay):
     """
     key = "@oocsay"
     locks = "cmd:all()"
-    help_category = "General"
+    help_category = "Communication"
     aliases = ['ooc']
     arg_regex = r"\s.*?|$"
 

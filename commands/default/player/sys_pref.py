@@ -1,4 +1,4 @@
-from ev import default_cmds
+from ev import default_cmds, settings
 import inspect
 
 class PrefValueException(Exception):
@@ -106,3 +106,11 @@ class CmdSysPref(default_cmds.MuxPlayerCommand):
                 return lock_map[oldval]
             else:
                 return 'unknown'
+
+    def pref_encoding(self, newval = None):
+        player = self.caller
+        if newval:
+            if newval not in settings.ENCODINGS:
+                raise PrefValueException('Encoding "%s" not supported on this server.  (Valid values: %s)' % (newval, ', '.join(settings.ENCODINGS)))
+            player.db.encoding = newval
+        return player.db.encoding

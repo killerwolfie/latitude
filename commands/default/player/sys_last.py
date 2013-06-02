@@ -15,7 +15,7 @@ class CmdSysLast(default_cmds.MuxPlayerCommand):
     key = "@last"
     locks = "cmd:all()"
     aliases = ['last']
-    help_category = "General"
+    help_category = "Information"
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):

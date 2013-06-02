@@ -13,7 +13,7 @@ class CmdSysSpoof(say.CmdSay):
     """
     key = "@spoof"
     locks = "cmd:all()"
-    help_category = "General"
+    help_category = "Communication"
     aliases = ['spoof']
     arg_regex = r"\s.*?|$"
 

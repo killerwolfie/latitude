@@ -27,7 +27,7 @@ class CmdSys3Who(default_cmds.MuxCommand):
             onseconds = int(character.status_online())
             onminutes = onseconds / 60
             ontime = '%02d:%02d' % (onminutes / 60, onminutes % 60)
-            idletime = self.tdelta_string(int(character.status_online()))
+            idletime = self.tdelta_string(int(character.status_idle()))
             output += '%-12s %6s %-5s ' % (name[:12], ontime[:6], idletime[:5])
             if char_num and char_num % 3 == 0:
                 output += '\n'

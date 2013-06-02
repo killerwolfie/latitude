@@ -24,7 +24,7 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
     key = "@page"
     aliases = ['p', 'page']
     locks = "cmd:all()"
-    help_category = "General"
+    help_category = "Communication"
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):

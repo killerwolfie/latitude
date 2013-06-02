@@ -21,7 +21,6 @@ from game.gamesrc.latitude.commands.default.character import sense
 from game.gamesrc.latitude.commands.default.character import smell
 from game.gamesrc.latitude.commands.default.character import start
 from game.gamesrc.latitude.commands.default.character import stop
-from game.gamesrc.latitude.commands.default.character import sys_about
 from game.gamesrc.latitude.commands.default.character import sys_access
 from game.gamesrc.latitude.commands.default.character import sys_ban
 from game.gamesrc.latitude.commands.default.character import sys_batchcode
@@ -37,19 +36,16 @@ from game.gamesrc.latitude.commands.default.character import sys_emit
 from game.gamesrc.latitude.commands.default.character import sys_examine
 from game.gamesrc.latitude.commands.default.character import sys_find
 from game.gamesrc.latitude.commands.default.character import sys_gohome
-from game.gamesrc.latitude.commands.default.character import sys_help
 from game.gamesrc.latitude.commands.default.character import sys_home
 from game.gamesrc.latitude.commands.default.character import sys_link
 from game.gamesrc.latitude.commands.default.character import sys_cmdsets
 from game.gamesrc.latitude.commands.default.character import sys_lock
 from game.gamesrc.latitude.commands.default.character import sys_mvattr
 from game.gamesrc.latitude.commands.default.character import sys_name
-from game.gamesrc.latitude.commands.default.character import sys_nick
 from game.gamesrc.latitude.commands.default.character import sys_objects
 from game.gamesrc.latitude.commands.default.character import sys_oocsay
 from game.gamesrc.latitude.commands.default.character import sys_open
 from game.gamesrc.latitude.commands.default.character import sys_perm
-from game.gamesrc.latitude.commands.default.character import sys_py
 from game.gamesrc.latitude.commands.default.character import sys_script
 from game.gamesrc.latitude.commands.default.character import sys_scripts
 from game.gamesrc.latitude.commands.default.character import sys_serverload
@@ -94,7 +90,6 @@ class LatitudeCmdsetCharacter(CmdSet):
 	self.add(smell.CmdSmell)
 	self.add(start.CmdStart)
 	self.add(stop.CmdStop)
-        self.add(sys_about.CmdSysAbout)
         self.add(sys_access.CmdSysAccess)
         self.add(sys_ban.CmdSysBan)
         self.add(sys_batchcode.CmdSysBatchCode)
@@ -110,19 +105,16 @@ class LatitudeCmdsetCharacter(CmdSet):
         self.add(sys_examine.CmdSysExamine)
         self.add(sys_find.CmdSysFind)
 	self.add(sys_gohome.CmdSysGoHome)
-        self.add(sys_help.CmdSysHelp)
 	self.add(sys_home.CmdSysHome)
         self.add(sys_link.CmdSysLink)
         self.add(sys_cmdsets.CmdSysCmdSets)
         self.add(sys_lock.CmdSysLock)
         self.add(sys_mvattr.CmdSysMvAttr)
         self.add(sys_name.CmdSysName)
-        self.add(sys_nick.CmdSysNick)
         self.add(sys_objects.CmdSysObjects)
         self.add(sys_oocsay.CmdSysOOCSay)
         self.add(sys_open.CmdSysOpen)
         self.add(sys_perm.CmdSysPerm)
-        self.add(sys_py.CmdSysPy)
         self.add(sys_script.CmdSysScript)
         self.add(sys_scripts.CmdSysScripts)
         self.add(sys_serverload.CmdSysServerLoad)
