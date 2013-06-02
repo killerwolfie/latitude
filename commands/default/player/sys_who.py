@@ -38,16 +38,18 @@ class CmdSysWho(default_cmds.MuxCommand):
             if (not switches or switches == ['characters']) and not self.args:
                 characters = set()
                 for session in SESSIONS.get_sessions():
-                    character = session.get_character().typeclass
+                    character = session.get_character()
                     if character:
+                        character = character.typeclass
                         characters.add(character)
                 self.display_users(characters)
                 return
             if switches == ['players'] and not self.args:
                 players = set()
                 for session in SESSIONS.get_sessions():
-                    player = session.get_player().typeclass
+                    player = session.get_player()
                     if player:
+                        player = player.typeclass
                         players.add(player)
                 self.display_users(players)
                 return
