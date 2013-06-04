@@ -7,6 +7,7 @@ from ev import CmdSet
 from game.gamesrc.latitude.commands.default.player import look
 from game.gamesrc.latitude.commands.default.player import say
 from game.gamesrc.latitude.commands.default.player import pose
+from game.gamesrc.latitude.commands.default.player import special_channel
 from game.gamesrc.latitude.commands.default.player import special_nomatch
 from game.gamesrc.latitude.commands.default.player import sys_3who
 from game.gamesrc.latitude.commands.default.player import sys_about
@@ -70,6 +71,7 @@ class LatitudeCmdsetPlayer(CmdSet):
         self.add(look.CmdLook)
         self.add(say.CmdSay)
         self.add(pose.CmdPose)
+        self.add(special_channel.CmdChannel)
         self.add(special_nomatch.CmdNoMatch)
         self.add(sys_3who.CmdSys3Who)
         self.add(sys_about.CmdSysAbout)
