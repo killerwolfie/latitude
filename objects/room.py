@@ -19,6 +19,7 @@ class LatitudeRoom(LatitudeObject, Room):
         """
         super(LatitudeRoom, self).basetype_setup()
         self.locks.add(";".join([
+            "rename:resident()",          # Allows users to rename this object
             "edit:resident()",            # Allows users to modify this object (required in addition to what is being edited, specifically)
             "edit_appearance:resident()", # Allows users to modify this object's 'appearance' description
             "edit_aura:resident()",       # Allows users to modify this object's 'aura' description
@@ -38,7 +39,7 @@ class LatitudeRoom(LatitudeObject, Room):
     def at_object_creation(self):
         self.db.attr_gender = 'Object'
 
-    def return_title(self, looker):
+    def return_styled_name(self, looker):
         return '{w' + self.key
 
     def return_appearance_name(self, looker):
@@ -142,12 +143,7 @@ class LatitudeRoom(LatitudeObject, Room):
                 for friend in mark_friends_of.get_friend_characters(online_only=True):
                     if friend.location and friend.location.db.area_id == area.dbref and friend.location.db.area_map_x and friend.location.db.area_map_y:
                         location = (friend.location.db.area_map_x, friend.location.db.area_map_y)
-                        if friend.db.owner:
-                            friend_owner = search_player(friend.db.owner)
-                            if friend_owner:
-                                friend_owner = friend_owner[0]
-                        else:
-                            friend_owner = None
+                        friend_owner = friend.get_owner()
                         # Determine the best prio
                         if friend.sessions:
                             prio = friend.sessions[0].cmd_last_visible - now

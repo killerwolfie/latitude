@@ -27,5 +27,5 @@ class LatitudeItem(LatitudeObject):
             "call:false()",            # allow to call commands on this object (Used by the system itself)
         ]))
 
-    def return_title(self, looker):
+    def return_styled_name(self, looker):
         return '{G' + self.key

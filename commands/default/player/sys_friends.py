@@ -3,9 +3,7 @@ from game.gamesrc.latitude.utils.search import match, match_character
 
 class CmdSysFriends(default_cmds.MuxPlayerCommand):
     """
-    @friends
-
-    Manage your friend list.
+    @friends - Manage your friend list.
 
     Usage:
       @friends
@@ -76,7 +74,7 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
             return
         online_friends = []
         for friend_char in sorted(self.caller.get_friend_characters(online_only=True), key=lambda char: char.key.lower()):
-            online_friends.append('{n%s{n (%s{n)' % (friend_char.return_title(self.caller), friend_char.get_owner().return_title(self.caller)))
+            online_friends.append('{n%s{n (%s{n)' % (friend_char.return_styled_name(self.caller), friend_char.get_owner().return_styled_name(self.caller)))
         for friend in self.caller.get_friend_players(online_only=True):
             if not friend.get_all_puppets(): # @ooc friend
                 online_friends.append('{c%s{n' % (friend.key))
@@ -93,31 +91,31 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
             self.msg('You have no friends :(')
         else:
             for friend in sorted(friends, key=lambda friend_player: str(friend_player).lower()):
-                friend_playable_characters = friend.get_playable_characters()
-                if not friend_playable_characters:
+                friend_characters = friend.get_characters()
+                if not friend_characters:
                     continue
-                if len(friend_playable_characters) == 1 and friend_playable_characters[0].key.lower() == friend.key.lower():
+                if len(friend_characters) == 1 and friend_characters[0].key.lower() == friend.key.lower():
                     # If this player only has one character and it matches the name of the player exactly, then output a condensed entry
-                    friend_char = friend_playable_characters[0]
+                    friend_char = friend_characters[0]
                     if friend_char.db.friends_optout:
                         continue
-                    self.msg('+ ' + friend_char.return_title(self.caller))
+                    self.msg('+ ' + friend_char.return_styled_name(self.caller))
                 else:
                     # List the characters, unless there is only one character, and it has the same name as the player.
                     friend_chars_online = []
                     friend_chars_offline = []
-                    for char in friend_playable_characters:
+                    for char in friend_characters:
                         # Don't include characters if they have 'opted out' from the friend system
                         if char.db.friends_optout:
                             continue
-                        friend_chars_online.append('{n  - ' + char.return_title(self.caller))
+                        friend_chars_online.append('{n  - ' + char.return_styled_name(self.caller))
                     friend_chars_online.sort()
                     friend_chars_offline.sort()
                     # Output the resulting entry
-                    self.msg('+ ' + friend.return_title(self.caller))
+                    self.msg('+ ' + friend.return_styled_name(self.caller))
                     if friend_chars_online or friend_chars_offline:
                         self.msg("\n".join(friend_chars_online + friend_chars_offline))
-        for character in self.caller.get_playable_characters():
+        for character in self.caller.get_characters():
             if character.db.friends_optout:
                 self.msg('{ROpt-out: %s' % character.key)
    

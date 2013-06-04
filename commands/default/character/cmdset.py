@@ -21,7 +21,6 @@ from game.gamesrc.latitude.commands.default.character import sense
 from game.gamesrc.latitude.commands.default.character import smell
 from game.gamesrc.latitude.commands.default.character import start
 from game.gamesrc.latitude.commands.default.character import stop
-from game.gamesrc.latitude.commands.default.character import sys_access
 from game.gamesrc.latitude.commands.default.character import sys_ban
 from game.gamesrc.latitude.commands.default.character import sys_batchcode
 from game.gamesrc.latitude.commands.default.character import sys_batchcommands
@@ -90,7 +89,6 @@ class LatitudeCmdsetCharacter(CmdSet):
 	self.add(smell.CmdSmell)
 	self.add(start.CmdStart)
 	self.add(stop.CmdStop)
-        self.add(sys_access.CmdSysAccess)
         self.add(sys_ban.CmdSysBan)
         self.add(sys_batchcode.CmdSysBatchCode)
         self.add(sys_batchcommands.CmdSysBatchCommands)

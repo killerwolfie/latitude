@@ -96,9 +96,6 @@ class CmdUnconnectedConnect(MuxCommand):
         else:
             character = None
 
-        # Spoof the _last_puppet so that the @ic command called at login will send you to the right character
-        player.db._last_puppet = character
-
         # actually do the login. This will call all other hooks:
         #   session.at_login()
         #   player.at_init()         # always called when object is loaded from disk
@@ -106,3 +103,8 @@ class CmdUnconnectedConnect(MuxCommand):
         #   player.at_first_login()  # only once
         #   player.at_post_login(sessid=sessid)
         session.sessionhandler.login(session, player)
+
+        # Now that we're connected, puppet the character, if requested.
+        if character:
+            session.msg('\n{WLogging directly into {c%s{W...\n' % (character.return_styled_name(player)))
+            player.do_puppet(session.sessid, character)

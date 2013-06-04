@@ -21,10 +21,9 @@ class LatitudeObject(Object):
 
     # ----- Lock Messages -----
     def at_access_failure(self, accessing_obj, access_type):
-        # Check for a custom message property
-        if self.db.access_failure and access_type in self.db.access_failure:
-            if self.db.access_failure[access_type] != None:
-                accessing_obj.msg(self.db.access_failure[access_type])
+        if not isinstance(accessing_obj, Object):
+            # Don't bother with players, or any other type of object which may be making an access call.
+            # For one, we can't get a player's session id to send messages out.
             return
         # Ignore access types used directly by the Evennia engine
         if access_type == 'call':
@@ -51,15 +50,28 @@ class LatitudeObject(Object):
         else:
             message = '{RAccess denied ({r%s{R)' % (access_type)
         if message:
-            accessing_obj.msg('{R[ %s{R ]' % message)
+            accessing_obj.msg('{R[ %s{R ]' % message, sessid=accessing_obj.sessid)
 
     def at_access_success(self, accessing_obj, access_type):
         # Check for a message property (sending nothing by default)
         if self.db.access_failure and access_type in self.db.access_failure and self.db.access_failure[access_type] != None:
             accessing_obj.msg(self.db.access_failure[access_type])
 
+    # ----- Auditing -----
+    def bad(self):
+        """
+        Audits whether the object is corrupted in some way, such as being a direct
+        instance of the LatitudeObject class, rather than a child class.
+
+        If the character is valid, then None is returned.  If it's broken, then a
+        string is returned containing a reason why.
+        """
+        if type(self) is LatitudeObject:
+            return "object is a base 'LatitudeObject' class"
+        return None
+
     # ----- Descriptions -----
-    def return_title(self, looker):
+    def return_styled_name(self, looker):
         """
         Returns the name of this object, styled (With colors, etc.) to help identify
         the type of the object.  This is used when displaying lists of objects, or
@@ -76,6 +88,23 @@ class LatitudeObject(Object):
         # You shouldn't create any Objects directly.  This is meant to be a pure base class.
         # So, make an accordingly ominous looking name.
         return '{x<<' + self.key + '>>'
+
+    def return_styled_gender(self, looker):
+        """
+        Returns the gender of this object, styled (With colors, etc.).
+        """
+        gender = self.db.attr_gender
+        if not gender:
+            gender = '%cn%cr-Unset-'
+        elif self.is_male():
+            gender = '%cn%ch%cb' + gender
+        elif self.is_female():
+            gender = '%cn%ch%cm' + gender
+        elif self.is_herm():
+            gender = '%cn%ch%cg' + gender
+        else:
+            gender = '%cn%ch%cw' + gender
+        return gender
 
     def return_appearance(self, looker):
         """
@@ -137,9 +166,9 @@ class LatitudeObject(Object):
             if isinstance(con, Exit):
 	        exits.append(con.key)
             elif con.player:
-                users.append(con.return_title(looker))
+                users.append(con.return_styled_name(looker))
             else:
-                things.append(con.return_title(looker))
+                things.append(con.return_styled_name(looker))
         if users or things:
             string = self.return_appearance_contents_header(looker)
             if users:

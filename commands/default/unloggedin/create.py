@@ -51,14 +51,9 @@ class CmdUnconnectedCreate(MuxCommand):
         # Drop the player name to lowercase
         playername = playername.lower()
         # sanity checks
-        if not re.findall('^[\w. @+-]+$', playername) or not (0 < len(playername) <= 30):
-            # this echoes the restrictions made by django's auth module (except not
-            # allowing spaces, for convenience of logging in).
-            string = "\n\r Playername can max be 30 characters or fewer. Letters, spaces, digits and @/./+/-/_ only."
-            session.msg(string)
+        if re.search('[^a-zA-Z0-9._-]', playername) or not (3 <= len(playername) <= 20):
+            session.msg('{RPlayer names must be between 3 and 20 characters, and only contain english letters, numbers, dot (.), underscore (_), or dash(-)')
             return
-        # strip excessive spaces in playername
-        playername = re.sub(r"\s+", " ", playername).strip()
         # Verify this player doesn't already exist
         if PlayerDB.objects.filter(user__username__iexact=playername) or User.objects.filter(username__iexact=playername):
             # player already exists (we also ignore capitalization here)

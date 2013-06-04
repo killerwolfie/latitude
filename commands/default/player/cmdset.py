@@ -4,23 +4,23 @@ from ev import CmdSet
 #from contrib import misc_commands
 #from contrib import chargen
 
-from game.gamesrc.latitude.commands.default.player import ooclook
+from game.gamesrc.latitude.commands.default.player import look
 from game.gamesrc.latitude.commands.default.player import special_nomatch
 from game.gamesrc.latitude.commands.default.player import sys_3who
 from game.gamesrc.latitude.commands.default.player import sys_about
+from game.gamesrc.latitude.commands.default.player import sys_access
 from game.gamesrc.latitude.commands.default.player import sys_cboot
 from game.gamesrc.latitude.commands.default.player import sys_ccreate
 from game.gamesrc.latitude.commands.default.player import sys_cdesc
 from game.gamesrc.latitude.commands.default.player import sys_cdestroy
 from game.gamesrc.latitude.commands.default.player import sys_cemit
 from game.gamesrc.latitude.commands.default.player import sys_channel
-from game.gamesrc.latitude.commands.default.player import sys_charcreate
+from game.gamesrc.latitude.commands.default.player import sys_char
 from game.gamesrc.latitude.commands.default.player import sys_cset
 from game.gamesrc.latitude.commands.default.player import sys_delplayer
 from game.gamesrc.latitude.commands.default.player import sys_friends
 from game.gamesrc.latitude.commands.default.player import sys_gametime
 from game.gamesrc.latitude.commands.default.player import sys_help
-from game.gamesrc.latitude.commands.default.player import sys_ic
 from game.gamesrc.latitude.commands.default.player import sys_imc2chan
 from game.gamesrc.latitude.commands.default.player import sys_imcinfo
 from game.gamesrc.latitude.commands.default.player import sys_imcpage
@@ -28,7 +28,6 @@ from game.gamesrc.latitude.commands.default.player import sys_irc2chan
 from game.gamesrc.latitude.commands.default.player import sys_last
 from game.gamesrc.latitude.commands.default.player import sys_merge
 from game.gamesrc.latitude.commands.default.player import sys_newpassword
-from game.gamesrc.latitude.commands.default.player import sys_ooc
 from game.gamesrc.latitude.commands.default.player import sys_page
 from game.gamesrc.latitude.commands.default.player import sys_password
 from game.gamesrc.latitude.commands.default.player import sys_pref
@@ -53,23 +52,23 @@ class LatitudeCmdsetPlayer(CmdSet):
         """
         Populates the cmdset
         """
-        self.add(ooclook.CmdOOCLook)
+        self.add(look.CmdLook)
         self.add(special_nomatch.CmdNoMatch)
         self.add(sys_3who.CmdSys3Who)
         self.add(sys_about.CmdSysAbout)
+        self.add(sys_access.CmdSysAccess)
         self.add(sys_cboot.CmdSysCBoot)
         self.add(sys_ccreate.CmdSysChannelCreate)
         self.add(sys_cdesc.CmdSysCdesc)
         self.add(sys_cdestroy.CmdSysCdestroy)
         self.add(sys_cemit.CmdSysCemit)
         self.add(sys_channel.CmdSysChannel)
-        self.add(sys_charcreate.CmdSysCharCreate)
+        self.add(sys_char.CmdSysChar)
         self.add(sys_cset.CmdSysCset)
         self.add(sys_delplayer.CmdSysDelPlayer)
 	self.add(sys_help.CmdSysHelp)
         self.add(sys_friends.CmdSysFriends)
         self.add(sys_gametime.CmdSysGameTime)
-        self.add(sys_ic.CmdSysIC)
         self.add(sys_imc2chan.CmdSysIMC2Chan)
         self.add(sys_imcinfo.CmdSysIMCInfo)
         self.add(sys_imcpage.CmdSysIMCPage)
@@ -77,7 +76,6 @@ class LatitudeCmdsetPlayer(CmdSet):
         self.add(sys_last.CmdSysLast)
         self.add(sys_merge.CmdSysMerge)
         self.add(sys_newpassword.CmdSysNewPassword)
-        self.add(sys_ooc.CmdSysOOC)
         self.add(sys_page.CmdSysPage)
         self.add(sys_password.CmdSysPassword)
         self.add(sys_pref.CmdSysPref)

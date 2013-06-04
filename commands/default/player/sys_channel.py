@@ -80,7 +80,7 @@ class CmdSysChannel(default_cmds.MuxPlayerCommand):
             self.msg('{w%s:' % channel.key)
             players = [conn.player for conn in PlayerChannelConnection.objects.get_all_connections(channel) if conn.player.status_online()]
             if players:
-                self.msg('  ' + ', '.join([player.return_title(caller) for player in players]))
+                self.msg('  ' + ', '.join([player.return_styled_name(caller) for player in players]))
             else:
                 self.msg('  <None>')
 

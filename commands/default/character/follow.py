@@ -34,7 +34,7 @@ class CmdFollow(default_cmds.MuxCommand):
             follower.msg("You're already following %s.  [Use \"stop\" to stop following, first.]" % (follower.db.follow_following.key))
             return
         # Start following, if we have permissions.
-        if not leader.access(follower, 'follow') and not (leader.db.follow_pending and follower == leader.db.follow_pending and leader.db.follow_pending_tolead):
+        if not leader.access(follower, 'follow') and not (leader.db.follow_pending and leader.db.follow_pending_tolead and follower in leader.db.follow_pending):
             # Looks like it's not going to happen.  If we're dealing with a character, give them a chance to give permission
             if isinstance(leader, Character):
                 # TODO: ALREADY WAITING

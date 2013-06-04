@@ -32,6 +32,12 @@ class CmdSysWho(default_cmds.MuxCommand):
         caller = self.caller
         if self.cmdstring.lower() == 'ws':
             if not switches and not self.args:
+                if not hasattr(self.caller, 'location'):
+                    self.msg("{RYou have no location.  (See {rhelp @ic{R for more information)")
+                    return
+                if not self.caller.location:
+                    self.msg("{RYou don't seem to have any specific location.")
+                    return
                 self.display_users([ con for con in self.caller.location.contents if utils.inherits_from(con, "src.objects.objects.Character") ])
                 return
         else:
@@ -96,7 +102,7 @@ class CmdSysWho(default_cmds.MuxCommand):
             if not utils.inherits_from(user, "src.objects.objects.Character"):
                 num_awake += 1
                 # Player name
-                name = user.return_title(self.caller)
+                name = user.return_styled_name(self.caller)
                 # Status
                 status = '%cn%cw?%ch%cr?%cg?%cy?%cb?%cm?%cc?'
                 if user.status_online():
@@ -110,39 +116,28 @@ class CmdSysWho(default_cmds.MuxCommand):
                 self.caller.msg('%s %s' % (evennia_color_left(name, 19, dots=True), evennia_color_left(status, 8)))
             else:
                 # Character Name
-                name = user.return_title(self.caller)
+                name = user.return_styled_name(self.caller)
                 # Stamina / Status readout
                 stamina = '%cn%cw?%ch%cr?%cg?%cy?%cb?%cm?%cc?'
                 if user.status_online():
                     idle_time = int(user.status_idle())
                     if idle_time < idle_threshhold:
-                        if user.db.stat_stamina != None and user.db.stat_stamina_max != None:
-                            stamina = '%d/%d' % (user.db.stat_stamina, user.db.stat_stamina_max)
-                            fraction = float(user.db.stat_stamina) / float(user.db.stat_stamina_max)
-                            if fraction > 0.8:
-                                sstamina = '%ch%cg' + stamina
-                            elif fraction > 0.5:
-                                stamina = '%cn%cg' + stamina
-                            elif fraction > 0.2:
-                                stamina = '%ch%cy' + stamina
-                            else:
-                                stamina = '%cn%cr' + stamina
+                        stamina = '%d/%d' % (user.stat_stamina(), user.stat_stamina_max())
+                        fraction = float(user.stat_stamina()) / float(user.stat_stamina_max())
+                        if fraction > 0.8:
+                            sstamina = '%ch%cg' + stamina
+                        elif fraction > 0.5:
+                            stamina = '%cn%cg' + stamina
+                        elif fraction > 0.2:
+                            stamina = '%ch%cy' + stamina
+                        else:
+                            stamina = '%cn%cr' + stamina
                     else:
                         stamina = self.idle_string(idle_time)
                 else:
                     stamina = '%cn%cgZzzz'
                 # Gender
-                gender = user.db.attr_gender
-                if not gender:
-                    gender = '%cn%cr-Unset-'
-                elif user.is_male():
-                    gender = '%cn%ch%cb' + gender
-                elif user.is_female():
-                    gender = '%cn%ch%cm' + gender
-                elif user.is_herm():
-                    gender = '%cn%ch%cg' + gender
-                else:
-                    gender = '%cn%ch%cw' + gender
+                gender = user.return_styled_gender(self.caller)
                 # Species
                 species = user.db.desc_species
                 if not species:

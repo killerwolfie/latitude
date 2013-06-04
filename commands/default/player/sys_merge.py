@@ -51,10 +51,10 @@ class CmdSysMerge(default_cmds.MuxCommand):
             from_player.msg('\nYour account has been merged into "%s".\n' % (to_player), sessid=session.sessid)
             from_player.disconnect_session_from_player(session.sessid)
         self.msg('  Transfering characters...')
-        transfer_characters = from_player.get_playable_characters()
+        transfer_characters = from_player.get_characters()
         if transfer_characters:
             for character in transfer_characters:
-                character.db.owner = to_player.key
+                character.set_owner(to_player)
                 character.locks.add("puppet:id(%i) or pid(%i) or perm(Janitors)" % (character.id, to_player.id))
                 self.msg('    %s' % (character.key))
         else:

@@ -37,6 +37,21 @@ def deadbolt_key(accessing_obj, accessed_obj, *args, **kwargs):
         return False
     return False
 
+def owner(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Usage:
+        owner()
+
+    Returns whether the accessing player owns the accessed character, or if the
+    accessing character and the accessed character have the same owner.
+    """
+    if not hasattr(accessed_obj, 'get_owner'):
+        return False
+    if hasattr(accessing_obj, 'get_owner'):
+        return accessing_obj.get_owner == accessed_obj.get_owner()
+    else:
+        return accessing_obj == accessed_obj.get_owner()
+
 def owner_lock(accessing_obj, accessed_obj, *args, **kwargs):
     """
     Usage:
