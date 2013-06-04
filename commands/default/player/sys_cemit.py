@@ -20,7 +20,7 @@ class CmdSysCemit(default_cmds.CmdCemit):
 
     key = "@cemit"
     aliases = []
-    locks = "cmd:perm(command_@cemit) or perm(Custodians)"
-    help_category = "--- Coder/Sysadmin ---"
+    locks = "cmd:perm(command_@cemit) or perm(Janitors)"
+    help_category = "=== Admin ==="
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 

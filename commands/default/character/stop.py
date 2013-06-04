@@ -2,7 +2,7 @@ from game.gamesrc.latitude.utils.stringmanip import conj_join
 from ev import default_cmds, search_object
 import re
 
-class CmdStop(default_cmds.MuxCommand):
+class CmdStop(default_cmds.MuxPlayerCommand):
     """
     stop
        Stop following or leading.
@@ -27,7 +27,7 @@ class CmdStop(default_cmds.MuxCommand):
     arg_regex = r"\s.*?|$"
 
     def func(self):
-        character = self.caller
+        character = self.character
         args = self.args.lower()
         if args == 'leading':
             followers = search_object(character, attribute_name='follow_following')
@@ -45,4 +45,4 @@ class CmdStop(default_cmds.MuxCommand):
             character.action_stop(character)
 
     def stop_leading(self):
-        character = self.caller
+        character = self.character

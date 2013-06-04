@@ -21,6 +21,6 @@ class CmdSysFind(default_cmds.CmdFind):
     key = "@find"
     aliases = "find, @search, search, @locate, locate"
     locks = "cmd:perm(command_@find) or perm(Janitors)"
-    help_category = "--- Coder/Sysadmin ---"
+    help_category = "=== Admin ==="
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 

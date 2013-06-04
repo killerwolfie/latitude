@@ -5,8 +5,8 @@ class CmdSysQuell(default_cmds.CmdQuell):
     Quelling permissions
 
     Usage:
-      quell
-      unquell
+      @quell
+      @unquell
 
     Normally the permission level of the Player is used when puppeting a
     Character/Object to determine access. This command will switch the lock

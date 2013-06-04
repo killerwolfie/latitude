@@ -53,8 +53,8 @@ class LatitudeCharacter(LatitudeObject, Character):
 
     def at_after_move(self, source_location):
         if self.db.prefs_automap == None or self.db.prefs_automap:
-	    self.execute_cmd('map')
-        self.execute_cmd('look')
+	    self.execute_cmd('map', sessid=self.sessid)
+        self.execute_cmd('look', sessid=self.sessid)
 
     def at_post_login(self):
         super(LatitudeCharacter, self).at_post_login() # For now call the default handler which unstows the character
@@ -72,8 +72,8 @@ class LatitudeCharacter(LatitudeObject, Character):
 
     def at_post_puppet(self):
         if self.db.prefs_automap == None or self.db.prefs_automap:
-	    self.execute_cmd('map')
-        self.execute_cmd('look')
+	    self.execute_cmd('map', sessid=self.sessid)
+        self.execute_cmd('look', sessid=self.sessid)
         # Alert all your friends :D
         if not self.db.friends_optout:
             for friend in self.player.get_friend_players():
@@ -85,6 +85,33 @@ class LatitudeCharacter(LatitudeObject, Character):
             self.location.msg_contents("%s has left the game." % self.name, exclude=[self])
         # Update puppet statistics
         self.db.stats_last_unpuppet_time = time.time()
+
+    def bad(self):
+        """
+        Audits whether the object is corrupted in some way, such as being a duplicate
+        character name.
+
+        If the character is valid, then None is returned.  If it's broken, then a
+        string is returned containing a reason why.
+        """
+        try:
+            # Verify that this character's owner exists
+            owner = self.db.owner
+            if owner: # If the owner is None, then that's okay.  It means we have an orphaned character.  Otherwise, verify the owner integrity.
+                # Verify that the player data also shows ownership
+                if not self in owner.db.characters:
+                    return "player and character data conflict"
+            # Verify that, among character objects, this one has a unique name
+            if len([char for char in search_object(self.key, attribute_name='key') if utils.inherits_from(char, "src.objects.objects.Character")]) != 1:
+                return "character name not unique"
+            # Verify this doesn't match the name of any player, unless that player is self
+            if not owner or self.key.lower() != owner.key.lower():
+                if search_player(self.key):
+                    return "character name matches player name"
+            # Looks like we're good.
+            return super(LatitudeCharacter, self).bad()
+        except:
+            return "exception raised during audit: " + sys.exc_info()[0]
 
     def return_styled_name(self, looker):
         if self.status_online():
@@ -111,30 +138,6 @@ class LatitudeCharacter(LatitudeObject, Character):
         if self.bad():
             return None
         return self.db.owner
-
-    def bad(self):
-        """
-        Audits whether the object is corrupted in some way, such as being a duplicate
-        character name.
-
-        If the character is valid, then None is returned.  If it's broken, then a
-        string is returned containing a reason why.
-        """
-        # Verify that this character's owner exists
-        owner = self.db.owner
-        if owner: # If the owner is None, then that's okay.  It means we have an orphaned character.  Otherwise, verify the owner integrity.
-            # Verify that the player data also shows ownership
-            if not self in owner.db.characters:
-                return "player and character data conflict"
-        # Verify that, among character objects, this one has a unique name
-        if len([char for char in search_object(self.key, attribute_name='key') if utils.inherits_from(char, "src.objects.objects.Character")]) != 1:
-            return "character name not unique"
-        # Verify this doesn't match the name of any player, unless that player is self
-        if not owner or self.key.lower() != owner.key.lower():
-            if search_player(self.key):
-                return "character name matches player name"
-        # Looks like we're good.
-        return super(LatitudeCharacter, self).bad()
 
     def status_online(self):
         """

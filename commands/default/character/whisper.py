@@ -23,7 +23,7 @@ class CmdWhisper(say.CmdSay):
     arg_regex = r"\s.*?|$"
 
     def func(self):
-        character = self.caller
+        character = self.character
         # Parse command line
         if self.lhs and self.rhs:
             target = character.search(self.lhs)
@@ -59,4 +59,4 @@ class CmdWhisper(say.CmdSay):
                         con.msg(character.objsub('{n&0N whispers %s{n.' % (message), target))
                     else:
                         con.msg(character.objsub('{n&0N whispers something.', target))
-                self.caller.location.at_whisper(self.caller, raw_message)
+                character.location.at_whisper(character, raw_message)

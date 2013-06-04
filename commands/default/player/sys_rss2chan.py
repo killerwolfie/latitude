@@ -24,7 +24,7 @@ class CmdSysRSS2Chan(default_cmds.CmdRSS2Chan):
     """
 
     key = "@rss2chan"
-    locks = "cmd:serversetting(RSS_ENABLED) and (perm(command_@rss2chan) or perm(Custodians))"
-    help_category = "--- Coder/Sysadmin ---"
+    locks = "perm(command_@rss2chan) or perm(Janitors)"
+    help_category = "=== Admin ==="
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 

@@ -1,6 +1,6 @@
 from ev import default_cmds
 
-class CmdLook(default_cmds.MuxCommand):
+class CmdLook(default_cmds.MuxPlayerCommand):
     """
     look
 
@@ -23,25 +23,25 @@ class CmdLook(default_cmds.MuxCommand):
         """
         Handle the percieving.
         """
-        caller = self.caller
+        character = self.character
         args = self.args
         if args.lower().startswith('at '):
             args = args[3:].strip()
         if args:
             # Use search to handle duplicate/nonexistant results.
-            looking_at_obj = caller.search(args, use_nicks=True)
+            looking_at_obj = character.search(args, use_nicks=True)
             if not looking_at_obj:
                 return
         else:
-            looking_at_obj = caller.location
+            looking_at_obj = character.location
             if not looking_at_obj:
-                caller.msg("You have no location to percieve!")
+                self.msg("You have no location to percieve!")
                 return
         # Get the object's description
-        caller.msg(getattr(looking_at_obj, 'return_'+ sense)(caller))
+        self.msg(getattr(looking_at_obj, 'return_'+ sense)(character))
         # the object's at_desc() method.
 	if sense == 'appearance':
 	    sense_callback = 'at_desc'
 	else:
 	    sense_callback = 'at_desc_' + sense
-        getattr(looking_at_obj, sense_callback)(looker=caller)
+        getattr(looking_at_obj, sense_callback)(looker=character)

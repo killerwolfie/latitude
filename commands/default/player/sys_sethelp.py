@@ -29,7 +29,7 @@ class CmdSysSetHelp(default_cmds.CmdSetHelp):
     """
     key = "@sethelp"
     aliases = []
-    locks = "cmd:perm(command_@sethelp) or perm(Custodians)"
-    help_category = "--- Coder/Sysadmin ---"
+    locks = "cmd:perm(command_@sethelp) or perm(Janitors)"
+    help_category = "=== Admin ==="
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 

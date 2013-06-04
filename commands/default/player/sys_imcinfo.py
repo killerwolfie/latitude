@@ -21,7 +21,7 @@ class CmdSysIMCInfo(default_cmds.CmdIMCInfo):
 
     key = "@imcinfo"
     aliases = []
-    locks = "cmd:serversetting(IMC2_ENABLED) and (perm(command_@imcinfo) or perm(Custodians))"
-    help_category = "--- Coder/Sysadmin ---"
+    locks = "perm(command_@imcinfo) or perm(Janitors)"
+    help_category = "=== Admin ==="
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 

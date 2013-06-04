@@ -12,8 +12,8 @@ class CmdSysObjects(default_cmds.CmdObjects):
     given, <nr> defaults to 10.
     """
     key = "@objects"
-    aliases = ["@listobjects", "@listobjs", '@stats', '@db']
-    locks = "cmd:perm(command_@objects) or perm(Custodians)"
-    help_category = "--- Coder/Sysadmin ---"
+    aliases = []
+    locks = "cmd:perm(command_@objects) or perm(Janitors)"
+    help_category = "=== Admin ==="
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 

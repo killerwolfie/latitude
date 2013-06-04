@@ -2,7 +2,7 @@ from game.gamesrc.latitude.utils.stringmanip import conj_join
 from ev import Object, Character, search_object, default_cmds
 import re
 
-class CmdFollow(default_cmds.MuxCommand):
+class CmdFollow(default_cmds.MuxPlayerCommand):
     """
     follow - Start following a character or object.
     Usage:
@@ -20,7 +20,7 @@ class CmdFollow(default_cmds.MuxCommand):
         if not self.args:
             self.msg('Follow what?')
             return
-        follower = self.caller
+        follower = self.character
         leader = follower.search(self.args)
         if follower == leader:
             leader.msg("You march to the beat of your own drum.")
@@ -52,7 +52,7 @@ class CmdFollow(default_cmds.MuxCommand):
                 follower.msg('You wait for %s to lead you.' % (leader.key))
                 return
             # It's not a character.  Fail out.
-            self.caller.msg("You can't follow that!")
+            self.msg("You can't follow that!")
             return
         # Start following
         follower.db.follow_following = leader

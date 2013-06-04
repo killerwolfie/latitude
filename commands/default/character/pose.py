@@ -25,10 +25,10 @@ class CmdPose(say.CmdSay):
 
     def func(self):
         message = self.gen_pose(self.args)
-        if self.caller.location:
+        if self.character.location:
             # Call the speech hook on the location
-            self.caller.location.at_say(self.caller, message)
-            self.caller.location.msg_contents(message)
+            self.character.location.at_say(self.character, message)
+            self.character.location.msg_contents(message)
         else:
-            self.caller.msg(message)
+            self.msg(message)
 

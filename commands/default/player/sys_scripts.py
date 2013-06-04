@@ -23,7 +23,7 @@ class CmdSysScripts(default_cmds.CmdScripts):
     """
     key = "@scripts"
     aliases = []
-    locks = "cmd:perm(command_@scripts) or perm(Custodians)"
-    help_category = "--- Coder/Sysadmin ---"
+    locks = "cmd:perm(command_@scripts) or perm(Janitors)"
+    help_category = "=== Admin ==="
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 

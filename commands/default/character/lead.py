@@ -2,7 +2,7 @@ from game.gamesrc.latitude.utils.stringmanip import conj_join
 from ev import Object, Character, search_object, default_cmds
 import re
 
-class CmdLead(default_cmds.MuxCommand):
+class CmdLead(default_cmds.MuxPlayerCommand):
     """
     lead - Start leading a character or object.
     Usage:
@@ -20,7 +20,7 @@ class CmdLead(default_cmds.MuxCommand):
         if not self.args:
             self.msg('Lead what?')
             return
-        leader = self.caller
+        leader = self.character
         follower = leader.search(self.args)
         if not follower:
             return # Error message is handled by the search call
@@ -61,7 +61,7 @@ class CmdLead(default_cmds.MuxCommand):
                 leader.msg('You wait for %s to follow you.' % (follower.key))
                 return
             # It's not a character.  Fail out.
-            self.caller.msg("You can't follow that!")
+            self.msg("You can't follow that!")
             return
         # Start leading
         follower.db.follow_following = leader

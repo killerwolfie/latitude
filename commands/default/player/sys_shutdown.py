@@ -11,7 +11,7 @@ class CmdSysShutdown(default_cmds.CmdShutdown):
     Gracefully shut down both Server and Portal.
     """
     key = "@shutdown"
-    locks = "cmd:perm(commandy_@shutdown) or perm(Custodians)"
-    help_category = "--- Coder/Sysadmin ---"
+    locks = "cmd:perm(commandy_@shutdown) or perm(Janitors)"
+    help_category = "=== Admin ==="
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 

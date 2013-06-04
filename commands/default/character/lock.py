@@ -1,6 +1,6 @@
 from ev import default_cmds
 
-class CmdLock(default_cmds.MuxCommand):
+class CmdLock(default_cmds.MuxPlayerCommand):
     """
     lock <object>
     
@@ -14,9 +14,9 @@ class CmdLock(default_cmds.MuxCommand):
 
     def func(self):
         if not self.args:
-	    self.caller.msg('Lock what?')
+	    self.msg('Lock what?')
 	    return()
-        obj = self.caller.search(self.args)
+        obj = self.character.search(self.args)
 	if not obj:
 	    return()
-	obj.action_lock(self.caller)
+	obj.action_lock(self.character)

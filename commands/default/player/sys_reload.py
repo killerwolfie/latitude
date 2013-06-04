@@ -12,7 +12,7 @@ class CmdSysReload(default_cmds.CmdReload):
     @reset to purge) and at_reload() hooks will be called.
     """
     key = "@reload"
-    locks = "cmd:perm(command_@reload) or perm(Custodians)"
-    help_category = "--- Coder/Sysadmin ---"
+    locks = "cmd:perm(command_@reload) or perm(Janitors)"
+    help_category = "=== Admin ==="
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 

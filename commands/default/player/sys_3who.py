@@ -2,7 +2,7 @@ from src.server.sessionhandler import SESSIONS
 from ev import default_cmds
 from ev import utils
 
-class CmdSys3Who(default_cmds.MuxCommand):
+class CmdSys3Who(default_cmds.MuxPlayerCommand):
     """
     @3who
 
@@ -31,7 +31,7 @@ class CmdSys3Who(default_cmds.MuxCommand):
             output += '%-12s %6s %-5s ' % (name[:12], ontime[:6], idletime[:5])
             if char_num and char_num % 3 == 0:
                 output += '\n'
-        self.caller.msg(output.rstrip('\n'))
+        self.msg(output.rstrip('\n'))
 
     def tdelta_string(self, seconds):
         unit_table = [

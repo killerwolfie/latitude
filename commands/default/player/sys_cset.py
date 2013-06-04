@@ -12,8 +12,8 @@ class CmdSysCset(default_cmds.CmdCset):
     """
 
     key = "@cset"
-    locks = "cmd:perm(command_@cset) or perm(Custodians)"
+    locks = "cmd:perm(command_@cset) or perm(Janitors)"
     aliases = []
-    help_category = "--- Coder/Sysadmin ---"
+    help_category = "=== Admin ==="
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 

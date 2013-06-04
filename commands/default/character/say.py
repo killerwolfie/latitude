@@ -20,12 +20,12 @@ color_names = {
     'hilite' : '%ch',
 }
 
-class CmdSay(default_cmds.MuxCommand):
+class CmdSay(default_cmds.MuxPlayerCommand):
     """
     Usage:
       say <message>
 
-    Talk to those in your current location.
+    Talk to others in your current location.
     """
     key = "say"
     aliases = ['"']
@@ -35,10 +35,10 @@ class CmdSay(default_cmds.MuxCommand):
 
     def func(self):
         message = self.gen_say(self.args)
-        if self.caller.location:
+        if self.character.location:
             # Call the speech hook on the location
-            self.caller.location.at_say(self.caller, message)
-            self.caller.location.msg_contents(message)
+            self.character.location.at_say(self.character, message)
+            self.character.location.msg_contents(message)
         else:
             self.msg(message)
 
@@ -50,12 +50,12 @@ class CmdSay(default_cmds.MuxCommand):
 	    verb = self.get_exclaims()
 	else:
 	    verb = self.get_says()
-	return self.get_color_name() + self.caller.name + ' ' + self.colorize(verb + ', "' + say_string + '"')
+	return self.get_color_name() + self.character.name + ' ' + self.colorize(verb + ', "' + say_string + '"')
 
     def gen_pose(self, pose_string):
         if [chk for chk in ["'s ", '-', ', ', ': ', ' '] if pose_string.startswith(chk)]:
-            return(self.get_color_name() + self.caller.name + self.colorize(pose_string))
-        return(self.get_color_name() + self.caller.name + ' ' + self.colorize(pose_string))
+            return(self.get_color_name() + self.character.name + self.colorize(pose_string))
+        return(self.get_color_name() + self.character.name + ' ' + self.colorize(pose_string))
 
     def get_says(self):
         return "says"
@@ -76,8 +76,8 @@ class CmdSay(default_cmds.MuxCommand):
 	return retval
 
     def get_color_depth(self, depth):
-        if self.caller.get_attribute('say_color_depth' + str(depth)):
-	    return self.parse_color(self.caller.get_attribute('say_color_depth' + str(depth)))
+        if self.character.get_attribute('say_color_depth' + str(depth)):
+	    return self.parse_color(self.character.get_attribute('say_color_depth' + str(depth)))
         if depth < 1:
 	    return '%cn%cc'
 	elif depth == 1:
@@ -88,13 +88,13 @@ class CmdSay(default_cmds.MuxCommand):
 	    return '%cn%cw'
 
     def get_color_quote(self):
-        if self.caller.get_attribute('say_color_quote'):
-	    return self.parse_color(self.caller.get_attribute('say_color_quote'))
+        if self.character.get_attribute('say_color_quote'):
+	    return self.parse_color(self.character.get_attribute('say_color_quote'))
 	return '%cn%cw'
 
     def get_color_name(self):
-        if self.caller.get_attribute('say_color_name'):
-	    return self.parse_color(self.caller.get_attribute('say_color_name'))
+        if self.character.get_attribute('say_color_name'):
+	    return self.parse_color(self.character.get_attribute('say_color_name'))
 	return '%ch%cc'
 
     def colorize(self, say_string):

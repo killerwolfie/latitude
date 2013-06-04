@@ -1,6 +1,6 @@
 from ev import default_cmds
 
-class CmdUnlock(default_cmds.MuxCommand):
+class CmdUnlock(default_cmds.MuxPlayerCommand):
     """
       unlock <object>
 
@@ -17,9 +17,9 @@ class CmdUnlock(default_cmds.MuxCommand):
 
     def func(self):
         if not self.args:
-	    self.caller.msg('Unlock what?')
+	    self.msg('Unlock what?')
 	    return()
-        obj = self.caller.search(self.args)
+        obj = self.character.search(self.args)
 	if not obj:
 	    return()
-	obj.action_unlock(self.caller)
+	obj.action_unlock(self.character)

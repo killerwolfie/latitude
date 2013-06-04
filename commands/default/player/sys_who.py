@@ -4,7 +4,7 @@ from ev import utils
 from game.gamesrc.latitude.utils.evennia_color import *
 from game.gamesrc.latitude.utils.search import match, match_character
 
-class CmdSysWho(default_cmds.MuxCommand):
+class CmdSysWho(default_cmds.MuxPlayerCommand):
     """
     @who - Display a table of basic information on other characters
 
@@ -29,16 +29,16 @@ class CmdSysWho(default_cmds.MuxCommand):
 
     def func(self):
         switches = [switch.lower() for switch in self.switches]
-        caller = self.caller
+        character = self.character
         if self.cmdstring.lower() == 'ws':
             if not switches and not self.args:
-                if not hasattr(self.caller, 'location'):
-                    self.msg("{RYou have no location.  (See {rhelp @ic{R for more information)")
+                if not character:
+                    self.msg("{RYou have no location.  (See {rhelp @char{R for more information)")
                     return
-                if not self.caller.location:
+                if not character.location:
                     self.msg("{RYou don't seem to have any specific location.")
                     return
-                self.display_users([ con for con in self.caller.location.contents if utils.inherits_from(con, "src.objects.objects.Character") ])
+                self.display_users([ con for con in character.location.contents if utils.inherits_from(con, "src.objects.objects.Character") ])
                 return
         else:
             if (not switches or switches == ['characters']) and not self.args:
@@ -62,12 +62,18 @@ class CmdSysWho(default_cmds.MuxCommand):
             if switches == ['far'] and self.args:
                 target = match(self.args)
                 if not target:
-                    self.caller.msg('%cnNo match found for "' + self.args + "'")
+                    self.msg('%cnNo match found for "' + self.args + "'")
                     return
                 self.display_users([target])
                 return
             if switches == ['room'] and not self.args:
-                self.display_users([ con for con in self.caller.location.contents if utils.inherits_from(con, "src.objects.objects.Character") ])
+                if not character:
+                    self.msg("{RYou have no location.  (See {rhelp @char{R for more information)")
+                    return
+                if not character.location:
+                    self.msg("{RYou don't seem to have any specific location.")
+                    return
+                self.display_users([ con for con in character.location.contents if utils.inherits_from(con, "src.objects.objects.Character") ])
                 return
         self.msg("Invalid '%s' command.  See 'help %s' for usage" % (self.cmdstring, self.key))
 
@@ -90,14 +96,14 @@ class CmdSysWho(default_cmds.MuxCommand):
                 has_characters = True
                 break
         if has_characters:
-            self.caller.msg("{CName                Stamina  Gender    Species           {b[{chelp @who{b for help]")
-            self.caller.msg("{w------------------------------------------------------------------------------")
+            self.msg("{CName                Stamina  Gender    Species           {b[{chelp @who{b for help]")
+            self.msg("{w------------------------------------------------------------------------------")
         else:
-            self.caller.msg("{CName     {b[{chelp @who{b for help]")
-            self.caller.msg("{w-----------------------------")
+            self.msg("{CName     {b[{chelp @who{b for help]")
+            self.msg("{w-----------------------------")
         # Output the body
 	if not users:
-	    self.caller.msg('{RNo results')
+	    self.msg('{RNo results')
         for user in users:
             if not utils.inherits_from(user, "src.objects.objects.Character"):
                 num_awake += 1
@@ -113,7 +119,7 @@ class CmdSysWho(default_cmds.MuxCommand):
                         status = self.idle_string(idle_time)
                 else:
                     status = '{GOffline'
-                self.caller.msg('%s %s' % (evennia_color_left(name, 19, dots=True), evennia_color_left(status, 8)))
+                self.msg('%s %s' % (evennia_color_left(name, 19, dots=True), evennia_color_left(status, 8)))
             else:
                 # Character Name
                 name = user.return_styled_name(self.caller)
@@ -145,7 +151,7 @@ class CmdSysWho(default_cmds.MuxCommand):
                 else:
                     species = '%cn%ch%cw' + species
 
-                self.caller.msg('%s %s %s %s' % (evennia_color_left(name, 19, dots=True), evennia_color_left(stamina, 8), evennia_color_left(gender, 9, dots=True), evennia_color_left(species, 39, dots=True)))
+                self.msg('%s %s %s %s' % (evennia_color_left(name, 19, dots=True), evennia_color_left(stamina, 8), evennia_color_left(gender, 9, dots=True), evennia_color_left(species, 39, dots=True)))
 
                 if user.has_player:
                     num_awake += 1
@@ -158,7 +164,7 @@ class CmdSysWho(default_cmds.MuxCommand):
         else:
             footer.evennia_import("{w-----------------------------")
             footer.draw_string(3, 0, '{b[ {C%s{b players ]' % (num_awake))
-        self.caller.msg(footer.evennia_export())
+        self.msg(footer.evennia_export())
 
     def idle_string(self, seconds):
         unit_table = [

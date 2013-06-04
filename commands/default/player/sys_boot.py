@@ -1,4 +1,5 @@
-from ev import default_cmds
+from ev import default_cmds, search_player
+from src.server.sessionhandler import SESSIONS
 
 class CmdSysBoot(default_cmds.CmdBoot):
     """
@@ -47,11 +48,10 @@ class CmdSysBoot(default_cmds.CmdBoot):
                     break
         else:
             # Boot by player object
-            pobj = search.player_search(args)
+            pobj = search_player(args)
             if not pobj:
                 self.caller("Player %s was not found." % pobj.key)
                 return
-            pobj = pobj[0]
             # we have a bootable object with a connected user
             matches = SESSIONS.sessions_from_player(pobj)
             for match in matches:

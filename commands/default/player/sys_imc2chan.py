@@ -23,7 +23,7 @@ class CmdSysIMC2Chan(default_cmds.CmdIMC2Chan):
     """
 
     key = "@imc2chan"
-    locks = "cmd:serversetting(IMC2_ENABLED) and (perm(command_@imc2chan) or perm(Custodians))"
-    help_category = "--- Coder/Sysadmin ---"
+    locks = "perm(command_@imc2chan) or perm(Janitors)"
+    help_category = "=== Admin ==="
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 

@@ -2,7 +2,7 @@ from ev import Command
 from ev import syscmdkeys
 from ev import default_cmds
 
-class CmdChannel(default_cmds.MuxCommand):
+class CmdChannel(default_cmds.MuxPlayerCommand):
     """
     This is a special command that the cmdhandler calls
     when it detects that the command given matches

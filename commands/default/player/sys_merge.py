@@ -1,8 +1,8 @@
-from ev import default_cmds
+from ev import default_cmds, search_player
 from src.server.sessionhandler import SESSIONS
 import shlex
 
-class CmdSysMerge(default_cmds.MuxCommand):
+class CmdSysMerge(default_cmds.MuxPlayerCommand):
     """
     @merge
 
@@ -26,10 +26,10 @@ class CmdSysMerge(default_cmds.MuxCommand):
         # Convert the requested account names into players
         players = []
         for player_name in player_names:
-            player = self.caller.search_player(player_name)
+            player = search_player(player_name)
             if not player:
                 return # The player search should drop an error message
-            players.append(player)
+            players.append(player[0])
         # Ensure none of the players are the same
         if len(players) != len(set(players)):
             self.msg("Each player must be different")

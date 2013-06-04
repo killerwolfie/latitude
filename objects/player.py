@@ -1,5 +1,6 @@
 from ev import Player, utils, search_object, search_player
 import time
+import sys
 
 class LatitudePlayer(Player):
     def basetype_setup(self):
@@ -32,6 +33,21 @@ class LatitudePlayer(Player):
     def at_disconnect(self, reason=None):
         # Update some statistics
         self.db.stats_last_logout_time = time.time()
+
+    def bad(self):
+        """
+        Audits whether the object is corrupted in some way.
+
+        If the object is valid, then None is returned.  If it's broken, then a string
+        is returned containing a reason why.
+        """
+        try:
+            if self.db.characters:
+                for character in self.db.characters:
+                    if character.get_owner() != self:
+                        return "some owned characters don't agree with ownership"
+        except:
+            return "exception raised during audit: " + sys.exc_info()[0]
 
     def do_puppet(self, sessid, new_character):
         """
@@ -176,9 +192,9 @@ class LatitudePlayer(Player):
         # Start with the default number of characters
         max_characters = 3
         # Apply bonuses
-        if 'CHAR_SLOT' in self.db.account_bonus_list:
+        if self.db.account_bonus_list and 'CHAR_SLOT' in self.db.account_bonus_list:
             max_characters += self.db.account_bonus.count('CHAR_SLOT')
-        if 'LAT1' in self.db.account_bonus_set:
+        if self.db.account_bonus_set and 'LAT1' in self.db.account_bonus_set:
             max_characters += 6
         return max_characters
 

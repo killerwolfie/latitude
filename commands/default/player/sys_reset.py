@@ -14,7 +14,7 @@ class CmdSysReset(default_cmds.CmdReset):
     """
     key = "@reset"
     aliases = []
-    locks = "cmd:perm(command_@reset) or perm(Custodians)"
-    help_category = "--- Coder/Sysadmin ---"
+    locks = "cmd:perm(command_@reset) or perm(Janitors)"
+    help_category = "=== Admin ==="
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 

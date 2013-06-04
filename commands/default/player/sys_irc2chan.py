@@ -23,6 +23,6 @@ class CmdSysIRC2Chan(default_cmds.CmdIRC2Chan):
     """
 
     key = "@irc2chan"
-    locks = "cmd:serversetting(IRC_ENABLED) and (perm(command_@irc2chan) or perm(Custodians))"
-    help_category = "--- Coder/Sysadmin ---"
+    locks = "cmd:perm(command_@irc2chan) or perm(Janitors)"
+    help_category = "=== Admin ==="
 

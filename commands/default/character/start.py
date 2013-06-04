@@ -2,7 +2,7 @@ from game.gamesrc.latitude.utils.stringmanip import conj_join
 from ev import default_cmds, search_object
 import re
 
-class CmdStart(default_cmds.MuxCommand):
+class CmdStart(default_cmds.MuxPlayerCommand):
     """
     start
        'Start' an object.
@@ -18,7 +18,7 @@ class CmdStart(default_cmds.MuxCommand):
     arg_regex = r"\s.*?|$"
 
     def func(self):
-        character = self.caller
+        character = self.character
         args = self.args.lower()
         if args:
             target = character.search(args)

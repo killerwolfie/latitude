@@ -1,7 +1,7 @@
 from ev import default_cmds
 from ev import utils
 
-class CmdMap(default_cmds.MuxCommand):
+class CmdMap(default_cmds.MuxPlayerCommand):
     """
     map
 
@@ -20,11 +20,11 @@ class CmdMap(default_cmds.MuxCommand):
         if self.args:
             self.msg('You cartographize "%s"!  (Maybe you meant just "map"?)' % (self.args))
             return
-        if self.caller.location:
-            if self.caller.get_owner().status_online():
-                self.caller.msg(self.caller.location.return_map(mark_friends_of=self.caller))
+        if self.character.location:
+            if self.character.get_owner().status_online():
+                self.msg(self.character.location.return_map(mark_friends_of=self.character))
             else:
                 # If the player is 'hiding' then hide friend markers for privacy
-                self.caller.msg(self.caller.location.return_map())
+                self.msg(self.character.location.return_map())
 	else:
-	    self.caller.msg("You have no location to find on the map!")
+	    self.character.msg("You have no location to find on the map!")
