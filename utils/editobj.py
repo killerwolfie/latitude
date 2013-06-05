@@ -55,25 +55,25 @@ class CmdEditObj(lineeditor.CmdLineEditorVi):
            if self.editor_cmdstring != None:
                if self.editor_cmdstring == ':q':
                    if self.editor_args:
-                       self.caller.msg('{rThe ":q" command takes no arguments.')
+                       self.msg('{rThe ":q" command takes no arguments.')
                        return
                    if not self.editor.is_unchanged():
-                       self.caller.msg('{rText has changed.  Use ":w" to save changes before quitting.')
+                       self.msg('{rText has changed.  Use ":w" to save changes before quitting.')
                        return
                    self.objedit.close_field()
                elif self.editor_cmdstring == ':q!':
                    if self.editor_args:
-                       self.caller.msg('{rThe ":q!" command takes no arguments.')
+                       self.msg('{rThe ":q!" command takes no arguments.')
                        return
                    self.objedit.close_field()
                elif self.editor_cmdstring == ':w':
                    if self.editor_args:
-                       self.caller.msg('{rThe ":w" command takes no arguments.')
+                       self.msg('{rThe ":w" command takes no arguments.')
                        return
                    self.objedit.save_field(close=False)
                elif self.editor_cmdstring == ':wq':
                    if self.editor_args:
-                       self.caller.msg('{rThe ":wq" command takes no arguments.')
+                       self.msg('{rThe ":wq" command takes no arguments.')
                        return
                    self.objedit.save_field(close=True)
                else:
@@ -86,18 +86,18 @@ class CmdEditObj(lineeditor.CmdLineEditorVi):
                    self.objedit.commit()
                    self.objedit.quit()
                else:
-                   self.caller.msg('Do you still want to try committing your changes?  [Y/N/C]:')
+                   self.msg('Do you still want to try committing your changes?  [Y/N/C]:')
            elif self.raw_string.lower() == 'n':
                self.objedit.quit()
            elif self.raw_string.lower() == 'c':
                self.objedit.state_asking_to_save = False
                self.objedit.display_menu()
            else:
-               self.caller.msg('Please use "Y", "N", or "C" to make your selection.  Do you want to commit your changes?  [Y/N/C]:')
+               self.msg('Please use "Y", "N", or "C" to make your selection.  Do you want to commit your changes?  [Y/N/C]:')
        else:
            # Catch requests to quit
            if self.args.lower() == 'q':
-               self.caller.msg('Do you want to commit your changes?  [Y/N/C]:')
+               self.msg('Do you want to commit your changes?  [Y/N/C]:')
                self.objedit.state_asking_to_save = True
                return
            
@@ -124,11 +124,12 @@ class EditObj(object):
     This class puts a ObjEditCmdset onto the user which overrides all commands and interprets all input, and passes it off to appropriate editor command classes.
     It also acts as a data store for the current state of the menu as the user navigates through it.
     """
-    def __init__(self, caller, obj, fields, confirm=True, key='Editor'):
+    def __init__(self, caller, obj, fields, sessid=None, confirm=True, key='Editor'):
         # Store settings
         self.caller = caller
         self.obj = obj.typeclass # 'isinstance' is used, requiring typeclass, not DB classes
         self.fields = list()
+        self.sessid = sessid
         self.confirm = confirm
         self.key = key
         # Initialize state
@@ -153,10 +154,13 @@ class EditObj(object):
         cmd_entry.objedit = self
         cmd_entry.editor = self.editor
         cmdset.add(cmd_entry)
-        if hasattr(caller, 'player'):
-            caller.player.cmdset.add(cmdset)
         caller.cmdset.add(cmdset)
         self.display_menu()
+
+    def msg(self, message, sessid=None):
+        if sessid == None:
+            sessid = self.sessid
+        self.caller.msg(message, sessid=sessid)
 
     def display_menu(self):
         menu_string = ''
@@ -217,7 +221,7 @@ class EditObj(object):
         menu_string += '\n\n{w------------------------------------------------------------------------------'
         menu_string += "\n{nPlease make a selection, or enter 'Q' to quit.  (You'll be prompted to save.)"
         # Print result
-        self.caller.msg(menu_string)
+        self.msg(menu_string)
 
     def open_field(self, key):
         for field in self.fields:
@@ -244,10 +248,10 @@ class EditObj(object):
                 else:
                     continue
                 self.state_current_field = field
-                self.caller.msg('\nNow editing "%s"...' % field['desc'])
+                self.msg('\nNow editing "%s"...' % field['desc'])
                 self.editor.display_buffer()
                 return
-        self.caller.msg('{rThat seems to be an invalid menu selection.')
+        self.msg('{rThat seems to be an invalid menu selection.')
 
     def save_field(self, close=False):
         # Process the buffer, if this field is a line editor type
@@ -255,35 +259,35 @@ class EditObj(object):
             # Verify that they supplied kosher results
             new_val = self.editor.get_buffer()
             if self.state_current_field['maxchars'] != None and len(new_val) > self.state_current_field['maxchars']:
-                self.caller.msg('{rUnable to save: Too many characters')
+                self.msg('{rUnable to save: Too many characters')
                 return
             if self.state_current_field['maxwords'] != None and len([ word for word in re.split(r'\s+', new_val) if word != '']) > self.state_current_field['maxwords']:
-                self.caller.msg('{rUnable to save: Too many words')
+                self.msg('{rUnable to save: Too many words')
                 return
             if self.state_current_field['maxlines'] != None and len(new_val.split('\n')) > self.state_current_field['maxlines']:
-                self.caller.msg('{rUnable to save: Too many lines')
+                self.msg('{rUnable to save: Too many lines')
                 return
             if self.state_current_field['invalid_regex'] != None and re.search(self.state_current_field['invalid_regex'], new_val):
-                self.caller.msg('{rUnable to save: Invalid characters detected.')
+                self.msg('{rUnable to save: Invalid characters detected.')
                 return
             if self.state_current_field['type'] == 'NAME' and not new_val:
-                self.caller.msg("{rNames can't be blank")
+                self.msg("{rNames can't be blank")
                 return
             if UNIQUE_CHARACTER_NAMES and self.state_current_field['type'] == 'NAME' and isinstance(self.obj, Character):
                 if new_val != self.obj.name: # Pass if they're trying to change the name of the object to what it already is
                     if [obj for obj in search_object(new_val) if isinstance(obj, Character)]:
-                        self.caller.msg('{rThat name is already taken.')
+                        self.msg('{rThat name is already taken.')
                         return
                     if new_val != self.obj.player.name and search_player(new_val):
-                        self.caller.msg("{rThat name matches someone's login.")
+                        self.msg("{rThat name matches someone's login.")
                         return
             if UNIQUE_PLAYER_NAMES and self.state_current_field['type'] == 'NAME' and isinstance(self.obj, Player):
                 if new_val != self.obj.name: # Pass if they're trying to change the name of the object to what it already is
                     if search_player(new_val):
-                        self.caller.msg('{rThat name is already taken.')
+                        self.msg('{rThat name is already taken.')
                         return
                     if new_val != self.obj.character.name and [obj for obj in search_object(new_val) if isinstance(obj, Character)]:
-                        self.caller.msg("{rThat name matches the name of someone's character.")
+                        self.msg("{rThat name matches the name of someone's character.")
                         return
             # Perform the save
             if self.state_current_field['type'] == 'ATTR':
@@ -293,14 +297,14 @@ class EditObj(object):
             # Set the buffer pristine (Matching what's saved)
             self.editor.set_pristine()
         # Alert the user that we've complete (Should have bailed by now if there were errors)
-        self.caller.msg('{GCurrent buffer saved.  Use "Q" on the main menu commit the change to the object.')
+        self.msg('{GCurrent buffer saved.  Use "Q" on the main menu commit the change to the object.')
         # Close if requested
         if close:
             self.close_field()
 
     def close_field(self):
         self.state_current_field = None
-        self.caller.msg('... Editor closed.')
+        self.msg('... Editor closed.')
         self.display_menu()
 
     def commit_precheck(self):
@@ -308,18 +312,18 @@ class EditObj(object):
         if UNIQUE_CHARACTER_NAMES and self.edited_name and isinstance(self.obj, Character):
             if self.edited_name != self.obj.name: # Pass if they're trying to change the name of the object to what it already is
                 if [obj for obj in search_object(self.edited_name) if isinstance(obj, Character)]:
-                    self.caller.msg('{rCould not commit changes: Character name already taken.')
+                    self.msg('{rCould not commit changes: Character name already taken.')
                     return False
                 if self.edited_name != self.obj.player.name and search_player(self.edited_name):
-                    self.caller.msg("{rCould not commit changes: Character name already assigned to player.")
+                    self.msg("{rCould not commit changes: Character name already assigned to player.")
                     return False
         if UNIQUE_PLAYER_NAMES and self.edited_name and isinstance(self.obj, Player):
             if self.edited_name != self.obj.name: # Pass if they're trying to change the name of the object to what it already is
                 if search_player(self.edited_name):
-                    self.caller.msg('{rCould not commit changes: Player name is already taken.')
+                    self.msg('{rCould not commit changes: Player name is already taken.')
                     return False
                 if self.edited_name != self.obj.character.name and [obj for obj in search_object(self.edited_name) if isinstance(obj, Character)]:
-                    self.caller.msg("{rCould not commit changes: Player name is already assigned to character.")
+                    self.msg("{rCould not commit changes: Player name is already assigned to character.")
                     return False
         return True
 
@@ -328,13 +332,11 @@ class EditObj(object):
             self.obj.name = self.edited_name
         for attr_name, attr_val in self.edited_attr.items():
             self.obj.set_attribute(attr_name, attr_val)
-        self.caller.msg('{gChanges committed.')
+        self.msg('{gChanges committed.')
 
     def quit(self):
-        if hasattr(self.caller, 'player'):
-            self.caller.player.cmdset.delete('ObjEdit')
         self.caller.cmdset.delete('ObjEdit')
-        self.caller.execute_cmd('look')
+        self.caller.execute_cmd('look', sessid=self.sessid)
 
 class CmdEditTest(Command):
     """
