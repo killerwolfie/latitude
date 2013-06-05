@@ -94,9 +94,9 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
                 friend_characters = friend.get_characters()
                 if not friend_characters:
                     continue
-                if len(friend_characters) == 1 and friend_characters[0].key.lower() == friend.key.lower():
+                if len(friend_characters) == 1 and list(friend_characters)[0].key.lower() == friend.key.lower():
                     # If this player only has one character and it matches the name of the player exactly, then output a condensed entry
-                    friend_char = friend_characters[0]
+                    friend_char = list(friend_characters)[0]
                     if friend_char.db.friends_optout:
                         continue
                     self.msg('+ ' + friend_char.return_styled_name(self.caller))
