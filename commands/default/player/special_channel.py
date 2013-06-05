@@ -11,6 +11,7 @@ class CmdChannel(say.CmdSay):
     key = syscmdkeys.CMD_CHANNEL
     aliases = []
     locks = "cmd:all()"
+    auto_help = False
 
     def parse(self):
         super(CmdChannel, self).parse()
