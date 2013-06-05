@@ -91,8 +91,7 @@ class CmdSysChar(default_cmds.MuxPlayerCommand):
         self.msg('{w|  {WSee {whelp{W for more information, or use {wpub <messsage>{W for the public chat.  |')
         self.msg('{w|-----------------------------------------------------------------------------|')
         disabled = player.no_slot_chars()
-        characters = player.get_characters()
-        characters.sort(cmp=lambda b, a: cmp(a.db.stats_last_puppet_time, b.db.stats_last_puppet_time) or cmp(a.id, b.id))
+        characters = sorted(player.get_characters(), cmp=lambda b, a: cmp(a.db.stats_last_puppet_time, b.db.stats_last_puppet_time) or cmp(a.id, b.id))
         max_characters = player.max_characters()
         if max_characters != float('inf'):
             characters.extend([None] * (player.max_characters() - len(characters)))
@@ -137,8 +136,7 @@ class CmdSysChar(default_cmds.MuxPlayerCommand):
 
     def cmd_list(self):
         player = self.caller
-        characters = player.get_characters()
-        characters.sort(cmp=lambda a, b: cmp(a.key,b.key))
+        characters = sorted(player.get_characters(), cmp=lambda a, b: cmp(a.key,b.key))
         self.msg('Your characters: ' + ', '.join([char.return_styled_name(player) for char in characters]))
         if player.no_slot_chars():
             self.msg('\n{RYou appear to have more characters than character slots.  Some of your characters may be inaccessible.')
