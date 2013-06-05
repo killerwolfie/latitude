@@ -211,7 +211,7 @@ class LatitudePlayer(Player):
             character_candidates = self.get_all_puppets()
         else:
             character_candidates = self.db.characters or []
-        return [char for char in character_candidates if hasattr(char, 'get_owner') and char.get_owner() == self]
+        return set(char for char in character_candidates if hasattr(char, 'get_owner') and char.get_owner() == self)
 
     def is_friends_with(self, player):
         """

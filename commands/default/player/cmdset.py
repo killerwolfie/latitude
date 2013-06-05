@@ -54,6 +54,7 @@ from game.gamesrc.latitude.commands.default.player import sys_shutdown
 from game.gamesrc.latitude.commands.default.player import sys_teleport
 from game.gamesrc.latitude.commands.default.player import sys_unban
 from game.gamesrc.latitude.commands.default.player import sys_wall
+from game.gamesrc.latitude.commands.default.player import sys_whereare
 from game.gamesrc.latitude.commands.default.player import sys_who
 
 class LatitudeCmdsetPlayer(CmdSet):
@@ -118,4 +119,5 @@ class LatitudeCmdsetPlayer(CmdSet):
         self.add(sys_teleport.CmdSysTeleport)
         self.add(sys_unban.CmdSysUnban)
         self.add(sys_wall.CmdSysWall)
+        self.add(sys_whereare.CmdSysWhereare)
         self.add(sys_who.CmdSysWho)
