@@ -48,7 +48,7 @@ def owner(accessing_obj, accessed_obj, *args, **kwargs):
     if not hasattr(accessed_obj, 'get_owner'):
         return False
     if hasattr(accessing_obj, 'get_owner'):
-        return accessing_obj.get_owner == accessed_obj.get_owner()
+        return accessing_obj.get_owner() == accessed_obj.get_owner()
     else:
         return accessing_obj == accessed_obj.get_owner()
 
