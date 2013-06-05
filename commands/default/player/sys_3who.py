@@ -1,6 +1,5 @@
 from src.server.sessionhandler import SESSIONS
-from ev import default_cmds
-from ev import utils
+from ev import default_cmds, utils
 
 class CmdSys3Who(default_cmds.MuxPlayerCommand):
     """
