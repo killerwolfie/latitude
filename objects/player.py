@@ -1,14 +1,15 @@
-from ev import Player, utils, search_object, search_player
+from ev import utils, search_object, search_player
+from ev import Player as EvenniaPlayer
 import time
 import sys
 
-class LatitudePlayer(Player):
+class Player(EvenniaPlayer):
     def basetype_setup(self):
         """
         This sets up the default properties of an Object,
         just before the more general at_object_creation.
         """
-        super(LatitudePlayer, self).basetype_setup()
+        super(Player, self).basetype_setup()
         # Clear any locks set by the default base
         self.locks.replace('')
         # Create friend system variables
@@ -124,7 +125,7 @@ class LatitudePlayer(Player):
         """
         Returns the name of this player, styled (With colors, etc.) to help identify
         the type of the object.  This is used for compatibility with
-        LatitudeObject.return_styled_name() objects.  For more details, look there.
+        Object.return_styled_name() objects.  For more details, look there.
         """
         # You shouldn't create any Objects directly.  This is meant to be a pure base class.
         # So, make an accordingly ominous looking name.

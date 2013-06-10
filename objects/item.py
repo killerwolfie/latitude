@@ -1,9 +1,9 @@
 """
 Latitude inanimate object class
 """
-from game.gamesrc.latitude.objects.object import LatitudeObject
+from game.gamesrc.latitude.objects.object import Object
 
-class LatitudeItem(LatitudeObject):
+class Item(Object):
     """
     This type of object is similar to the base Object class, except that it's considered inanimate, and something that could potentially be picked up and stored in a character inventory.
     """
@@ -12,7 +12,7 @@ class LatitudeItem(LatitudeObject):
         This sets up the default properties of an Object,
         just before the more general at_object_creation.
         """
-        super(LatitudeItem, self).basetype_setup()
+        super(Item, self).basetype_setup()
         self.locks.add(";".join([
             "get:true()",              # Allows users to pick up the object 
             "drop:true()",             # Allows users to put down the object (Requires 'drop_into' at your location as well)
@@ -31,5 +31,5 @@ class LatitudeItem(LatitudeObject):
         return '{G' + self.key
 
     def gender(self):
-        return super(LatitudeItem, self).gender() or 'neuter'
+        return super(Item, self).gender() or 'neuter'
 

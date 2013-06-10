@@ -1,8 +1,8 @@
-from game.gamesrc.latitude.objects.exit import LatitudeExit
+from game.gamesrc.latitude.objects.exit import Exit
 
-class LatitudeExitDeadbolt(LatitudeExit):
+class ExitDeadbolt(Exit):
     def at_object_creation(self):
-        super(LatitudeExitDeadbolt, self).at_object_creation()
+        super(ExitDeadbolt, self).at_object_creation()
 	self.db.deadbolt_two_way = True
         self.locks.add("lock:all()")
 
@@ -42,7 +42,7 @@ class LatitudeExitDeadbolt(LatitudeExit):
 	    return()
 
 	if self.db.deadbolt_two_way:
-            reverse_exits = list(exit for exit in self.reverse_exits() if isinstance(exit, LatitudeExitDeadbolt) and exit.db.deadbolt_two_way)
+            reverse_exits = list(exit for exit in self.reverse_exits() if isinstance(exit, ExitDeadbolt) and exit.db.deadbolt_two_way)
 
 	    # Check the reverse exits to ensure they're in the proper state
 	    # We don't care if the opposite side is already locked/unlocked.  This should force a sync.

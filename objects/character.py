@@ -1,8 +1,9 @@
-from ev import Character, search_player, search_object, utils
-from game.gamesrc.latitude.objects.object import LatitudeObject
+from ev import search_player, search_object, utils
+from ev import Character as EvenniaCharacter
+from game.gamesrc.latitude.objects.object import Object
 import time
 
-class LatitudeCharacter(LatitudeObject, Character):
+class Character(Object, EvenniaCharacter):
     """
     The Character is like any normal Object (see example/object.py for
     a list of properties and methods), except it actually implements
@@ -26,7 +27,7 @@ class LatitudeCharacter(LatitudeObject, Character):
         This sets up the default properties of an Object,
         just before the more general at_object_creation.
         """
-        super(LatitudeCharacter, self).basetype_setup()
+        super(Character, self).basetype_setup()
         self.permissions = ['Player'] # This is the default permissions that a quelled administrator will want
         self.locks.add(";".join([
             "char_delete:owner() or perm(Janitor)", # Allows users to delete this object with the @char command.
@@ -57,7 +58,7 @@ class LatitudeCharacter(LatitudeObject, Character):
         self.execute_cmd('look', sessid=self.sessid)
 
     def at_post_login(self):
-        super(LatitudeCharacter, self).at_post_login() # For now call the default handler which unstows the character
+        super(Character, self).at_post_login() # For now call the default handler which unstows the character
 
     def at_pre_puppet(self, player):
         if self.location:
@@ -109,7 +110,7 @@ class LatitudeCharacter(LatitudeObject, Character):
                 if search_player(self.key):
                     return "character name matches player name"
             # Looks like we're good.
-            return super(LatitudeCharacter, self).bad()
+            return super(Character, self).bad()
         except:
             return "exception raised during audit: " + sys.exc_info()[0]
 

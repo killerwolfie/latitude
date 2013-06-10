@@ -1,15 +1,15 @@
-from ev import Object
-from ev import Exit
-from ev import Room
+from ev import Object as EvenniaObject
+from ev import Exit as EvenniaExit
+from ev import Room as EvenniaRoom
 import re
 
-class LatitudeObject(Object):
+class Object(EvenniaObject):
     def basetype_setup(self):
         """
         This sets up the default properties of an Object,
         just before the more general at_object_creation.
         """
-        super(LatitudeObject, self).basetype_setup()
+        super(Object, self).basetype_setup()
         # Clear the locks assigned by the built in Evennia base class
         self.locks.replace("")
         # Set the default permissions which apply to all objects.
@@ -61,13 +61,13 @@ class LatitudeObject(Object):
     def bad(self):
         """
         Audits whether the object is corrupted in some way, such as being a direct
-        instance of the LatitudeObject class, rather than a child class.
+        instance of the Object class, rather than a child class.
 
         If the character is valid, then None is returned.  If it's broken, then a
         string is returned containing a reason why.
         """
-        if type(self) is LatitudeObject:
-            return "object is a base 'LatitudeObject' class"
+        if type(self) is Object:
+            return "object is a base 'Object' class"
         return None
 
     # ----- Descriptions -----
@@ -148,7 +148,7 @@ class LatitudeObject(Object):
         visible = (con for con in self.contents if con != looker)
         exits = []
         for con in visible:
-            if isinstance(con, Exit):
+            if isinstance(con, EvenniaExit):
                 exits.append(con.key)
 
         if exits:
@@ -163,7 +163,7 @@ class LatitudeObject(Object):
         visible = [con for con in self.contents if con != looker]
         exits, users, things = [], [], []
         for con in visible:
-            if isinstance(con, Exit):
+            if isinstance(con, EvenniaExit):
 	        exits.append(con.key)
             elif con.player:
                 users.append(con.return_styled_name(looker))
@@ -393,7 +393,7 @@ class LatitudeObject(Object):
             if room in obj_seen:
                 raise Exception('Object loop detected!  ' + room.dbref + ' contains itself!')
             obj_seen.add(room)
-            if isinstance(room.typeclass, Room):
+            if isinstance(room.typeclass, EvenniaRoom):
                 break
             room = room.location
 	if room and room.location != None:
@@ -417,7 +417,7 @@ class LatitudeObject(Object):
 
     # ----- Default Behavior -----
     def at_after_move(source_location):
-        super(LatitudeObject, self).at_after_move(source_location)
+        super(Object, self).at_after_move(source_location)
         # Clear 'following'
         following = self.db.follow_following
         if following and following.location == None or following.location != self.location:

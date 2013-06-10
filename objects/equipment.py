@@ -1,9 +1,9 @@
 """
 Latitude inanimate object class
 """
-from game.gamesrc.latitude.objects.item import LatitudeItem
+from game.gamesrc.latitude.objects.item import Item
 
-class Equipment(LatitudeItem):
+class Equipment(Item):
     """
     This is the base class for equipment, such as shirts, pants, swords, wicked
     awesome arm mounted laser cannons, etc.

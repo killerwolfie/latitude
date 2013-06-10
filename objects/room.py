@@ -6,18 +6,18 @@ import sys
 import os
 import time
 
-from ev import Room
-from ev import Exit
-from game.gamesrc.latitude.objects.object import LatitudeObject
+from ev import Room as EvenniaRoom
+from ev import Exit as EvenniaExit
+from game.gamesrc.latitude.objects.object import Object
 from game.gamesrc.latitude.utils import evennia_color
 
-class LatitudeRoom(LatitudeObject, Room):
+class Room(Object, EvenniaRoom):
     def basetype_setup(self):
         """
         This sets up the default properties of an Object,
         just before the more general at_object_creation.
         """
-        super(LatitudeRoom, self).basetype_setup()
+        super(Room, self).basetype_setup()
         self.locks.add(";".join([
             "rename:resident()",          # Allows users to rename this object
             "edit:resident()",            # Allows users to modify this object (required in addition to what is being edited, specifically)
@@ -56,10 +56,10 @@ class LatitudeRoom(LatitudeObject, Room):
         """
 	Returns the scent description of the object.
 	"""
-	retval = super(LatitudeRoom, self).return_scent(looker)
+	retval = super(Room, self).return_scent(looker)
         visible = (con for con in self.contents if con != looker)
 	for con in visible:
-	    if con.db.desc_scent and not isinstance(con, Exit):
+	    if con.db.desc_scent and not isinstance(con, EvenniaExit):
 	        retval += '\n[%s]\n%s\n' % (con.key, con.db.desc_scent)
 	# Return the scents of everything in the room as well
 	return retval
@@ -68,23 +68,23 @@ class LatitudeRoom(LatitudeObject, Room):
         """
 	Returns the scent description of the object.
 	"""
-	return super(LatitudeRoom, self).return_texture(looker)
+	return super(Room, self).return_texture(looker)
 
     def return_flavor(self, looker):
         """
 	Returns the scent description of the object.
 	"""
-	return super(LatitudeRoom, self).return_flavor(looker)
+	return super(Room, self).return_flavor(looker)
 
     def return_sound(self, looker):
         """
 	Returns the scent description of the object.
 	"""
-	retval = super(LatitudeRoom, self).return_sound(looker)
+	retval = super(Room, self).return_sound(looker)
 	# Return the sounds of things in the room at random
         visible = (con for con in self.contents if con != looker)
 	for con in visible:
-	    if con.db.desc_sound and not isinstance(con, Exit) and random.random() < 0.25:
+	    if con.db.desc_sound and not isinstance(con, EvenniaExit) and random.random() < 0.25:
 	        retval += '\n  %s' % (con.db.desc_sound)
 	return retval
 
@@ -92,11 +92,11 @@ class LatitudeRoom(LatitudeObject, Room):
         """
 	Returns the scent description of the object.
 	"""
-	retval = super(LatitudeRoom, self).return_aura(looker)
+	retval = super(Room, self).return_aura(looker)
 	# Return the auras of everything in the room as well
         visible = (con for con in self.contents if con != looker)
 	for con in visible:
-	    if con.db.desc_aura and not isinstance(con, Exit):
+	    if con.db.desc_aura and not isinstance(con, EvenniaExit):
 	        retval += '\n[%s]\n%s\n' % (con.key, con.db.desc_aura)
 	return retval
 
@@ -104,7 +104,7 @@ class LatitudeRoom(LatitudeObject, Room):
         """
 	Returns the scent description of the object.
 	"""
-	return super(LatitudeRoom, self).return_writing(looker)
+	return super(Room, self).return_writing(looker)
 
     # ----- Maps -----
     def return_map(self, print_location=False, mark_self=True, mark_friends_of=None):

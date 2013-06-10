@@ -1,4 +1,3 @@
-from game.gamesrc.latitude.objects.object import LatitudeObject
 from ev import Command
 import re
 

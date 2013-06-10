@@ -1,5 +1,5 @@
 from ev import utils
-from game.gamesrc.latitude.objects.room import LatitudeRoom
+from game.gamesrc.latitude.objects.room import Room
 
 def resident(accessing_obj, accessed_obj, *args, **kwargs):
     """
@@ -10,7 +10,7 @@ def resident(accessing_obj, accessed_obj, *args, **kwargs):
     It returns True only if the attribute is set, and there is a match.
     """
     room = accessed_obj
-    while not isinstance(room.typeclass, LatitudeRoom):
+    while not isinstance(room.typeclass, Room):
         if not room.location:
 	    return False
 	room = room.location

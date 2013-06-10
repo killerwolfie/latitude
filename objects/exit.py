@@ -16,11 +16,11 @@ this change, you have to convert them manually e.g. with the
 @typeclass command.
 
 """
-from ev import Exit
+from ev import Exit as EvenniaExit
 from ev import search_object
-from game.gamesrc.latitude.objects.object import LatitudeObject
+from game.gamesrc.latitude.objects.object import Object
 
-class LatitudeExit(LatitudeObject, Exit):
+class Exit(Object, EvenniaExit):
     """
     Exits are connectors between rooms. Exits are normal Objects except
     they defines the 'destination' property. It also does work in the
@@ -47,7 +47,7 @@ class LatitudeExit(LatitudeObject, Exit):
         This sets up the default properties of an Object,
         just before the more general at_object_creation.
         """
-        super(LatitudeExit, self).basetype_setup()
+        super(Exit, self).basetype_setup()
         self.locks.add(";".join([
             "edit:resident()",            # Allows users to modify this object (required in addition to what is being edited, specifically)
             "edit_appearance:resident()", # Allows users to modify this object's 'appearance' description
