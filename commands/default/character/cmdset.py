@@ -5,6 +5,7 @@ from ev import CmdSet
 #from contrib import chargen
 
 from game.gamesrc.latitude.commands.default.character import drop
+from game.gamesrc.latitude.commands.default.character import equip
 from game.gamesrc.latitude.commands.default.character import feel
 from game.gamesrc.latitude.commands.default.character import follow
 from game.gamesrc.latitude.commands.default.character import get
@@ -23,6 +24,7 @@ from game.gamesrc.latitude.commands.default.character import start
 from game.gamesrc.latitude.commands.default.character import stop
 from game.gamesrc.latitude.commands.default.character import spoof
 from game.gamesrc.latitude.commands.default.character import taste
+from game.gamesrc.latitude.commands.default.character import unequip 
 from game.gamesrc.latitude.commands.default.character import unlock
 from game.gamesrc.latitude.commands.default.character import use
 from game.gamesrc.latitude.commands.default.character import whisper
@@ -35,6 +37,7 @@ class LatitudeCmdsetCharacter(CmdSet):
         Populates the cmdset
         """
 	self.add(drop.CmdDrop)
+	self.add(equip.CmdEquip)
 	self.add(feel.CmdFeel)
 	self.add(follow.CmdFollow)
 	self.add(get.CmdGet)
@@ -53,6 +56,7 @@ class LatitudeCmdsetCharacter(CmdSet):
 	self.add(stop.CmdStop)
 	self.add(spoof.CmdSpoof)
 	self.add(taste.CmdTaste)
+	self.add(unequip.CmdUnequip)
 	self.add(unlock.CmdUnlock)
 	self.add(use.CmdUse)
 	self.add(whisper.CmdWhisper)

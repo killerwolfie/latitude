@@ -29,3 +29,7 @@ class LatitudeItem(LatitudeObject):
 
     def return_styled_name(self, looker):
         return '{G' + self.key
+
+    def gender(self):
+        return super(LatitudeItem, self).gender() or 'neuter'
+

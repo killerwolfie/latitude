@@ -190,3 +190,18 @@ class LatitudeCharacter(LatitudeObject, Character):
 
     def stat_stamina_max(self):
         return 10
+
+    # ----- Object based string substitution -----
+
+    # D - Definite Name
+    def objsub_d(self):
+        if self.db.objsub_d:
+            return(str(self.db.objsub_d))
+        return self.key
+
+    # I - Indefinite Name
+    def objsub_i(self):
+        if self.db.objsub_i:
+            return(str(self.db.objsub_i))
+        return self.key
+

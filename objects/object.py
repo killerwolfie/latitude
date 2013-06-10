@@ -248,26 +248,34 @@ class LatitudeObject(Object):
 	if hasattr(room, 'return_map'):
 	    return room.return_map(mark_friends_of)
 	return None
+
     # ----- Gender -----
     def is_male(self):
-        if self.db.attr_gender:
-            return(self.db.attr_gender.lower().rstrip() in ['male', 'man', 'boy', 'dude', 'him'])
-        return False
+        return self.gender() == 'male'
 
     def is_female(self):
-        if self.db.attr_gender:
-            return(self.db.attr_gender.lower().rstrip() in ['female', 'woman', 'girl', 'chick', 'her'])
-        return False
+        return self.gender() == 'female'
 
     def is_herm(self):
-        if self.db.attr_gender:
-            return(self.db.attr_gender.lower().rstrip() in ['herm', 'hermy', 'both', 'shemale'])
-        return False
+        return self.gender() == 'herm'
 
     def is_neuter(self):
+        return self.gender() == 'neuter'
+
+    def gender(self):
+        """
+        Returns 'male', 'female', 'herm', 'neuter', or None
+        """
         if self.db.attr_gender:
-            return(self.db.attr_gender.lower().rstrip() in ['neuter', 'asexual', 'it', 'thing', 'object', 'machine'])
-        return False
+            if self.db.attr_gender.lower().rstrip() in ['male', 'man', 'boy', 'dude', 'him']:
+                return 'male'
+            elif self.db.attr_gender.lower().rstrip() in ['female', 'woman', 'girl', 'chick', 'lady', 'her']:
+                return 'female'
+            elif self.db.attr_gender.lower().rstrip() in ['herm', 'hermy', 'both', 'shemale']:
+                return 'herm'
+            elif self.db.attr_gender.lower().rstrip() in ['neuter', 'asexual', 'it', 'thing', 'object', 'machine', 'genderless', 'sexless']:
+                return 'neuter'
+        return None
 
     # ----- Event Hooks -----
     def at_desc(self, looker):
@@ -362,6 +370,18 @@ class LatitudeObject(Object):
         """
         starter.msg("You can't start that.")
 
+    def action_equip(self, equipper):
+        """
+        This action is called when a player attempts to 'equip' the object
+        """
+        equipper.msg("You can't put that on.")
+
+    def action_unequip(self, unequipper):
+        """
+        This action is called when a player attempts to 'doff' the object
+        """
+        unequipper.msg("That's not something you can take off.")
+
     # ----- Utilities -----
     def containing_room(self):
         """
@@ -425,7 +445,10 @@ class LatitudeObject(Object):
             else:
                 capitalize = False
                 code = codeseq.group(2)
-            # Determine what to substitute, and get the substitution
+            # Check for an attribute override first
+            if self.has_attribute('objsub_' + code):
+                return(str(self.get_attribute('objsub_' + code)))
+            # Otherwise, use a function on the class
             if hasattr(subobj, 'objsub_' + code):
                 retval = getattr(subobj, 'objsub_' + code)()
             else:
@@ -441,8 +464,6 @@ class LatitudeObject(Object):
     
     # A - Absolute Pronoun
     def objsub_a(self):
-        if self.db.objsub_a:
-	    return(str(self.db.objsub_a))
 	if self.is_male():
 	    return('his')
 	if self.is_female():
@@ -453,21 +474,84 @@ class LatitudeObject(Object):
 	    return('its')
 	return(self.key + "'s")
 
-    # C - Casual Name
-    def objsub_c(self):
+    # B - Casual Indefinite Name
+    def objsub_b(self):
         """
-        The casual name is used to order to casually refer to the object.
+        The casual name is used to order to casually or vaguely refer to the object, but expressed in an indefinite way (That is, not specific or unknown to the listener, such as with the idefinite article 'a')
 
         Examples:
-            Object: 'Water Fountain' would return 'the water fountain'
-            Exit: '[E]astern Gate' would return 'the eastern gate'
-            Room: Most rooms would return 'this room'
+            lamp post -> a lamp post
+            Greywind Scaletooth -> an adventurer
+            The Land Before Time -> a book
+            a few pebbles -> pebbles
+            [E]astern Gate -> a gate
+            [E]xit Cave -> an exit
+            The Courtyard -> a room
 
         In almost all cases, a character's name should be their casual name, but for objects it's often not.
         """
-        if self.db.objsub_c:
-	    return(str(self.db.objsub_c))
         return self.key
+
+    # C - Casual Definite Name
+    def objsub_c(self):
+        """
+        The casual name is used to order to casually or vaguely refer to the object, but expressed in a definite way (That is, specific or known to the listener, such as with the definite article 'the')
+
+        Examples:
+            lamp post -> the lamp post
+            Greywind Scaletooth -> the adventurer
+            The Land Before Time -> the book
+            a few pebbles -> the pebbles
+            [E]astern Gate -> the gate
+            [E]xit Cave -> the exit
+            The Courtyard -> the room
+
+        In almost all cases, a character's name should be their casual name, but for objects it's often not.
+        """
+        return self.key
+
+    # D - Specific Definite Name
+    def objsub_d(self):
+        """
+        The name of the object when the object is specific or known to the listener.
+        In other words, the name used in situations which typically call for the
+        definite article.  ('the')
+
+        Examples:
+            lamp post -> the lamp post
+            Greywind Scaletooth -> Greywind Scaletooth
+            The Land Before Time -> The Land Before Time
+            a few pebbles -> the pebbles
+            [E]astern Gate -> the eastern gate
+            [E]xit Cave -> the cave exit
+            The Courtyard -> the courtyard
+        """
+        return 'the ' + self.key
+
+    # I - Specific Indefinite Name
+    def objsub_i(self):
+        """
+        The indefinite, (non-particular or unknown to the listenr) name of the object.
+        In other words, the name used in situations which typically call for the
+        indefinite article.  ('a')
+
+        Examples:
+            lamp post -> a lamp post
+            Greywind Scaletooth -> Greywind Scaletooth
+            The Land Before Time -> a copy of The Land Before Time
+            a few pebbles -> a few pebbles
+            [E]astern Gate -> an eastern gate
+            [E]xit Cave -> a cave exit
+            The Courtyard -> a courtyard
+
+        Also, this doesn't mean 'vague'.  For example, you wouldn't want to change
+        'King George' into 'a king'.  The user should still be able to identify what
+        you're talking about, even though you're referring to it in an indefinite
+        manner.  Although, for totally unique objects like 'King George' or 'The Holy
+        Grail' there is no indefinite way to refer to them, in that case, just return
+        their definite name.  (For 'vague', see 'B' - 'Casual Indefinite Name')
+        """
+        return 'a ' + self.key
 
     # N - Object Name
     def objsub_n(self):
@@ -476,14 +560,10 @@ class LatitudeObject(Object):
         Even though it's possible to override this, it would probably be bad, because it's used to identify the object to other players.
         It would allow a character to masquerade as another character, for example.  Not good.
         """
-        if self.db.objsub_n:
-	    return(str(self.db.objsub_n))
         return self.key
 
     # O - Objective Pronoun
     def objsub_o(self):
-        if self.db.objsub_o:
-	    return(str(self.db.objsub_o))
 	if self.is_male():
 	    return('him')
 	if self.is_female():
@@ -496,8 +576,6 @@ class LatitudeObject(Object):
 
     # P - Posessive Pronoun
     def objsub_p(self):
-        if self.db.objsub_p:
-	    return(str(self.db.objsub_p))
 	if self.is_male():
 	    return('his')
 	if self.is_female():
@@ -510,8 +588,6 @@ class LatitudeObject(Object):
 
     # R - Reflexive Pronoun
     def objsub_r(self):
-        if self.db.objsub_r:
-	    return(str(self.db.objsub_r))
 	if self.is_male():
 	    return('himself')
 	if self.is_female():
@@ -524,8 +600,6 @@ class LatitudeObject(Object):
 
     # S - Subjective Pronoun
     def objsub_s(self):
-        if self.db.objsub_s:
-	    return(str(self.db.objsub_s))
 	if self.is_male():
 	    return('he')
 	if self.is_female():
@@ -550,21 +624,8 @@ class LatitudeObject(Object):
         This can be used to generate a sentence (Combined with the casual name):
             That's a pencil, in Ted's pocket, at the southern doors, in the Pleasantville Shopping Mall, on the moon.
         """
-        if self.db.objsub_w:
-	    return(str(self.db.objsub_w))
         return 'in ' + self.key
 
     # Other
     def objsub_other(self, code):
-        # Since untrusted strings generate calls to this function, be rigorous about what to accept.
-        if not isinstance(code, basestring):
-            raise TypeError
-        if not len(code) == 1:
-            raise ValueError
-        if not code.islower():
-            raise ValueError
-        # Check for a property with the value
-        if self.has_attribute('objsub_' + code):
-            return(str(self.get_attribute('objsub_' + code)))
-        # Otherwise return None, which should cause the substitution to be ignored
-        return(None)
+        return None
