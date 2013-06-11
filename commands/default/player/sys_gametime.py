@@ -12,11 +12,11 @@ class CmdSysGameTime(default_cmds.MuxPlayerCommand):
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     moon_names = {
-        'new' : '{xNew{n',
+        'new_moon' : '{xNew{n',
         'waxing_crescent' : '{Wwaxing qrescent{n',
         'first_quarter' : '{Wfirst quarter{n',
         'waxing_gibbous' : '{Wwaxing gibbous{n',
-        'full' : '{wFull{n',
+        'full_moon' : '{wFull{n',
         'waning_gibbous' : '{Wwaning gibbous{n',
         'third_quarter' : '{Wlast quarter{n',
         'waning_crescent' : '{Wwaning crescent{n',
