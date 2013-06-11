@@ -1,7 +1,6 @@
 import sys
 import re
 from ev import Command, syscmdkeys
-from contrib.menusystem import prompt_yesno
 from game.gamesrc.latitude.utils import evennia_color
 import shlex
 

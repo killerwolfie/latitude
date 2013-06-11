@@ -57,13 +57,6 @@ class CmdsetMenu(CmdSet):
     def at_cmdset_creation(self):
         pass
 
-class CmdsetDisable(CmdSet):
-    key = "disable"
-    priority = 1
-    mergetype = "Replace"
-    def at_cmdset_creation(self):
-        pass
-
 class MenuTree(object):
     def __init__(self, caller, nodes, refresh_cmd='look'):
         self.caller = caller
@@ -75,8 +68,6 @@ class MenuTree(object):
 
     def goto(self, node):
         # Delete the old cmdset
-        if hasattr(self.caller, 'player'):
-            self.caller.player.cmdset.delete('disable')
         self.caller.cmdset.delete('menucmdset')
         # Produce a new cmdset to add, if any
         if node:
@@ -86,8 +77,6 @@ class MenuTree(object):
                 return
             self.current_node = self.nodes[node]
             # Create and add a new cmdset for a new menu entry
-            if hasattr(self.caller, 'player'):
-                self.caller.player.cmdset.add(CmdsetDisable)
             menucmdset = CmdsetMenu()
             for cmd in self.current_node:
                 menucmdset.add(cmd)
