@@ -1,5 +1,6 @@
 from ev import search_player, search_object, utils
 from ev import Character as EvenniaCharacter
+from src.scripts.models import ScriptDB
 from game.gamesrc.latitude.objects.object import Object
 import time
 
@@ -183,26 +184,111 @@ class Character(Object, EvenniaCharacter):
             stopper.msg(self.objsub('You stop leading &0n.', stopper))
             self.msg(self.objsub('&1n stops leading you.', stopper))
 
-    # ---- Stats ----
-    def stat_stamina(self):
-        if not self.db.stat_stamina:
-            self.db.stat_stamina = 0
-        return self.stat_stamina_max() - self.db.stat_stamina
+    # ---- 'Attributes' ----
+    def get_attribute(self, attribute):
+        """
+        Returns a character 'attribute', or 'stat' value.  (Not to be confused with
+        the class's attributes or database attributes)  These are integers which
+        represent the abilities of the character.
 
-    def stat_stamina_max(self):
-        return 10
+        Attributes default 0, and can be modified by attaching ModAttribute scripts to
+        the character.
+        """
+        value = 0
+        # Grab a list of mod objects
+        mods = []
+        for script in ScriptDB.objects.get_all_scripts_on_obj(self):
+            if not utils.inherits_from(script, "game.gamesrc.latitude.scripts.attribute_mod.AttributeMod"):
+                continue
+            if script.bad():
+                continue
+            if not script.attribute() == attribute:
+                continue
+            if not script.access(self, 'bear'):
+                continue
+            mods.append(script)
+        # First, check for any 'set' modifiers.  These override everything
+        setter_value = None
+        setter_priority = None
+        for mod in mods:
+            if not utils.inherits_from(mod, "game.gamesrc.latitude.scripts.attribute_set.AttributeSet"):
+                continue
+            value = mod.value()
+            if not value:
+                continue
+            priority = mod.priority()
+            if setter_value == None or setter_priority < priority:
+                setter_value = value
+                setter_priority = priority
+        if setter_value:
+            setter_value
+        # Offsets
+        positive_non_stacking_offset = 0
+        negative_non_stacking_offset = 0
+        for mod in mods:
+            if not utils.inherits_from(mod, "game.gamesrc.latitude.scripts.attribute_offset.AttributeOffset"):
+                continue
+            offset = mod.offset()
+            if not offset:
+                continue
+            if mod.stacking():
+                # Stacking offsets are simple.  Just apply them now.
+                value += offset
+            else:
+                # Non stacking offsets are applied at the end, once we figure out the best one(s)
+                if offset > 0:
+                    if offset > positive_non_stacking_offset:
+                        positive_non_stacking_offset = offset
+                else:
+                    if offset < negative_non_stacking_offset:
+                        negative_non_stacking_offset = offset
+        value += positive_non_stacking_offset
+        value += negative_non_stacking_offset
+        # Multipliers
+        positive_non_stacking_multiplier = 1
+        negative_non_stacking_multiplier = 1
+        for mod in mods:
+            if not utils.inherits_from(mod, "game.gamesrc.latitude.scripts.attribute_multiplier.AttributeMultiplier"):
+                continue
+            multiplier = mod.multiplier()
+            if not multiplier:
+                continue
+            if mod.stacking():
+                # Stacking multipliers are simple.  Just apply them now.
+                value *= multiplier
+            else:
+                # Non stacking multipliers are applied at the end, once we figure out the best one(s)
+                if multiplier > 1:
+                    if multiplier > positive_non_stacking_multiplier:
+                        positive_non_stacking_multiplier = multiplier
+                else:
+                    if multiplier < negative_non_stacking_multiplier:
+                        negative_non_stacking_multiplier = multiplier
+        value *= positive_non_stacking_multiplier
+        value *= negative_non_stacking_multiplier
+        return int(value)
+
+    def get_attribute_current(self, attribute):
+        """
+        Returns the current value of an attribute, taking exhaustion into accepnt.
+        Exhaustion is when an attribute is temporarally consumed.  (For example,
+        hit points collect exhaustion when you take damage, and magic points collect
+        exhaustion when you cast spells, etc.)
+
+        This is a convenience function, the real work is done by Exhaustion scripts
+        attached to the character object, which take care of the current offset from
+        the base attribute value.  (This offset can be positive as well, in the case
+        of temporary boosts.)
+        """
+        pass
 
     # ----- Object based string substitution -----
 
     # D - Definite Name
     def objsub_d(self):
-        if self.db.objsub_d:
-            return(str(self.db.objsub_d))
         return self.key
 
     # I - Indefinite Name
     def objsub_i(self):
-        if self.db.objsub_i:
-            return(str(self.db.objsub_i))
         return self.key
 

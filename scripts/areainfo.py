@@ -1,4 +1,5 @@
-from ev import Script, search_script
+from game.gamesrc.latitude.scripts.script import Script
+from ev import search_script
 
 class AreaInfo(Script):
     def at_script_creation(self):

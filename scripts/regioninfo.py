@@ -1,4 +1,4 @@
-from ev import Script
+from game.gamesrc.latitude.scripts.script import Script
 
 class RegionInfo(Script):
     def at_script_creation(self):

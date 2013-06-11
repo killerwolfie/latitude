@@ -1,5 +1,15 @@
 from ev import utils
-from game.gamesrc.latitude.objects.room import Room
+
+def script_obj(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Returns true if accessed_obj is a script, and the script is attached to accessing_obj
+    """
+    if not utils.inherits_from(accessed_obj.typeclass, "src.scripts.scripts.Script"):
+        return False
+    try:
+        return accessing_obj.typeclass == accessed_obj.obj.typeclass
+    except AttributeError:
+        return False
 
 def resident(accessing_obj, accessed_obj, *args, **kwargs):
     """
@@ -10,7 +20,7 @@ def resident(accessing_obj, accessed_obj, *args, **kwargs):
     It returns True only if the attribute is set, and there is a match.
     """
     room = accessed_obj
-    while not isinstance(room.typeclass, Room):
+    while not utils.inherits_from(room.typeclass, "src.objects.objects.Room"):
         if not room.location:
 	    return False
 	room = room.location
@@ -34,6 +44,9 @@ def deadbolt_key(accessing_obj, accessed_obj, *args, **kwargs):
             if deadbolt_key(child, accessed_obj, args[0]):
                 return True
     except TypeError:
+        return False
+    except AttributeError:
+        # Probably passed in a script or command as the accessing object
         return False
     return False
 

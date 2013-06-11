@@ -29,6 +29,8 @@ from game.gamesrc.latitude.commands.default.character import unlock
 from game.gamesrc.latitude.commands.default.character import use
 from game.gamesrc.latitude.commands.default.character import whisper
 
+from game.gamesrc.latitude.utils import menusystem
+
 class LatitudeCmdsetCharacter(CmdSet):
     key = "Character"
 

@@ -1,4 +1,4 @@
-from ev import Script
+from game.gamesrc.latitude.scripts.script import Script
 import time
 import math
 
@@ -153,7 +153,7 @@ class GameTime(Script):
 
     def type_moon(self, at=None, lunar_period=None):
         """
-        Returns 'new', 'waxing_crescent', 'first_quarter', 'waxing_gibbous', 'full', 'waning_gibbous', 'third_quarter' or 'waning_crescent'.
+        Returns 'new_moon', 'waxing_crescent', 'first_quarter', 'waxing_gibbous', 'full_moon', 'waning_gibbous', 'third_quarter' or 'waning_crescent'.
         """
         seconds_per_day = int(self.db.secondsperminute) * int(self.db.minutesperhour) * int(self.db.hoursperday)
         # Calculate the nearest midnight.
