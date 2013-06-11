@@ -121,7 +121,7 @@ class Player(EvenniaPlayer):
         characters = sorted(characters, cmp=lambda b, a: cmp(a.db.stats_last_puppet_time, b.db.stats_last_puppet_time) or cmp(a.id, b.id))
         return characters[max_characters:]
 
-    def return_styled_name(self, looker):
+    def return_styled_name(self, looker=None):
         """
         Returns the name of this player, styled (With colors, etc.) to help identify
         the type of the object.  This is used for compatibility with

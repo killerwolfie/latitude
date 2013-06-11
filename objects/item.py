@@ -27,9 +27,5 @@ class Item(Object):
             "call:false()",            # allow to call commands on this object (Used by the system itself)
         ]))
 
-    def return_styled_name(self, looker):
+    def return_styled_name(self, looker=None):
         return '{G' + self.key
-
-    def gender(self):
-        return super(Item, self).gender() or 'neuter'
-

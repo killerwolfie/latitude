@@ -66,18 +66,9 @@ class CmdSay(default_cmds.MuxPlayerCommand):
     def get_exclaims(self):
         return "exclaims"
 
-    def parse_color(self, desc):
-        retval = ''
-	for name in desc.split(','):
-	    if name in color_names:
-	        retval += color_names[name]
-        if retval:
-	    retval = '%cn' + retval # Default to normal
-	return retval
-
     def get_color_depth(self, depth):
         if self.character.get_attribute('say_color_depth' + str(depth)):
-	    return self.parse_color(self.character.get_attribute('say_color_depth' + str(depth)))
+	    return self.character.get_attribute('say_color_depth' + str(depth))
         if depth < 1:
 	    return '%cn%cc'
 	elif depth == 1:
@@ -88,14 +79,10 @@ class CmdSay(default_cmds.MuxPlayerCommand):
 	    return '%cn%cw'
 
     def get_color_quote(self):
-        if self.character.get_attribute('say_color_quote'):
-	    return self.parse_color(self.character.get_attribute('say_color_quote'))
-	return '%cn%cw'
+	return self.character.db.say_color_quote or '%cn%cw'
 
     def get_color_name(self):
-        if self.character.get_attribute('say_color_name'):
-	    return self.parse_color(self.character.get_attribute('say_color_name'))
-	return '%ch%cc'
+	return self.character.db.say_color_name or '%ch%cc'
 
     def colorize(self, say_string):
         retval = u''

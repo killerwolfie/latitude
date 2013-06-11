@@ -71,7 +71,7 @@ class Object(EvenniaObject):
         return None
 
     # ----- Descriptions -----
-    def return_styled_name(self, looker):
+    def return_styled_name(self, looker=None):
         """
         Returns the name of this object, styled (With colors, etc.) to help identify
         the type of the object.  This is used when displaying lists of objects, or
@@ -89,11 +89,11 @@ class Object(EvenniaObject):
         # So, make an accordingly ominous looking name.
         return '{x<<' + self.key + '>>'
 
-    def return_styled_gender(self, looker):
+    def return_styled_gender(self, looker=None):
         """
         Returns the gender of this object, styled (With colors, etc.).
         """
-        gender = self.db.attr_gender
+        gender = self.return_gender()
         if not gender:
             gender = '%cn%cr-Unset-'
         elif self.is_male():
@@ -106,7 +106,7 @@ class Object(EvenniaObject):
             gender = '%cn%ch%cw' + gender
         return gender
 
-    def return_appearance(self, looker):
+    def return_appearance(self, looker=None):
         """
         Describes the appearance of this object.  Used by the "look" command.
 	This method, by default, delegates its desc generation into several other calls on the object.
@@ -123,14 +123,14 @@ class Object(EvenniaObject):
 	descs = [desc for desc in descs if desc != None]
 	return('\n'.join(descs))
 
-    def return_appearance_name(self, looker):
+    def return_appearance_name(self, looker=None):
         """
 	Return the name portion of the visual description.
 	By default, the name of the object is not announced when getting the description.
 	"""
         return(None)
 
-    def return_appearance_desc(self, looker):
+    def return_appearance_desc(self, looker=None):
         """
 	Return the main portion of the visual description.
 	"""
@@ -140,7 +140,7 @@ class Object(EvenniaObject):
 	else:
 	    return('%cnYou see nothing special.')
 
-    def return_appearance_exits(self, looker):
+    def return_appearance_exits(self, looker=None):
         """
 	Return a line that describes the visible exits in the object.
 	"""
@@ -179,13 +179,13 @@ class Object(EvenniaObject):
 	else:
 	    return(None)
 
-    def return_appearance_contents_header(self, looker):
+    def return_appearance_contents_header(self, looker=None):
         """
 	Returns a header line to display just before outputting the contents of the object.
 	"""
         return('%ch%cbContents:%cn')
 
-    def return_scent(self, looker):
+    def return_scent(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
@@ -194,7 +194,7 @@ class Object(EvenniaObject):
 	else:
 	    return self.objsub("&0C doesn't seem to have any descernable scent.")
 
-    def return_texture(self, looker):
+    def return_texture(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
@@ -203,7 +203,7 @@ class Object(EvenniaObject):
 	else:
 	    return self.objsub("&0C doesn't seem to have any descernable texture.")
 
-    def return_flavor(self, looker):
+    def return_flavor(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
@@ -212,7 +212,7 @@ class Object(EvenniaObject):
 	else:
 	    return self.objsub("&0C doesn't seem to have any descernable flavor.")
 
-    def return_sound(self, looker):
+    def return_sound(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
@@ -221,7 +221,7 @@ class Object(EvenniaObject):
 	else:
 	    return self.objsub("&0C doesn't seem to have any descernable sound.")
 
-    def return_aura(self, looker):
+    def return_aura(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
@@ -230,7 +230,7 @@ class Object(EvenniaObject):
 	else:
 	    return self.objsub("&0C doesn't seem to have any descernable aura.")
 
-    def return_writing(self, looker):
+    def return_writing(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
@@ -238,6 +238,24 @@ class Object(EvenniaObject):
 	    return self.db.desc_writing
 	else:
 	    return self.objsub("&0C doesn't seem to have any descernable writing.")
+
+    def return_gender(self, looker=None):
+        """
+        Returns the gender description of the object.  (Typically one word)
+        """
+        if self.db.desc_gender:
+            return self.db.desc_gender
+        else:
+            return 'thing'
+
+    def return_species(self, looker=None):
+        """
+        Returns the species description of the object.  (Typically less than 25 characters)
+        """
+        if self.db.desc_species:
+            return self.db.desc_species
+        else:
+            return 'Object'
 
     # ----- Maps -----
     def return_map(self, mark_friends_of=None):
@@ -251,31 +269,19 @@ class Object(EvenniaObject):
 
     # ----- Gender -----
     def is_male(self):
-        return self.gender() == 'male'
+        return self.return_gender().lower().strip() in ['male', 'man', 'boy', 'dude', 'him']
 
     def is_female(self):
-        return self.gender() == 'female'
+        return self.return_gender().lower().strip() in ['female', 'woman', 'girl', 'chick', 'lady', 'her']
 
     def is_herm(self):
-        return self.gender() == 'herm'
+        return self.return_gender().lower().strip() in ['herm', 'hermy', 'both', 'shemale']
 
     def is_neuter(self):
-        return self.gender() == 'neuter'
+        return self.return_gender().lower().strip() in ['neuter', 'asexual', 'it', 'thing', 'object', 'machine', 'genderless', 'sexless']
 
-    def gender(self):
-        """
-        Returns 'male', 'female', 'herm', 'neuter', or None
-        """
-        if self.db.attr_gender:
-            if self.db.attr_gender.lower().rstrip() in ['male', 'man', 'boy', 'dude', 'him']:
-                return 'male'
-            elif self.db.attr_gender.lower().rstrip() in ['female', 'woman', 'girl', 'chick', 'lady', 'her']:
-                return 'female'
-            elif self.db.attr_gender.lower().rstrip() in ['herm', 'hermy', 'both', 'shemale']:
-                return 'herm'
-            elif self.db.attr_gender.lower().rstrip() in ['neuter', 'asexual', 'it', 'thing', 'object', 'machine', 'genderless', 'sexless']:
-                return 'neuter'
-        return None
+    def is_androgynous(self):
+        return not self.is_male() and not self.is_female() and not self.is_herm() and not self.is_neuter()
 
     # ----- Event Hooks -----
     def at_desc(self, looker):

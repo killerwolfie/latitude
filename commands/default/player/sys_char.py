@@ -188,7 +188,7 @@ class CmdSysChar(default_cmds.MuxPlayerCommand):
         block_canvas.evennia_import((disabled and '{R' or '{W') + self.character_border())
         block_canvas.draw_string(1, 1, evennia_color_center(character.return_styled_name(self.caller), 22, dots=True))
         block_canvas.draw_string(1, 3, evennia_color_left('{nSex: %s{n' % (character.return_styled_gender(self.caller)), 12, dots=True))
-        block_canvas.draw_string(14, 3, evennia_color_left('{nSta: {g%s{n' % (character.stat_stamina_max()), 9, dots=True))
+        block_canvas.draw_string(14, 3, evennia_color_left('{nSta: {g%s{n' % (character.game_attribute('STAMINA')), 9, dots=True))
         if disabled:
             block_canvas.draw_string(1, 6, evennia_color_center('{r' + disabled, 22, dots=True))
         return block_canvas.evennia_export()

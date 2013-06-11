@@ -115,12 +115,6 @@ class Character(Object, EvenniaCharacter):
         except:
             return "exception raised during audit: " + sys.exc_info()[0]
 
-    def return_styled_name(self, looker):
-        if self.status_online():
-            return '{c' + self.key
-        else:
-            return '{C' + self.key
-
     def set_owner(self, new_owner):
         # Remove current owner
         owner = self.get_owner()
@@ -162,6 +156,180 @@ class Character(Object, EvenniaCharacter):
         else:
             return None
 
+    # ---- Descriptions ----
+    def return_styled_name(self, looker=None):
+        if self.status_online():
+            return '{c' + self.key
+        else:
+            return '{C' + self.key
+
+    def return_appearance(self, looker=None):
+        appearance = self.real_appearance(looker)
+        desc_mod = self.desc_mod()
+        if desc_mod:
+            return desc_mod.modify_appearance(appearance)
+        else:
+            return appearance
+
+    def return_scent(self, looker=None):
+        scent = self.real_scent(looker)
+        desc_mod = self.desc_mod()
+        if desc_mod:
+            return desc_mod.modify_scent(scent)
+        else:
+            return scent
+
+    def return_texture(self, looker=None):
+        texture = self.real_texture(looker)
+        desc_mod = self.desc_mod()
+        if desc_mod:
+            return desc_mod.modify_texture(texture)
+        else:
+            return texture
+
+    def return_flavor(self, looker=None):
+        flavor = self.real_flavor(looker)
+        desc_mod = self.desc_mod()
+        if desc_mod:
+            return desc_mod.modify_flavor(flavor)
+        else:
+            return flavor
+
+    def return_sound(self, looker=None):
+        sound = self.real_sound(looker)
+        desc_mod = self.desc_mod()
+        if desc_mod:
+            return desc_mod.modify_sound(sound)
+        else:
+            return sound
+
+    def return_aura(self, looker=None):
+        aura = self.real_aura(looker)
+        desc_mod = self.desc_mod()
+        if desc_mod:
+            return desc_mod.modify_aura(aura)
+        else:
+            return aura
+
+    def return_writing(self, looker=None):
+        writing = self.real_writing(looker)
+        desc_mod = self.desc_mod()
+        if desc_mod:
+            return desc_mod.modify_writing(writing)
+        else:
+            return writing
+
+    def return_gender(self, looker=None):
+        gender = self.real_gender(looker)
+        desc_mod = self.desc_mod()
+        if desc_mod:
+            return desc_mod.modify_gender(gender)
+        else:
+            return gender
+
+    def return_species(self, looker):
+        species = self.real_species(looker)
+        desc_mod = self.desc_mod()
+        if desc_mod:
+            return desc_mod.modify_species(species)
+        else:
+            return species
+
+    def real_appearance(self, looker=None):
+        """
+        This returns your unmodified appearance.  This is useful for things like
+        satisfying conditions to wear equipment or go places, etc., and any other
+        checks where it would not be preferable to use temporary values.
+        """
+        return super(Character, self).return_appearance(looker)
+
+    def real_scent(self, looker=None):
+        """
+        This returns your unmodified scent.  This is useful for things like
+        satisfying conditions to wear equipment or go places, etc., and any other
+        checks where it would not be preferable to use temporary values.
+        """
+        return super(Character, self).return_scent(looker)
+
+    def real_texture(self, looker=None):
+        """
+        This returns your unmodified texture.  This is useful for things like
+        satisfying conditions to wear equipment or go places, etc., and any other
+        checks where it would not be preferable to use temporary values.
+        """
+        return super(Character, self).return_texture(looker)
+
+    def real_flavor(self, looker=None):
+        """
+        This returns your unmodified flavor.  This is useful for things like
+        satisfying conditions to wear equipment or go places, etc., and any other
+        checks where it would not be preferable to use temporary values.
+        """
+        return super(Character, self).return_flavor(looker)
+
+    def real_sound(self, looker=None):
+        """
+        This returns your unmodified sound.  This is useful for things like
+        satisfying conditions to wear equipment or go places, etc., and any other
+        checks where it would not be preferable to use temporary values.
+        """
+        return super(Character, self).return_sound(looker)
+
+    def real_aura(self, looker=None):
+        """
+        This returns your unmodified aura.  This is useful for things like
+        satisfying conditions to wear equipment or go places, etc., and any other
+        checks where it would not be preferable to use temporary values.
+        """
+        return super(Character, self).return_aura(looker)
+
+    def real_writing(self, looker=None):
+        """
+        This returns your unmodified writing.  This is useful for things like
+        satisfying conditions to wear equipment or go places, etc., and any other
+        checks where it would not be preferable to use temporary values.
+        """
+        return super(Character, self).return_writing(looker)
+
+    def real_gender(self, looker=None):
+        """
+        This returns your unmodified gender.  This is useful for things like
+        satisfying conditions to wear equipment or go places, etc., and any other
+        checks where it would not be preferable to use temporary values.
+        """
+        return super(Character, self).return_gender(looker)
+
+    def return_species(self, looker):
+        """
+        This returns your unmodified species.  This is useful for things like
+        satisfying conditions to wear equipment or go places, etc., and any other
+        checks where it would not be preferable to use temporary values.
+        """
+        species = super(Character, self).return_species(looker)
+        desc_mod = self.desc_mod()
+        if desc_mod:
+            return desc_mod.modify_species(species)
+        else:
+            return species
+
+    def desc_mod(self):
+        """
+        Returns the currently active desc mod, or None
+        """
+        desc_mod = None
+        desc_mod_priority = None
+        for script in ScriptDB.objects.get_all_scripts_on_obj(self):
+            if not utils.inherits_from(script, "game.gamesrc.latitude.scripts.desc_mod.DescMod"):
+                continue
+            if script.bad():
+                continue
+            if not script.access(self, 'bear'):
+                continue
+            priority = script.priority()
+            if not desc_mod or priority > desc_mod_priority:
+                desc_mod = script
+        return desc_mod
+
     # ---- Actions ----
     def action_stop(self, stopper):
         if self == stopper:
@@ -185,7 +353,7 @@ class Character(Object, EvenniaCharacter):
             self.msg(self.objsub('&1n stops leading you.', stopper))
 
     # ---- 'Attributes' ----
-    def get_attribute(self, attribute):
+    def game_attribute(self, attribute):
         """
         Returns a character 'attribute', or 'stat' value.  (Not to be confused with
         the class's attributes or database attributes)  These are integers which
@@ -216,7 +384,7 @@ class Character(Object, EvenniaCharacter):
             value = mod.value()
             if not value:
                 continue
-            priority = mod.priority()
+            priority = (mod.priority(), mod.id) # The database ID is included so that there's never a tie
             if setter_value == None or setter_priority < priority:
                 setter_value = value
                 setter_priority = priority
@@ -268,7 +436,7 @@ class Character(Object, EvenniaCharacter):
         value *= negative_non_stacking_multiplier
         return int(value)
 
-    def get_attribute_current(self, attribute):
+    def game_attribute_current(self, attribute):
         """
         Returns the current value of an attribute, taking exhaustion into accepnt.
         Exhaustion is when an attribute is temporarally consumed.  (For example,
@@ -280,7 +448,7 @@ class Character(Object, EvenniaCharacter):
         the base attribute value.  (This offset can be positive as well, in the case
         of temporary boosts.)
         """
-        pass
+        return self.game_attribute(attribute) # STUB
 
     # ----- Object based string substitution -----
 

@@ -70,7 +70,7 @@ class Exit(Object, EvenniaExit):
     def at_object_creation(self):
         self.db.attr_gender = 'Object'
 
-    def return_styled_name(self, looker):
+    def return_styled_name(self, looker=None):
         return '{x' + self.key
 
     def reverse_exits(self):

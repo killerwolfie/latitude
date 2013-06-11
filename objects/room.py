@@ -39,20 +39,20 @@ class Room(Object, EvenniaRoom):
     def at_object_creation(self):
         self.db.attr_gender = 'Object'
 
-    def return_styled_name(self, looker):
+    def return_styled_name(self, looker=None):
         return '{w' + self.key
 
-    def return_appearance_name(self, looker):
+    def return_appearance_name(self, looker=None):
         return ('%cn%ch%cw' + self.key)
 
-    def return_appearance_desc(self, looker):
+    def return_appearance_desc(self, looker=None):
         desc = self.db.desc_appearance
         if desc != None:
             return('%cn' + desc)
         else:
             return(None)
 
-    def return_scent(self, looker):
+    def return_scent(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
@@ -64,7 +64,7 @@ class Room(Object, EvenniaRoom):
 	# Return the scents of everything in the room as well
 	return retval
 
-    def return_texture(self, looker):
+    def return_texture(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
@@ -80,7 +80,7 @@ class Room(Object, EvenniaRoom):
         """
 	Returns the scent description of the object.
 	"""
-	retval = super(Room, self).return_sound(looker)
+        retval = super(Room, self).return_sound(looker=None)
 	# Return the sounds of things in the room at random
         visible = (con for con in self.contents if con != looker)
 	for con in visible:
@@ -88,7 +88,7 @@ class Room(Object, EvenniaRoom):
 	        retval += '\n  %s' % (con.db.desc_sound)
 	return retval
 
-    def return_aura(self, looker):
+    def return_aura(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
@@ -100,7 +100,7 @@ class Room(Object, EvenniaRoom):
 	        retval += '\n[%s]\n%s\n' % (con.key, con.db.desc_aura)
 	return retval
 
-    def return_writing(self, looker):
+    def return_writing(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
