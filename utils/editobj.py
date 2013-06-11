@@ -1,7 +1,7 @@
 """
 """
 
-from ev import Command, CmdSet, syscmdkeys, Character, Player, search_object, search_player
+from ev import Command, CmdSet, syscmdkeys, Character, Player, search_object, search_player, create_object
 from game.gamesrc.latitude.utils import lineeditor
 from game.gamesrc.latitude.utils.evennia_color import evennia_color_left, evennia_color_len, EvenniaColorCanvas
 import unicodedata, re
@@ -124,10 +124,15 @@ class EditObj(object):
     This class puts a ObjEditCmdset onto the user which overrides all commands and interprets all input, and passes it off to appropriate editor command classes.
     It also acts as a data store for the current state of the menu as the user navigates through it.
     """
-    def __init__(self, caller, obj, fields, sessid=None, confirm=True, key='Editor'):
+    def __init__(self, caller, obj, fields, sessid=None, new_object_name='Object', new_object_typeclass='src.objects.objects.Object', confirm=True, key='Editor'):
         # Store settings
         self.caller = caller
-        self.obj = obj.typeclass # 'isinstance' is used, requiring typeclass, not DB classes
+        if obj == None:
+            self.obj = None
+        else:
+            self.obj = obj.typeclass # 'isinstance' is used, requiring typeclass, not DB classesa
+        self.new_object_name = new_object_name
+        self.new_object_typeclass = new_object_typeclass
         self.fields = list()
         self.sessid = sessid
         self.confirm = confirm
@@ -168,7 +173,7 @@ class EditObj(object):
         header = EvenniaColorCanvas()
         header.evennia_import('{w------------------------------------------------------------------------------')
         header.draw_string(5, 0, '{B[{y %s {B]' % (self.key))
-        item_string = '{B[{c %s {B]' % (self.obj.key)
+        item_string = '{B[{c %s {B]' % (self.obj and self.obj.return_styled_name(self.caller) or '{g<New Object>')
         header.draw_string(73 - evennia_color_len(item_string), 0, item_string)
         menu_string += header.evennia_export() + '\n\n'
         # Render body
@@ -195,19 +200,20 @@ class EditObj(object):
                 if self.edited_name:
                     name_string = self.edited_name
                 else:
-                    name_string = self.obj.key
+                    name_string = self.obj and self.obj.key or self.new_object_name
                 menu_string += evennia_color_left('{C%s {b%s' % (field['menutext'], name_string), 78 / current_max_columns, dots=True)
             elif field['type'] == 'ATTR':
-                if self.obj.has_attribute(field['attribute']):
-                    if field['attribute'] in self.edited_attr:
-                        attr_string = self.edited_attr[field['attribute']]
-                    else:
-                        attr_string = self.obj.get_attribute(field['attribute'])
-                    if '\n' in attr_string:
-                       attr_string = attr_string.split('\n')[0]
-                       attr_string += '...'
+                if field['attribute'] in self.edited_attr:
+                    attr_string = self.edited_attr[field['attribute']]
+                elif self.obj and self.obj.has_attribute(field['attribute']):
+                    attr_string = self.obj.get_attribute(field['attribute'])
+                elif 'default' in field:
+                    attr_string = field['default']
                 else:
                     attr_string = '{B[Unset]'
+                if '\n' in attr_string:
+                    attr_string = attr_string.split('\n')[0]
+                    attr_string += '...'
                 menu_string += evennia_color_left('{C%s {b%s' % (field['menutext'], attr_string), 78 / current_max_columns, dots=True)
             elif field['type'] == 'SEP':
                 separator = EvenniaColorCanvas()
@@ -236,15 +242,17 @@ class EditObj(object):
                     if field['type'] == 'ATTR':
                         if field['attribute'] in self.edited_attr:
                             self.editor.set_buffer(self.edited_attr[field['attribute']])
-                        elif self.obj.has_attribute(field['attribute']):
+                        elif self.obj and self.obj.has_attribute(field['attribute']):
                             self.editor.set_buffer(self.obj.get_attribute(field['attribute']))
+                        elif 'default' in field:
+                            self.editor.set_buffer(field['default'])
                         else:
                             self.editor.set_buffer(None)
                     elif field['type'] == 'NAME':
                         if self.edited_name:
                             self.editor.set_buffer(self.edited_name)
                         else:
-                            self.editor.set_buffer(self.obj.key)
+                            self.editor.set_buffer(self.obj and self.obj.key or self.new_object_name)
                 else:
                     continue
                 self.state_current_field = field
@@ -273,7 +281,7 @@ class EditObj(object):
             if self.state_current_field['type'] == 'NAME' and not new_val:
                 self.msg("{rNames can't be blank")
                 return
-            if UNIQUE_CHARACTER_NAMES and self.state_current_field['type'] == 'NAME' and isinstance(self.obj, Character):
+            if UNIQUE_CHARACTER_NAMES and self.state_current_field['type'] == 'NAME' and self.obj and isinstance(self.obj, Character):
                 if new_val != self.obj.name: # Pass if they're trying to change the name of the object to what it already is
                     if [obj for obj in search_object(new_val) if isinstance(obj, Character)]:
                         self.msg('{rThat name is already taken.')
@@ -281,7 +289,7 @@ class EditObj(object):
                     if new_val != self.obj.player.name and search_player(new_val):
                         self.msg("{rThat name matches someone's login.")
                         return
-            if UNIQUE_PLAYER_NAMES and self.state_current_field['type'] == 'NAME' and isinstance(self.obj, Player):
+            if UNIQUE_PLAYER_NAMES and self.state_current_field['type'] == 'NAME' and self.obj and isinstance(self.obj, Player):
                 if new_val != self.obj.name: # Pass if they're trying to change the name of the object to what it already is
                     if search_player(new_val):
                         self.msg('{rThat name is already taken.')
@@ -328,8 +336,17 @@ class EditObj(object):
         return True
 
     def commit(self):
-        if self.edited_name:
-            self.obj.name = self.edited_name
+        # Set name / Create object
+        if self.obj:
+            if self.edited_name:
+                self.obj.name = self.edited_name
+        else:
+            self.obj = create_object(
+                key=self.edited_name or self.new_object_name,
+                typeclass = self.new_object_typeclass,
+                location=self.caller,
+            )
+        # Set attributes
         for attr_name, attr_val in self.edited_attr.items():
             self.obj.set_attribute(attr_name, attr_val)
         self.msg('{gChanges committed.')

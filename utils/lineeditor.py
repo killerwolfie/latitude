@@ -309,7 +309,7 @@ class LineEditor(object):
         Resets everything, and sets the initial buffer
         """
         if buf == None or buf == '':
-            self.text_bufer = []
+            self.text_buffer = []
         else:
             self.text_buffer = buf.split('\n')
         self.pristine_buffer = list(self.text_buffer)
