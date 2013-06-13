@@ -129,7 +129,7 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
         receivers = set()
         for targetname in targetstr.split(','):
             targetname = targetname.strip()
-            receiver = match(targetname)
+            receiver = match(targetname, prioritize_players=True)
             if receiver:
                 receivers.add(receiver)
             else:

@@ -5,7 +5,7 @@ from ev import utils
 from src.players.models import PlayerDB
 from src.objects.models import ObjectDB
 
-def match(name, exact=False):
+def match(name, exact=False, prioritize_players=False):
     """
     This function is used to permit partial matching for players/characters for convenience when parsing player commands.
     The following rules are used, in priority order:
@@ -41,8 +41,11 @@ def match(name, exact=False):
         # Check for unambiguous match of a character and player with exactly the same name
         if len(matching_players) == 1 and len(matching_characters) == 1:
             if matching_players[0].key.lower() == matching_characters[0].key.lower() and matching_players[0] == matching_characters[0].get_owner():
-                # Player has the same name as character.  Return character.
-                return matching_characters[0]
+                # Player has the same name as character.  Return one
+                if prioritize_players:
+                    return matching_players[0]
+                else:
+                    return matching_characters[0]
     # No matches
     return None
 
