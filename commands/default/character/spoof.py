@@ -1,6 +1,6 @@
-from game.gamesrc.latitude.commands.default.character import say
+from ev import default_cmds
 
-class CmdSpoof(say.CmdSay):
+class CmdSpoof(default_cmds.MuxPlayerCommand):
     """
     spoof
     

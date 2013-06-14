@@ -1,7 +1,6 @@
-from ev import syscmdkeys, Channel, create_message
-from game.gamesrc.latitude.commands.default.character import say
+from ev import default_cmds, syscmdkeys, Channel, create_message
 
-class CmdChannel(say.CmdSay):
+class CmdChannel(default_cmds.MuxPlayerCommand):
     """
     This is a special command that the cmdhandler calls
     when it detects that the command given matches
@@ -43,11 +42,11 @@ class CmdChannel(say.CmdSay):
         if self.character:
             # If we have a character, then we can use the 'say' routines to format the message.
             if message.startswith(':'):
-                message = self.gen_pose(message[1:])
+                message = self.character.speech_pose(message[1:])
             elif message.startswith('"'):
-                message = self.gen_say(message[1:])
+                message = self.character.speech_say(message[1:])
             else:
-                message = self.gen_say(message)
+                message = self.character.speech_say(message)
         else:
             # If we have no character, we'll have to take care of the formatting
             if message.startswith(':'):

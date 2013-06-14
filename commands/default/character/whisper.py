@@ -1,8 +1,8 @@
-from game.gamesrc.latitude.commands.default.character import say
+from ev import default_cmds
 import random
 import re
 
-class CmdWhisper(say.CmdSay):
+class CmdWhisper(default_cmds.MuxPlayerCommand):
     """
     whisper - speak quietly
 
@@ -28,6 +28,8 @@ class CmdWhisper(say.CmdSay):
         if self.lhs and self.rhs:
             target = character.search(self.lhs)
             raw_message = self.rhs
+            if not target:
+                return # Search should have output a message
         else:
             match = re.search(r'^(.*)\s+to\s+(\S*)$', self.args)
             if match:
@@ -43,20 +45,20 @@ class CmdWhisper(say.CmdSay):
         if target == character.location:
             target = None
         # Fancy up the message
-        message = self.colorize('"' + raw_message + '"')
+        message = self.character.speech_msg(raw_message, min_depth=1)
         # Deliver the message
         if target:
-            self.msg(character.objsub('{nYou whisper %s{n to &1c.' % (message), target))
-            target.msg(character.objsub('{n&0N whispers %s{n to you.' % (message), target))
+            self.msg(character.objsub('{nYou whisper "%s{n" to &1c.' % (message), target))
+            target.msg(character.objsub('{n&0N whispers "%s{n" to you.' % (message), target))
             target.at_whisper(character, raw_message)
         else:
-            self.msg('{nYou whisper %s{n.' % (message))
+            self.msg('{nYou whisper "%s{n".' % (message))
             if character.location:
                 for con in character.location.contents:
                     if con == character:
                         continue
                     if random.random() < 0.4:
-                        con.msg(character.objsub('{n&0N whispers %s{n.' % (message), target))
+                        con.msg(character.objsub('{n&0N whispers "%s{n".' % (message), target))
                     else:
                         con.msg(character.objsub('{n&0N whispers something.', target))
                 character.location.at_whisper(character, raw_message)

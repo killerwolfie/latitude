@@ -1,6 +1,6 @@
-from game.gamesrc.latitude.commands.default.character import say
+from ev import default_cmds
 
-class CmdPose(say.CmdSay):
+class CmdPose(default_cmds.MuxPlayerCommand):
     """
     pose - strike a pose
 
@@ -24,7 +24,7 @@ class CmdPose(say.CmdSay):
     help_category = "Actions"
 
     def func(self):
-        message = self.gen_pose(self.args)
+        message = self.character.speech_pose(self.args)
         if self.character.location:
             # Call the speech hook on the location
             self.character.location.at_say(self.character, message)

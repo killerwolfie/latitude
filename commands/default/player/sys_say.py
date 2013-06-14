@@ -1,6 +1,6 @@
-from game.gamesrc.latitude.commands.default.character import say
+from ev import default_cmds
 
-class CmdSysSay(say.CmdSay):
+class CmdSysSay(default_cmds.MuxPlayerCommand):
     """
     @say
     
@@ -34,11 +34,11 @@ class CmdSysSay(say.CmdSay):
         character = self.character
         if character:
             if self.args.startswith(':'):
-                message = self.gen_pose(self.args[1:])
+                message = self.character.speech_pose(self.args[1:])
             elif self.args.startswith('"'):
-                message = self.gen_say(self.args[1:])
+                message = self.character.speech_say(self.args[1:])
             else:
-                message = self.gen_say(self.args)
+                message = self.character.speech_say(self.args)
             message = '{w<{rOOC{w> {n' + message
             if self.character.location:
                 self.character.location.msg_contents(message)

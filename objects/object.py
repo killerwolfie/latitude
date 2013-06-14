@@ -257,6 +257,89 @@ class Object(EvenniaObject):
         else:
             return 'Object'
 
+    # ----- Speech -----
+    def speech_say(self, say_string, pose=False):
+        """
+        Take a string of words this object wants to say, and return a stylized string, suitable for messaging to others.
+        """
+        # Determine verb
+        if say_string.endswith('?'):
+	    verb = self.speech_asks()
+	elif say_string.endswith('!'):
+	    verb = self.speech_exclaims()
+	else:
+	    verb = self.speech_says()
+	return self.speech_color_name() + self.speech_name() + ' ' + self.speech_msg(verb + ', "' + say_string + '"')
+
+    def speech_pose(self, pose_string):
+        """
+        Take a string of words this object wants to 'pose', and return a stylized string, suitable for messaging to others.
+        """
+        sep = ' '
+        if [chk for chk in ["'s ", '-', ', ', ': ', ' '] if pose_string.startswith(chk)]:
+            sep = ''
+        return(self.speech_color_name() + self.speech_name() + sep + self.speech_msg(pose_string))
+
+    def speech_msg(self, msg_string, min_depth=0):
+        """
+        Process a message which this object wants to say, pose, whisper, etc. and stylize it with this object's speech style.
+
+        Typically this just adds some color, but it could be used to modify the object's words as well (Such as adding exclamatory suffixes, cleaning up swears, etc.)
+        """
+        retval = u''
+        current_color = min_depth
+        last_change = 1
+	msg_sections = []
+        for msg_section in msg_string.replace('%', '%%').replace('{', '{{').split('"'):
+            msg_sections.append(self.speech_color_depth(current_color >= min_depth and current_color or min_depth) + msg_section)
+	    if msg_section == '':
+	        current_color += last_change
+	    elif msg_section[-1] == ' ':
+	        current_color += 1
+		last_change = 1
+            else:
+	        current_color -= 1
+		last_change = -1
+        return((self.speech_color_quote() + '"').join(msg_sections))
+
+    def speech_name(self):
+        """
+        Returns this object's name, used for constructing speech messages.
+        """
+        return self.db.say_name or self.key
+
+    def speech_says(self):
+        """
+        Returns this object's 'says' verb, used for constructing speech messages.
+        """
+        return self.db.say_says or "says"
+
+    def speech_asks(self):
+        """
+        Returns this object's 'asks' verb, used for constructing speech messages.
+        """
+        return self.db.say_asks or "asks"
+
+    def speech_exclaims(self):
+        """
+        Returns this object's 'exclaims' verb, used for constructing speech messages.
+        """
+        return self.db.say_exclaims or "exclaims"
+
+    def speech_color_name(self):
+	return self.db.say_color_name or '%ch%cc'
+
+    def speech_color_quote(self):
+	return self.db.say_color_quote or '%cn%cw'
+
+    def speech_color_depth(self, depth):
+        if self.get_attribute('say_color_depth' + str(depth)):
+	    return self.get_attribute('say_color_depth' + str(depth))
+        if depth < 1:
+	    return '{C'
+        else:
+            return '{W'
+
     # ----- Maps -----
     def return_map(self, mark_friends_of=None):
         """
