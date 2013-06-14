@@ -47,6 +47,19 @@ class CmdMenuList(CmdMenu):
             if cmd.get_menustring():
                 self.caller.msg('%s - %s' % (cmd.key, cmd.menustring))
 
+class CmdMenuQuit(CmdMenu):
+    locks = "cmd:all()"
+
+    def __init__(self, key, message=None, aliases=[], menustring=None):
+        super(CmdMenuQuit, self).__init__(key=key, aliases=aliases, menustring=menustring)
+        self.message = message
+
+    def func(self):
+        if self.message:
+            self.msg(self.message)
+        self.menutree.goto(None)
+
+
 class CmdsetMenu(CmdSet):
     key = "menucmdset"
     priority = 5
@@ -65,6 +78,7 @@ class MenuTree(object):
         for node in nodes.values():
             for cmd in node:
                 cmd.menutree = self
+        self.metadata = None # This variable is here to be used by your menu commands to store miscellaneous data (like remembering your choices), and it's not touched by default.
 
     def goto(self, node):
         # Delete the old cmdset
