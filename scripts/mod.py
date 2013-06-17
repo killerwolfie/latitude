@@ -7,15 +7,13 @@ class Mod(Script):
     def at_script_creation(self):
         super(Mod, self).at_script_creation()
         self.key = "mod"
-	self.desc = "<<MODIFIER>>"
 	self.interval = 0
 	self.persistent = True
         self.locks.add(';'.join([
-            'valid:true()', # Used internally, checks whether a character is supposed to have this mod
-            'bear:script_obj()' # Checks whether a character bears this mod
+            'valid:true()' # If this script's 'obj' can not pass this lock, then is_valid() returns false. (And the object self destructs)
         ]))
 
-    def active(self):
+    def is_valid(self):
         """
         Returns whether this mod is currently active.
 
@@ -32,8 +30,6 @@ class Mod(Script):
         """
         if not self.obj:
             return "orphaned mod"
-        if not self.access(self.obj, 'valid'):
-            return "mod is not valid for its object"
         if type(self) is Mod:
             return "script is a base 'Mod' class"
         return super(Mod, self).bad()

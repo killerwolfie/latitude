@@ -1,4 +1,27 @@
-from ev import utils
+from ev import utils, search_object
+
+def equipped(accessing_obj, accessed_obj, *args, **kwargs):
+    """
+    Checks if an object is equipped by accessing_obj
+
+    Usage:
+        equipped() - Returns true if accessed_obj is equipped by accessing_obj
+        equipped(dbref) - Returns true if a given object is equipped by accessing_obj
+    """
+    if not args:
+        equipment = accessed_obj
+    elif len(args) == 1:
+        equipment = utils.dbref(args[0])
+        if not equipment:
+            return False
+        equipment = search_object('#' + str(equipment))
+    else:
+        return False
+    if not equipment:
+        return False
+    if not hasattr(equipment, 'is_equipped_by'):
+        return False
+    return equipment.is_equipped_by(accessing_obj)
 
 def script_obj(accessing_obj, accessed_obj, *args, **kwargs):
     """

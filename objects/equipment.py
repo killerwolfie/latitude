@@ -67,3 +67,9 @@ class Equipment(Item):
         # Unequip object
         unequipper.set_attribute(attr_name, None)
         self.at_unequip(unequipper)
+
+    def is_equipped_by(self, equipper):
+        """
+        Returns true if this object is equipped by equipper.
+        """
+        return equipper.get_attribute('equipment_' + self.equipment_slot()) == self

@@ -20,6 +20,7 @@ class Costume(Equipment):
         """
         script = create_script(typeclass='game.gamesrc.latitude.scripts.costume_mod.CostumeMod', key='costume_mod', obj=equipper)
         script.desc='{nEquipment ({C%s{n): {yCostume' % self.return_styled_name()
+        script.locks.add('valid:holds(%s) and equipped(%s)' % (self.dbref, self.dbref))
         script.db.costume_obj = self
         self.db.costume_script = script
         equipper.msg(self.objsub('You wear &0d, and your appearance changes.'))
@@ -28,7 +29,10 @@ class Costume(Equipment):
         """
         Called when equipment is successfully unequipped.
         """
-        self.db.costume_script.delete()
+        costume_script = self.db.costume_script
+        if costume_script:
+            costume_script.delete()
+            costume_script = None
         unequipper.msg(self.objsub('You remove &0d, and return to your normal appearance.'))
 
     def costume_appearance(self):
