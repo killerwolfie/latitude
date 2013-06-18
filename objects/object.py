@@ -333,12 +333,16 @@ class Object(EvenniaObject):
 	return self.db.say_color_quote or '%cn%cw'
 
     def speech_color_depth(self, depth):
+        if depth > 10:
+            depth = 10 # Depth limit, to limit recursion
         if self.get_attribute('say_color_depth' + str(depth)):
 	    return self.get_attribute('say_color_depth' + str(depth))
         if depth < 1:
 	    return '{C'
-        else:
+        elif depth == 1:
             return '{W'
+        else:
+            return self.speech_color_depth(depth - 1)
 
     # ----- Maps -----
     def return_map(self, mark_friends_of=None):
@@ -505,11 +509,11 @@ class Object(EvenniaObject):
 	return False
 
     # ----- Default Behavior -----
-    def at_after_move(source_location):
+    def at_after_move(self, source_location):
         super(Object, self).at_after_move(source_location)
         # Clear 'following'
         following = self.db.follow_following
-        if following and following.location == None or following.location != self.location:
+        if following and (following.location == None or following.location != self.location):
             self.msg('You move off, and stop following %s.' % (following.key))
             del self.db.follow_following
         # Clear any pending follow or lead requests
