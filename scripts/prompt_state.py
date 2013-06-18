@@ -53,7 +53,7 @@ class PromptStateCmdset(CmdSet):
     key = "PromptState"
     priority = 10
     mergetype = "Replace"
-    key_mergetype = {
+    key_mergetypes = {
         'Player' : 'Union',
     }
     no_exits = True
