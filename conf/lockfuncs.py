@@ -15,6 +15,9 @@ def equipped(accessing_obj, accessed_obj, *args, **kwargs):
         if not equipment:
             return False
         equipment = search_object('#' + str(equipment))
+        if not equipment:
+            return False
+        equipment = equipment[0]
     else:
         return False
     if not equipment:

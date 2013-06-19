@@ -17,17 +17,17 @@ class Equipment(Item):
         # This must be overridden by the equipment subclass.
         raise NotImplemented('equipment base class used directly')
 
-    def at_equip(self, equipper):
+    def do_equip(self, equipper):
         """
-        Called when equipment is sucessfully equipped.
+        Called to perform the actual equip, by creating the appropriate script, and inform the user.
         """
-        equipper.msg(self.objsub('You equip &0d.'))
+        raise NotImplemented('equipment base class used directly')
 
-    def at_unequip(self, unequipper):
+    def do_unequip(self, unequipper):
         """
-        Called when equipment is successfully unequipped.
+        Called to perform the actual unequip, by stopping the appropriate script, and inform the user.
         """
-        unequipper.msg(self.objsub('You unequip &0d.'))
+        raise NotImplemented('equipment base class used directly')
 
     def action_use(self, user):
         self.action_equip(user)
@@ -45,31 +45,38 @@ class Equipment(Item):
         if not self.location or not self.location == equipper:
             equipper.msg('You have to pick it up first.')
             return
-        attr_name = 'equipment_' + self.equipment_slot()
-        if equipper.get_attribute(attr_name):
-            current_equip = equipper.get_attribute(attr_name)
-            if current_equip == self:
-                equipper.msg(self.objsub("You're already wearing &0o."))
-            else:
-                equipper.msg(self.objsub("{R[Try '{runequip &1n{R' first.]", current_equip))
-                equipper.msg(self.objsub("You're already wering &1i.", current_equip))
+        if self.is_equipped_by(equipper):
+            equipper.msg(self.objsub("You're already wearing &0o."))
+            return
+        current_equip = equipper.get_equipment(self.equipment_slot())
+        if len(current_equip) == 1:
+            equipper.msg(self.objsub("{R[Try '{runequip &1n{R' first.]", current_equip[0]))
+            equipper.msg(self.objsub("You're already wearing &1i.", current_equip[0]))
+            return
+        elif len(current_equip) > 1:
+            # Theoretically we could support more than one thing in one slot at some point.
+            # Chances are this will never be reached though under sane conditions, so we don't need to be specific.
+            equipper.msg("You're already wearing multiple %ss." % (self.equipment_slot().lower()))
             return
         # Equip object
-        equipper.set_attribute(attr_name, self)
-        self.at_equip(equipper)
+        self.do_equip(equipper)
 
     def action_unequip(self, unequipper):
         # Verify permission
-        attr_name = 'equipment_' + self.equipment_slot()
-        if not unequipper.get_attribute(attr_name) or unequipper.get_attribute(attr_name) != self:
+        if not self.is_equipped_by(unequipper):
             unequipper.msg(self.objsub("You're not wearing &0o."))
             return
         # Unequip object
-        unequipper.set_attribute(attr_name, None)
-        self.at_unequip(unequipper)
+        self.do_unequip(unequipper)
 
     def is_equipped_by(self, equipper):
         """
         Returns true if this object is equipped by equipper.
         """
-        return equipper.get_attribute('equipment_' + self.equipment_slot()) == self
+        # Validate first.  This will make sure everything is kosher
+        equipper.scripts.validate()
+        # Since no funky states should exist now on any of the equipper's scripts, we don't need to check for them.
+        equipment_script = self.db.equipment_script
+        if not equipment_script:
+            return False
+        return equipment_script.obj == equipper

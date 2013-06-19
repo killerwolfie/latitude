@@ -21,16 +21,14 @@ class PromptState(Script):
 	self.interval = 0
 	self.persistent = True
 
-    def bad(self):
-        """
-        Checks if the script is corrupt in some way.
-        Returns the first problem found with the script, as a string, or None.
-        """
+    def is_valid(self):
         if not self.obj:
-            return "orphaned mod"
+            # Orphaned script
+            return False
         if type(self) is PromptState:
-            return "script is a base 'PromptState' class"
-        return super(Mod, self).bad()
+            # Direct instance of base class
+            return False
+        return super(Mod, self).is_valid()
 
     def at_start(self):
         # Construct and attach a cmdset to the object

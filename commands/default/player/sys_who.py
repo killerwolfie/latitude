@@ -147,7 +147,7 @@ class CmdSysWho(default_cmds.MuxPlayerCommand):
                 # Gender
                 gender = user.return_styled_gender(self.caller)
                 # Species
-                species = user.db.desc_species
+                species = user.return_species(self.caller)
                 if not species:
                     species = '%cn%cr-Unset-'
                 else:

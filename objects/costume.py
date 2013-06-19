@@ -14,25 +14,25 @@ class Costume(Equipment):
     def equipment_slot(self):
         return 'costume'
 
-    def at_equip(self, equipper):
+    def do_equip(self, equipper):
         """
-        Called when equipment is sucessfully equipped.
+        Called to perform the actual equip.
         """
-        script = create_script(typeclass='game.gamesrc.latitude.scripts.costume_mod.CostumeMod', key='costume_mod', obj=equipper)
-        script.desc='{nEquipment ({C%s{n): {yCostume' % self.return_styled_name()
-        script.locks.add('valid:holds(%s) and equipped(%s)' % (self.dbref, self.dbref))
-        script.db.costume_obj = self
-        self.db.costume_script = script
+        script = create_script(typeclass='game.gamesrc.latitude.scripts.equipped_costume.EquippedCostume', key='equipped_costume', obj=equipper, autostart=False)
+        script.db.equipped_obj = self
+        #script.desc='{nEquipment ({C%s{n): {yCostume' % self.return_styled_name()
+        script.start()
+        self.db.equipment_script = script
         equipper.msg(self.objsub('You wear &0d, and your appearance changes.'))
 
-    def at_unequip(self, unequipper):
+    def do_unequip(self, unequipper):
         """
-        Called when equipment is successfully unequipped.
+        Called to perform the actual unequip.
         """
-        costume_script = self.db.costume_script
-        if costume_script:
-            costume_script.delete()
-            costume_script = None
+        equipment_script = self.db.equipment_script
+        if equipment_script:
+            equipment_script.delete()
+            equipment_script = None
         unequipper.msg(self.objsub('You remove &0d, and return to your normal appearance.'))
 
     def costume_appearance(self):
