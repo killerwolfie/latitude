@@ -780,14 +780,6 @@ class Object(EvenniaObject):
             offset = int(offset[attribute])
             if offset:
                 value += offset
-        # Stacking multiplier
-        for script in scripts:
-            multiplier = script.mod_attr_multiply_stack()
-            if not multiplier or not attribute in multiplier:
-                continue
-            multiplier = float(multiplier[attribute])
-            if multiplier:
-                value *= multiplier
         # Non-stacking offset
         positive_non_stacking_offset = 0
         negative_non_stacking_offset = 0
@@ -805,6 +797,14 @@ class Object(EvenniaObject):
                     negative_non_stacking_offset = offset
         value += positive_non_stacking_offset
         value += negative_non_stacking_offset
+        # Stacking multiplier
+        for script in scripts:
+            multiplier = script.mod_attr_multiply_stack()
+            if not multiplier or not attribute in multiplier:
+                continue
+            multiplier = float(multiplier[attribute])
+            if multiplier:
+                value *= multiplier
         # Non stacking multiplier
         positive_non_stacking_multiplier = 1
         negative_non_stacking_multiplier = 1
