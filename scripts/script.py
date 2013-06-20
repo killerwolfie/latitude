@@ -1,5 +1,4 @@
 from ev import Script as EvenniaScript
-from collections import namedtuple
 
 class Script(EvenniaScript):
     """
