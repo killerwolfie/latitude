@@ -66,11 +66,11 @@ class CmdSysExamine(default_cmds.ObjManipCommand):
         string = ""
         if db_attr and db_attr[0]:
             string += "\n{wPersistent attributes{n:"
-            for attr, value in db_attr:
+            for attr, value in sorted(db_attr):
                 string += self.list_attribute(crop, attr, value)
         if ndb_attr and ndb_attr[0]:
             string += "\n{wNon-Persistent attributes{n:"
-            for attr, value in ndb_attr:
+            for attr, value in sorted(ndb_attr):
                 string += self.list_attribute(crop, attr, value)
         return string
 
