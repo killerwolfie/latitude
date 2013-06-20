@@ -742,7 +742,7 @@ class Object(EvenniaObject):
         return None
 
     # ---- 'Attributes' ----
-    def game_attribute(self, attribute):
+    def game_attribute(self, attribute, base=None):
         """
         Returns a character/npc/etc 'attribute', or 'stat' value.  (Not to be confused
         with the class's attributes or database attributes)  These are integers which
@@ -751,7 +751,9 @@ class Object(EvenniaObject):
         Attributes default 0, and can be modified by attaching scripts to the object.
         (See the Latitude script base class for details)
         """
-        value = 0
+        if base == None:
+            base = 0
+        value = int(base)
         # First, validate the scripts on this object.  Anothing that's no longer valid should not count.
         # if any scripts render themselves invalid during this procedure, it could create a race condition,
         # so the attribute mod routines should not do anything to render the script invalid, (or any other script,
@@ -830,13 +832,8 @@ class Object(EvenniaObject):
         Exhaustion is when an attribute is temporarally consumed.  (For example,
         hit points collect exhaustion when you take damage, and magic points collect
         exhaustion when you cast spells, etc.)
-
-        This is a convenience function, the real work is done by Exhaustion scripts
-        attached to the character object, which take care of the current offset from
-        the base attribute value.  (This offset can be positive as well, in the case
-        of temporary boosts.)
         """
-        return self.game_attribute(attribute) # STUB
+        return self.game_attribute(attribute)
 
     # ---- Equipment ----
     def get_equipment(self, slot):
