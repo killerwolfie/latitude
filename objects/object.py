@@ -1,6 +1,7 @@
 from ev import Object as EvenniaObject
 from ev import Exit as EvenniaExit
 from ev import Room as EvenniaRoom
+from ev import utils
 import re
 
 class Object(EvenniaObject):
@@ -18,6 +19,7 @@ class Object(EvenniaObject):
             "call:false()",                  # allow to call commands on this object (Used by the system itself)
             "puppet:id(%s) or pperm(Janitors)" % self.dbref,
         ])) # restricts puppeting of this object
+        self.db.equipment = set()
 
     # ----- Lock Messages -----
     def at_access_failure(self, accessing_obj, access_type):
@@ -68,21 +70,25 @@ class Object(EvenniaObject):
         """
         if type(self) is Object:
             return "object is a base 'Object' class"
+        # Equipment
+        for item in self.db.equipment:
+            if item.get_equipper() != self:
+                return 'character and item data conflict (%s)' % item.key
         return None
 
     # ----- Descriptions -----
-    def _desc_script_mod(self, method, value):
+    def _desc_mod(self, method, value):
         """
-        Return a value which is modified by any active modifier script.
+        Return a value which is modified by any active mods.
         """
         max_prio = (float('-inf'), float('-inf'))
         retval = value
-        for script in self.scripts.all():
-            this_prio = (script.mod_priority(), script.id)
+        for mod in self.get_mods():
+            this_prio = (mod.mod_priority(), mod.__hash__())
             if this_prio < max_prio:
                 # We already have a higher priority than this
                 continue
-            new_desc = getattr(script, method)(value)
+            new_desc = getattr(mod, method)(value)
             if new_desc == None:
                 # Script doesn't provide a mod for this
                 continue
@@ -139,14 +145,14 @@ class Object(EvenniaObject):
         # By default, construct the appearance by calling other methods on the object
 	descs = [self.return_appearance_name(looker), self.return_appearance_desc(looker), self.return_appearance_exits(looker), self.return_appearance_contents(looker)]
 	descs = [desc for desc in descs if desc != None]
-	return self._desc_script_mod('mod_appearance', '\n'.join(descs))
+	return self._desc_mod('mod_appearance', '\n'.join(descs))
 
     def return_appearance_name(self, looker=None):
         """
 	Return the name portion of the visual description.
 	By default, the name of the object is not announced when getting the description.
 	"""
-        return self._desc_script_mod('mod_appearance_name', None)
+        return self._desc_mod('mod_appearance_name', None)
 
     def return_appearance_desc(self, looker=None):
         """
@@ -154,9 +160,9 @@ class Object(EvenniaObject):
 	"""
         desc = self.db.desc_appearance
 	if desc != None:
-	    return self._desc_script_mod('mod_appearance_desc', '%cn' + self.objsub(desc))
+	    return self._desc_mod('mod_appearance_desc', '%cn' + self.objsub(desc))
 	else:
-	    return self._desc_script_mod('mod_appearance_desc', '%cnYou see nothing special.')
+	    return self._desc_mod('mod_appearance_desc', '%cnYou see nothing special.')
 
     def return_appearance_exits(self, looker=None):
         """
@@ -170,9 +176,9 @@ class Object(EvenniaObject):
                 exits.append(con.key)
 
         if exits:
-            return self._desc_script_mod('mod_appearance_exits', '%ch%cx[Exits: ' + ', '.join(exits) + ']%cn')
+            return self._desc_mod('mod_appearance_exits', '%ch%cx[Exits: ' + ', '.join(exits) + ']%cn')
 	else:
-	    return self._desc_script_mod('mod_appearance_exits', None)
+	    return self._desc_mod('mod_appearance_exits', None)
 
     def return_appearance_contents(self, looker):
         """
@@ -193,87 +199,87 @@ class Object(EvenniaObject):
                 string += '\n%ch%cc' + '\n'.join(users) + '%cn'
             if things:
                 string += '\n%cn%cc' + '\n'.join(things) + '%cn'
-            return self._desc_script_mod('mod_appearance_contents', string)
+            return self._desc_mod('mod_appearance_contents', string)
 	else:
-	    return self._desc_script_mod('mod_appearance_contents', None)
+	    return self._desc_mod('mod_appearance_contents', None)
 
     def return_appearance_contents_header(self, looker=None):
         """
 	Returns a header line to display just before outputting the contents of the object.
 	"""
-        return self._desc_script_mod('mod_appearance_contents_header', '%ch%cbContents:%cn')
+        return self._desc_mod('mod_appearance_contents_header', '%ch%cbContents:%cn')
 
     def return_scent(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
         if self.db.desc_scent:
-	    return self._desc_script_mod('mod_scent', self.objsub(self.db.desc_scent))
+	    return self._desc_mod('mod_scent', self.objsub(self.db.desc_scent))
 	else:
-	    return self._desc_script_mod('mod_scent', self.objsub("&0C doesn't seem to have any descernable scent."))
+	    return self._desc_mod('mod_scent', self.objsub("&0C doesn't seem to have any descernable scent."))
 
     def return_texture(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
         if self.db.desc_texture:
-	    return self._desc_script_mod('mod_texture', self.objsub(self.db.desc_texture))
+	    return self._desc_mod('mod_texture', self.objsub(self.db.desc_texture))
 	else:
-	    return self._desc_script_mod('mod_texture', self.objsub("&0C doesn't seem to have any descernable texture."))
+	    return self._desc_mod('mod_texture', self.objsub("&0C doesn't seem to have any descernable texture."))
 
     def return_flavor(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
         if self.db.desc_flavor:
-	    return self._desc_script_mod('mod_flavor', self.objsub(self.db.desc_flavor))
+	    return self._desc_mod('mod_flavor', self.objsub(self.db.desc_flavor))
 	else:
-	    return self._desc_script_mod('mod_flavor', self.objsub("&0C doesn't seem to have any descernable flavor."))
+	    return self._desc_mod('mod_flavor', self.objsub("&0C doesn't seem to have any descernable flavor."))
 
     def return_sound(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
         if self.db.desc_sound:
-	    return self._desc_script_mod('mod_sound', self.objsub(self.db.desc_sound))
+	    return self._desc_mod('mod_sound', self.objsub(self.db.desc_sound))
 	else:
-	    return self._desc_script_mod('mod_sound', self.objsub("&0C doesn't seem to have any descernable sound."))
+	    return self._desc_mod('mod_sound', self.objsub("&0C doesn't seem to have any descernable sound."))
 
     def return_aura(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
         if self.db.desc_aura:
-	    return self._desc_script_mod('mod_aura', self.objsub(self.db.desc_aura))
+	    return self._desc_mod('mod_aura', self.objsub(self.db.desc_aura))
 	else:
-	    return self._desc_script_mod('mod_aura', self.objsub("&0C doesn't seem to have any descernable aura."))
+	    return self._desc_mod('mod_aura', self.objsub("&0C doesn't seem to have any descernable aura."))
 
     def return_writing(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
         if self.db.desc_writing:
-	    return self._desc_script_mod('mod_writing', self.objsub(self.db.desc_writing))
+	    return self._desc_mod('mod_writing', self.objsub(self.db.desc_writing))
 	else:
-	    return self._desc_script_mod('mod_writing', self.objsub("&0C doesn't seem to have any descernable writing."))
+	    return self._desc_mod('mod_writing', self.objsub("&0C doesn't seem to have any descernable writing."))
 
     def return_gender(self, looker=None):
         """
         Returns the gender description of the object.  (Typically one word)
         """
         if self.db.desc_gender:
-            return self._desc_script_mod('mod_gender', self.db.desc_gender)
+            return self._desc_mod('mod_gender', self.db.desc_gender)
         else:
-            return self._desc_script_mod('mod_gender', 'thing')
+            return self._desc_mod('mod_gender', 'thing')
 
     def return_species(self, looker=None):
         """
         Returns the species description of the object.  (Typically less than 25 characters)
         """
         if self.db.desc_species:
-            return self._desc_script_mod('mod_species', self.db.desc_species)
+            return self._desc_mod('mod_species', self.db.desc_species)
         else:
-            return self._desc_script_mod('mod_species', 'Object')
+            return self._desc_mod('mod_species', 'Object')
 
     # ----- Speech -----
     def speech_say(self, say_string, pose=False):
@@ -741,42 +747,58 @@ class Object(EvenniaObject):
     def objsub_other(self, code):
         return None
 
+    # ---- Equipment / Status Effects / Etc. ----
+    def get_equipment(self, slot=None):
+        """
+        Return a list of equipment equipped by this Object.
+        """
+        if slot:
+            return set(item for item in self.db.equipment if item and item.get_equipper() == self and item.equipment_slot() == slot)
+        else:
+            return set(item for item in self.db.equipment if item and item.get_equipper() == self)
+
+    def get_mods(self, slot=None):
+        """
+        Returns a set of Mod objects which apply to this Object.
+        """
+        self.scripts.validate()
+        # Produce a list of all objects, which if derived from Mod, qualify on this character
+        candidates = set(self.get_equipment())
+        for script in self.scripts.all():
+            candidates.add(script)
+        candidates.add(self.location)
+        # TODO: Global mods
+        # Return the set of mods
+        return set(candidate for candidate in candidates if utils.inherits_from(candidate, 'game.gamesrc.latitude.struct.mod.Mod'))
+
     # ---- 'Attributes' ----
     def game_attribute(self, attribute, base=None):
         """
         Returns a character/npc/etc 'attribute', or 'stat' value.  (Not to be confused
         with the class's attributes or database attributes)  These are integers which
         represent the abilities of the object.
-
-        Attributes default 0, and can be modified by attaching scripts to the object.
-        (See the Latitude script base class for details)
         """
         if base == None:
             base = 0
         value = int(base)
-        # First, validate the scripts on this object.  Anothing that's no longer valid should not count.
-        # if any scripts render themselves invalid during this procedure, it could create a race condition,
-        # so the attribute mod routines should not do anything to render the script invalid, (or any other script,
-        # which is hard to promise, so it should try not to touch anything except itself.)
-        self.scripts.validate()
-        scripts = self.scripts.all()
+        mods = self.get_mods()
         # Check for any 'set' modifiers.  These override everything
         setter_value = None
         setter_priority = None
-        for script in scripts:
-            values = script.mod_attr_set()
+        for mod in mods:
+            values = mod.mod_attr_set()
             if not values or not attribute in values:
                 continue
             value = int(values[attribute])
-            priority = (mod.priority(), mod.id) # The database ID is included so that there's never a tie
+            priority = (mod.priority(), mod.__hash__()) # The hash is included so that there's never a tie
             if setter_value == None or setter_priority < priority:
                 setter_value = value
                 setter_priority = priority
         if setter_value:
             return setter_value
         # Stacking offset
-        for script in scripts:
-            offset = script.mod_attr_offset_stack()
+        for mod in mods:
+            offset = mod.mod_attr_offset_stack()
             if not offset or not attribute in offset:
                 continue
             offset = int(offset[attribute])
@@ -785,8 +807,8 @@ class Object(EvenniaObject):
         # Non-stacking offset
         positive_non_stacking_offset = 0
         negative_non_stacking_offset = 0
-        for script in scripts:
-            offset = script.mod_attr_offset_nostack()
+        for mod in mods:
+            offset = mod.mod_attr_offset_nostack()
             if not offset or not attribute in offset:
                 continue
             offset = int(offset[attribute])
@@ -800,8 +822,8 @@ class Object(EvenniaObject):
         value += positive_non_stacking_offset
         value += negative_non_stacking_offset
         # Stacking multiplier
-        for script in scripts:
-            multiplier = script.mod_attr_multiply_stack()
+        for mod in mods:
+            multiplier = mod.mod_attr_multiply_stack()
             if not multiplier or not attribute in multiplier:
                 continue
             multiplier = float(multiplier[attribute])
@@ -810,8 +832,8 @@ class Object(EvenniaObject):
         # Non stacking multiplier
         positive_non_stacking_multiplier = 1
         negative_non_stacking_multiplier = 1
-        for script in scripts:
-            multiplier = script.mod_attr_multiply_nostack()
+        for mod in mods:
+            multiplier = mod.mod_attr_multiply_nostack()
             if not multiplier or not attribute in multiplier:
                 continue
             multiplier = float(multiplier[attribute])
@@ -834,17 +856,3 @@ class Object(EvenniaObject):
         exhaustion when you cast spells, etc.)
         """
         return self.game_attribute(attribute)
-
-    # ---- Equipment ----
-    def get_equipment(self, slot):
-        """
-        Returns all equipment in the given slot
-        """
-        results = []
-        self.scripts.validate()
-        for script in self.scripts.all():
-            if script.has_attribute('equipped_obj'):
-                equipment = script.db.equipped_obj
-                if equipment.equipment_slot() == slot:
-                    results.append(equipment)
-        return results

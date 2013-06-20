@@ -2,7 +2,6 @@
 Latitude inanimate object class
 """
 from game.gamesrc.latitude.objects.equipment import Equipment
-from ev import create_script
 
 class Costume(Equipment):
     """
@@ -14,77 +13,73 @@ class Costume(Equipment):
     def equipment_slot(self):
         return 'costume'
 
-    def do_equip(self, equipper):
+    def at_equip(self, equipper):
         """
         Called to perform the actual equip.
         """
-        script = create_script(typeclass='game.gamesrc.latitude.scripts.equipped_costume.EquippedCostume', key='equipped_costume', obj=equipper, autostart=False)
-        script.db.equipped_obj = self
-        #script.desc='{nEquipment ({C%s{n): {yCostume' % self.return_styled_name()
-        script.start()
-        self.db.equipment_script = script
         equipper.msg(self.objsub('You wear &0d, and your appearance changes.'))
 
-    def do_unequip(self, unequipper):
+    def at_unequip(self, unequipper):
         """
         Called to perform the actual unequip.
         """
-        equipment_script = self.db.equipment_script
-        if equipment_script:
-            equipment_script.delete()
-            equipment_script = None
         unequipper.msg(self.objsub('You remove &0d, and return to your normal appearance.'))
 
-    def costume_appearance(self):
+    def mod_desc_source(self):
         """
-	Returns the scent description of a character wearing the costume.
-	"""
-	return self.db.costume_appearance
+        Returns a stylized string, typically an object or status condition name, that describes the source of the mod.
+        Returns None if this information is meant to be unknown to the user.
+        """
+        return self.db.mod_desc_source or self.return_styled_name()
 
-    def costume_scent(self, looker=None):
+    def mod_desc_detail(self):
         """
-	Returns the scent description of a character wearing the costume.
-	"""
-	return self.db.costume_scent
+        Returns a short description of the mod.  (Such as '+10 Stamina' or 'Invisibility', etc.)
+        Returns None if this information is meant to be unknown to the user.
+        """
+        return self.db.mod_desc_detail or '{yCostume'
 
-    def costume_texture(self, looker=None):
-        """
-	Returns the scent description of a character wearing the costume.
-	"""
-	return self.db.costume_texture
+    def mod_priority(self):
+        return self.db.costume_priority or 0
 
-    def costume_flavor(self, looker=None):
-        """
-	Returns the scent description of a character wearing the costume.
-	"""
-	return self.db.costume_flavor
+    def mod_appearance(self, appearance):
+        return self.db.costume_appearance
 
-    def costume_sound(self, looker=None):
-        """
-	Returns the scent description of a character wearing the costume.
-	"""
-	return self.db.costume_sound
+    def mod_appearance_desc(self, appearance):
+        return self.db.costume_appearance_desc
 
-    def costume_aura(self, looker=None):
-        """
-	Returns the scent description of a character wearing the costume.
-	"""
-	return self.db.costume_aura
+    def mod_appearance_name(self, appearance):
+        return self.db.costume_appearance_name
 
-    def costume_writing(self, looker=None):
-        """
-	Returns the scent description of a character wearing the costume.
-	"""
-	return self.db.costume_writing
+    def mod_appearance_contents_header(self, appearance):
+        return self.db.costume_appearance_contents_header
 
-    def costume_gender(self, looker=None):
-        """
-        Returns the gender description of a character wearing the costume.  (Typically one word)
-        """
-        return self.db.costume_gender
+    def mod_appearance_contents(self, appearance):
+        return self.db.costume_appearance_contents
 
-    def costume_species(self, looker=None):
-        """
-        Returns the species description of a character wearing the costume.  (Typically less than 25 characters)
-        """
+    def mod_appearance_exits(self, appearance):
+        return self.db.costume_appearance_exits
+
+    def mod_aura(self, aura):
+        return self.db.costume_aura
+
+    def mod_flavor(self, flavor):
+        return self.db.costume_flavor
+
+    def mod_scent(self, scent):
+        return self.db.costume_scent
+
+    def mod_sound(self, sound):
+        return self.db.costume_sound
+
+    def mod_texture(self, texture):
+        return self.db.costume_texture
+
+    def mod_writing(self, writing):
+        return self.db.costume_writing
+
+    def mod_species(self, species):
         return self.db.costume_species
+
+    def mod_gender(self, gender):
+        return self.db.costume_gender

@@ -2,12 +2,29 @@
 Latitude inanimate object class
 """
 from game.gamesrc.latitude.objects.item import Item
+from game.gamesrc.latitude.struct.mod import Mod
 
-class Equipment(Item):
+class Equipment(Item, Mod):
     """
     This is the base class for equipment, such as shirts, pants, swords, wicked
     awesome arm mounted laser cannons, etc.
     """
+    def bad(self):
+        """
+        Audits whether the object is corrupted in some way.
+
+        If the object is valid, then None is returned.  If it's broken, then a string
+        is returned containing a reason why.
+        """
+        try:
+            equipper = self.db.equipper
+            if equipper:
+                if not self in equipper.db.equipment:
+                    return "character and equipment data conflict"
+        except:
+            return "exception raised during audit: " + sys.exc_info()[0]
+
+
     def equipment_slot(self):
         """
         Returns which 'slot' this equipment occupies.  For example, right
@@ -17,17 +34,19 @@ class Equipment(Item):
         # This must be overridden by the equipment subclass.
         raise NotImplemented('equipment base class used directly')
 
-    def do_equip(self, equipper):
+    def at_equip(self, equipper):
         """
-        Called to perform the actual equip, by creating the appropriate script, and inform the user.
+        Called when an object is successfully equipped.
+        Returning 'False' will prevent the equipping from occuring.
         """
-        raise NotImplemented('equipment base class used directly')
+        equipper.msg(self.objsub('You equip &0d.'))
 
-    def do_unequip(self, unequipper):
+    def at_unequip(self, unequipper):
         """
-        Called to perform the actual unequip, by stopping the appropriate script, and inform the user.
+        Called when an object is sucessfully unequipped.
+        Returning 'False' will prevent the equipping from occuring.
         """
-        raise NotImplemented('equipment base class used directly')
+        unequipper.msg(self.objsub('You unequip &0d.'))
 
     def action_use(self, user):
         self.action_equip(user)
@@ -45,38 +64,42 @@ class Equipment(Item):
         if not self.location or not self.location == equipper:
             equipper.msg('You have to pick it up first.')
             return
-        if self.is_equipped_by(equipper):
+        if self in equipper.get_equipment():
             equipper.msg(self.objsub("You're already wearing &0o."))
             return
-        current_equip = equipper.get_equipment(self.equipment_slot())
+        this_slot = self.equipment_slot()
+        current_equip = equipper.get_equipment(slot=this_slot)
         if len(current_equip) == 1:
-            equipper.msg(self.objsub("{R[Try '{runequip &1n{R' first.]", current_equip[0]))
-            equipper.msg(self.objsub("You're already wearing &1i.", current_equip[0]))
+            current_equip = list(current_equip)[0]
+            equipper.msg(self.objsub("{R[Try '{runequip &1n{R' first.]", current_equip))
+            equipper.msg(self.objsub("You're already wearing &1i.", current_equip))
             return
         elif len(current_equip) > 1:
             # Theoretically we could support more than one thing in one slot at some point.
             # Chances are this will never be reached though under sane conditions, so we don't need to be specific.
-            equipper.msg("You're already wearing multiple %ss." % (self.equipment_slot().lower()))
+            equipper.msg("You're already wearing multiple %ss." % (str(this_slot).lower()))
             return
         # Equip object
-        self.do_equip(equipper)
+        result = self.at_equip(equipper)
+        if result or result == None:
+            self.db.equipper = equipper
+            equipper.db.equipment.add(self)
 
     def action_unequip(self, unequipper):
         # Verify permission
-        if not self.is_equipped_by(unequipper):
+        if not self in unequipper.get_equipment():
             unequipper.msg(self.objsub("You're not wearing &0o."))
             return
         # Unequip object
-        self.do_unequip(unequipper)
+        result = self.at_unequip(unequipper)
+        if result or result == None:
+            self.db.equipper = None
+            unequipper.db.equipment.remove(self)
 
-    def is_equipped_by(self, equipper):
+    def get_equipper(self):
         """
-        Returns true if this object is equipped by equipper.
+        Returns who is currently equipping this object.
         """
-        # Validate first.  This will make sure everything is kosher
-        equipper.scripts.validate()
-        # Since no funky states should exist now on any of the equipper's scripts, we don't need to check for them.
-        equipment_script = self.db.equipment_script
-        if not equipment_script:
-            return False
-        return equipment_script.obj == equipper
+        if self.bad():
+            return None
+        return self.db.equipper

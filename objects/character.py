@@ -35,6 +35,20 @@ class Character(Object, EvenniaCharacter):
         self.set_attribute('stats_last_unpuppet_time', None)
         self.set_attribute('stats_last_puppet_time', None)
 
+    def bad(self):
+        """
+        Audits whether the object is corrupted in some way, such as being a duplicate
+        character name.
+
+        If the character is valid, then None is returned.  If it's broken, then a
+        string is returned containing a reason why.
+        """
+        # Owner security check
+        if self.db.owner and not self.get_owner():
+            return 'owner security check failed'
+        # Looks like we're good.
+        return super(Character, self).bad()
+
     def at_after_move(self, source_location):
         if self.db.prefs_automap == None or self.db.prefs_automap:
 	    self.execute_cmd('map', sessid=self.sessid)
@@ -70,33 +84,6 @@ class Character(Object, EvenniaCharacter):
         # Update puppet statistics
         self.db.stats_last_unpuppet_time = time.time()
 
-    def bad(self):
-        """
-        Audits whether the object is corrupted in some way, such as being a duplicate
-        character name.
-
-        If the character is valid, then None is returned.  If it's broken, then a
-        string is returned containing a reason why.
-        """
-        try:
-            # Verify that this character's owner exists
-            owner = self.db.owner
-            if owner: # If the owner is None, then that's okay.  It means we have an orphaned character.  Otherwise, verify the owner integrity.
-                # Verify that the player data also shows ownership
-                if not self in owner.db.characters:
-                    return "player and character data conflict"
-            # Verify that, among character objects, this one has a unique name
-            if len([char for char in search_object(self.key, attribute_name='key') if utils.inherits_from(char, "src.objects.objects.Character")]) != 1:
-                return "character name not unique"
-            # Verify this doesn't match the name of any player, unless that player is self
-            if not owner or self.key.lower() != owner.key.lower():
-                if search_player(self.key):
-                    return "character name matches player name"
-            # Looks like we're good.
-            return super(Character, self).bad()
-        except:
-            return "exception raised during audit: " + sys.exc_info()[0]
-
     def set_owner(self, new_owner):
         # Remove current owner
         owner = self.get_owner()
@@ -112,9 +99,20 @@ class Character(Object, EvenniaCharacter):
             self.db.owner = new_owner
 
     def get_owner(self):
-        # For security reasons, messed up character objects have no owner.
-        if self.bad():
+        # Do some security checks to prevent messed up characters from having an official owner
+        owner = self.db.owner
+        if not owner:
             return None
+        # Verify that the player data also shows ownership
+        if not self in owner.db.characters:
+            return None
+        # Verify that, among character objects, this one has a unique name
+        if len([char for char in search_object(self.key, attribute_name='key') if isinstance(char, Character)]) != 1:
+            return None
+        # Verify this doesn't match the name of any player, unless that player is our own
+        if self.key.lower() != owner.key.lower() and search_player(self.key):
+            return None
+        # Looks good, return the owner.
         return self.db.owner
 
     def status_online(self):

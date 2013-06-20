@@ -202,17 +202,12 @@ class Player(EvenniaPlayer):
     def get_characters(self, online_only=False):
         """
         Return a list of characters owned by this player.
-
-        Characters which are 'bad' will not be returned.  This is to prevent
-        characters which are in questionable states of data integrity from being
-        controlled, for fear that the wrong player may have access to them, or they
-        may be able to masquerade as some other player or some other exploit.
         """
         if online_only:
             character_candidates = self.get_all_puppets()
         else:
             character_candidates = self.db.characters or []
-        return set(char for char in character_candidates if hasattr(char, 'get_owner') and char.get_owner() == self)
+        return set(char for char in character_candidates if char.get_owner() == self)
 
     def is_friends_with(self, player):
         """
