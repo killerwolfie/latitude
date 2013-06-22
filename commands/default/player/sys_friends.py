@@ -196,23 +196,9 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
             self.msg("Your friend doesn't appear to be anywhere in particular.")
         else:
             friend_map = friend.return_map()
-            friend_area = friend_location.get_area()
-            if friend_area:
-                friend_region = friend_area.get_region()
-            else:
-                friend_region = None
             if friend_map:
                 self.msg(friend_map)
-            location_tree = []
-            for location in [friend_location, friend_area, friend_region]:
-                location_name = None
-                if hasattr(location, 'objsub_w'):
-                    location_name = location.objsub_w()
-                elif hasattr(location, 'get_name_within'):
-                    location_name = location.get_name_within()
-                if location_name:
-                    location_tree.append(location_name)
-            self.msg("%s is %s." % (friend.key, ", ".join(location_tree)))
+            self.msg('%s is %s.' % (friend.key, ", ".join([inside.objsub('&0w') for inside in friend_location.trace()])))
 
     def check_optout(self):
         if not self.caller.status_online():

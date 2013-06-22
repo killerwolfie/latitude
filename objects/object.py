@@ -500,22 +500,34 @@ class Object(EvenniaObject):
         unequipper.msg("That's not something you can take off.")
 
     # ----- Utilities -----
+    def trace(self):
+        """
+        Returns all objects up the tree starting with this object and ending with a base object.
+        """
+        objects = [self]
+        while True:
+            location = objects[-1].location
+            if not location:
+                break
+            if location in objects:
+                raise Exception('Object loop detected!  ' + obj.dbref + ' contains itself!')
+            objects.append(location)
+        return objects
+
+    def get_area(self):
+        return self.get_containing_room().location
+
+    def get_region(self):
+        return self.get_containing_room().location.location
+
     def containing_room(self):
         """
 	Ascends the tree until it hits the first room, and returns it.
 	"""
-        obj_seen = set([self])
-        room = self.location
-        while room:
-            if room in obj_seen:
-                raise Exception('Object loop detected!  ' + room.dbref + ' contains itself!')
-            obj_seen.add(room)
-            if isinstance(room.typeclass, EvenniaRoom):
-                break
-            room = room.location
-	if room and room.location != None:
-	    raise Exception('"Child" room detected!  ' + room.dbref + ' has a location!')
-        return room
+        for obj in self.trace():
+            if isinstance(obj, EvenniaRoom):
+                return obj
+        return None
 
     def is_inside(self, obj):
         """
@@ -856,3 +868,34 @@ class Object(EvenniaObject):
         exhaustion when you cast spells, etc.)
         """
         return self.game_attribute(attribute)
+
+    # ----  Regions / Areas ----
+    def _get_room_area_region(self):
+        # Ascend the tree until you hit a 'room' object
+        room = self
+        while room:
+            if utils.inherits_from(room, 'game.gamesrc.latitude.objects.room.Room'):
+                break
+            room = room.location
+        # If there's no room, we can return now.
+        if not room:
+            return None, None, None
+        # Ensure the room's parent is an area
+        area = room.location
+        if not area or not utils.inherits_from(area, 'game.gamesrc.latitude.objects.area.Area'):
+            return None, None, None
+        # Ensure the area's parent is a region
+        region = area.location
+        if not region or not utils.inherits_from(region, 'game.gamesrc.latitude.objects.region.Region'):
+            return None, None, None
+        # Ensure the region has no parent
+        if region.location:
+            return None, None, None
+        # Looks good.  Return the result.
+        return room, area, region
+
+    def get_area(self):
+        return self._get_room_area_region()[1]
+
+    def get_region(self):
+        return self._get_room_area_region()[2]

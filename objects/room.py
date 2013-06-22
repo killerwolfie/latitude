@@ -1,11 +1,10 @@
-from ev import search_script
-from ev import search_player
 import re
 import random
 import sys
 import os
 import time
 
+from ev import search_script, search_player, utils
 from ev import Room as EvenniaRoom
 from ev import Exit as EvenniaExit
 from game.gamesrc.latitude.objects.object import Object
@@ -37,7 +36,12 @@ class Room(Object, EvenniaRoom):
         ]))
 
     def at_object_creation(self):
-        self.db.attr_gender = 'Object'
+        self.db.desc_gender = 'Object'
+
+    def bad(self):
+        if not utils.inherits_from(self.location, 'game.gamesrc.latitude.objects.area.Area'):
+            return 'room has no area'
+        return super(Room, self).bad()
 
     def return_styled_name(self, looker=None):
         return '{w' + self.key
@@ -118,10 +122,10 @@ class Room(Object, EvenniaRoom):
 	    region = area.get_region()
             if not region:
                 return None
-            area_map_num = self.db.area_map_num
-            if area_map_num == None:
+            area_map_id = self.db.area_map_id
+            if area_map_id == None:
                 return None
-	    map_data = area.get_attribute('maps')[self.db.area_map_num]['map_data']
+	    map_data = area.db.area_maps[self.db.area_map_id]['map_data']
             if not map_data:
                 return None
             # Parse the map data's color codes and create a canvas
@@ -214,17 +218,6 @@ class Room(Object, EvenniaRoom):
 	    filename = os.path.split(sys.exc_info()[2].tb_frame.f_code.co_filename)[1]
             line = sys.exc_info()[2].tb_lineno
 	    return '{R[Error displaying map (%s:%d): %s]{n' % (filename, line, str(e))
-
-    def get_area(self):
-        area_id = self.db.area_id
-        if area_id:
-            # Sanity check the area_id first
-            if area_id[0] != '#' or not area_id[1:].isdigit():
-                area_id = None
-        if area_id:
-            return(search_script(area_id)[0])
-        else:
-            return(None)
 
     # ---- Object based string substitution ----
     # A - Absolute Pronoun
