@@ -1,11 +1,15 @@
 from game.gamesrc.latitude.objects.object import Object
+from game.gamesrc.latitude.commands.region.cmdset import RegionCmdSet
 
 class Region(Object):
     """
     This object is a container for areas, and it handles various functions to related to large regions in the game world, such as generating new areas on demand, weather, etc.
     """
 
-    # The basic object locks are fine, because this isn't the kind of object you can pick up, edit, etc.
+    def at_object_creation(self):
+        super(Region, self).at_object_creation()
+        self.locks.add('call:true()')
+        self.cmdset.add(RegionCmdSet, permanent=True)
 
     def bad(self):
         if self.location:
@@ -20,5 +24,3 @@ class Region(Object):
 
     def get_region(self):
         return self
-
-

@@ -20,6 +20,7 @@ class PromptState(Script):
         self.key = "prompt_state"
 	self.interval = 0
 	self.persistent = True
+        self.db.prompt_finish_cmds = ['look']
 
     def is_valid(self):
         if not self.obj:
@@ -28,7 +29,7 @@ class PromptState(Script):
         if type(self) is PromptState:
             # Direct instance of base class
             return False
-        return super(Mod, self).is_valid()
+        return super(PromptState, self).is_valid()
 
     def at_start(self):
         # Construct and attach a cmdset to the object
@@ -68,6 +69,7 @@ class PromptStateCommand(Command):
     key = syscmdkeys.CMD_NOMATCH
     aliases = []
     locks = "cmd:all()"
+    auto_help = False
 
     def func(self):
         # A 'scriptobj' variable is set on this command by the PromptState script when the command is constructed.
@@ -91,8 +93,10 @@ class PromptStateCommand(Command):
                     newscript.start()
             else:
                 # We're done, and there's nothing to replace us.
+                finish_cmds = scriptobj.db.prompt_finish_cmds or []
                 scriptobj.stop()
-                self.caller.execute_cmd('look', sessid=self.sessid)
+                for cmd in finish_cmds:
+                    self.caller.execute_cmd(cmd, sessid=self.sessid)
         else:
             self.msg('{R[That selection is not recognized]')
             scriptobj.show_options()

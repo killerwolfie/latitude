@@ -21,27 +21,6 @@ from ev import search_object
 from game.gamesrc.latitude.objects.object import Object
 
 class Exit(Object, EvenniaExit):
-    """
-    Exits are connectors between rooms. Exits are normal Objects except
-    they defines the 'destination' property. It also does work in the
-    following methods:
-
-     basetype_setup() - sets default exit locks (to change, use at_object_creation instead)
-     at_cmdset_get() - this auto-creates and caches a command and a command set on itself
-                     with the same name as the Exit object. This
-                     allows users to use the exit by only giving its
-                     name alone on the command line.
-     at_failed_traverse() - gives a default error message ("You cannot
-                            go there") if exit traversal fails and an
-                            attribute err_traverse is not defined.
-
-    Relevant hooks to overload (compared to other types of Objects):
-    at_before_traverse(traveller) - called just before traversing
-    at_after_traverse(traveller, source_loc) - called just after traversing
-    at_failed_traverse(traveller) - called if traversal failed for some reason. Will
-                                    not be called if the attribute 'err_traverse' is
-                                    defined, in which case that will simply be echoed.
-    """
     def basetype_setup(self):
         """
         This sets up the default properties of an Object,
@@ -84,6 +63,17 @@ class Exit(Object, EvenniaExit):
 	    return None
 
 	return list(con for con in self.destination.contents if con.destination and con.destination == self.location)
+
+    def at_traverse(self, traversing_object, target_location):
+        """
+        This implements the actual traversal. The traverse lock has already been
+        checked (in the Exit command) at this point.
+        """
+        if target_location == None:
+            # Leaves the 'area'
+            traversing_object.scripts.add('game.gamesrc.latitude.scripts.prompt_leave.PromptLeave')
+        else:
+            super(Exit, self).at_traverse(traversing_object, target_location)
 
     def at_after_traverse(self, traveller, source_loc):
         # Check for followers

@@ -4,9 +4,6 @@ from ev import CmdSet
 #from contrib import misc_commands
 #from contrib import chargen
 
-from game.gamesrc.latitude.commands.default.player import look
-from game.gamesrc.latitude.commands.default.player import say
-from game.gamesrc.latitude.commands.default.player import pose
 from game.gamesrc.latitude.commands.default.player import special_channel
 from game.gamesrc.latitude.commands.default.player import special_nomatch
 from game.gamesrc.latitude.commands.default.player import sys_3who
@@ -69,9 +66,6 @@ class LatitudeCmdsetPlayer(CmdSet):
         """
         Populates the cmdset
         """
-        self.add(look.CmdLook)
-        self.add(say.CmdSay)
-        self.add(pose.CmdPose)
         self.add(special_channel.CmdChannel)
         self.add(special_nomatch.CmdNoMatch)
         self.add(sys_3who.CmdSys3Who)

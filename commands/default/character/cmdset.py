@@ -11,6 +11,7 @@ from game.gamesrc.latitude.commands.default.character import follow
 from game.gamesrc.latitude.commands.default.character import get
 from game.gamesrc.latitude.commands.default.character import inventory
 from game.gamesrc.latitude.commands.default.character import lead
+from game.gamesrc.latitude.commands.default.character import leave
 from game.gamesrc.latitude.commands.default.character import listen
 from game.gamesrc.latitude.commands.default.character import lock
 from game.gamesrc.latitude.commands.default.character import look
@@ -46,6 +47,7 @@ class LatitudeCmdsetCharacter(CmdSet):
 	self.add(inventory.CmdInventory)
 	self.add(listen.CmdListen)
 	self.add(lead.CmdLead)
+	self.add(leave.CmdLeave)
 	self.add(lock.CmdLock)
 	self.add(look.CmdLook)
 	self.add(map.CmdMap)

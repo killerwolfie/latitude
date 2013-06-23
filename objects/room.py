@@ -33,6 +33,7 @@ class Room(Object, EvenniaRoom):
             "puppet:false()",             # It would be weird to puppet a room ...
             "get:false()",                # Holding an room doesn't really make sense
             "drop:false()",               # Dropping an room doesn't really make sense
+            "leave:true()",               # Permits 'leaving' the room and going to the region menu
         ]))
 
     def at_object_creation(self):
