@@ -1,5 +1,6 @@
 from ev import utils
 from game.gamesrc.latitude.objects.object import Object
+from game.gamesrc.latitude.commands.area.cmdset import AreaCmdSet
 from random import choice
 
 class Area(Object):
