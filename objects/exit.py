@@ -17,7 +17,7 @@ this change, you have to convert them manually e.g. with the
 
 """
 from ev import Exit as EvenniaExit
-from ev import search_object
+from ev import search_object, create_script
 from game.gamesrc.latitude.objects.object import Object
 
 class Exit(Object, EvenniaExit):
@@ -71,9 +71,15 @@ class Exit(Object, EvenniaExit):
         """
         if target_location == None:
             # Leaves the 'area'
-            traversing_object.scripts.add('game.gamesrc.latitude.scripts.prompt_leave.PromptLeave')
+            prompt_script = create_script('game.gamesrc.latitude.scripts.prompt_leave.PromptLeave', obj=traversing_object, autostart=False)
+            prompt_script.db.destination = self.get_region()
+            prompt_script.start()
         else:
-            super(Exit, self).at_traverse(traversing_object, target_location)
+            source_location = traversing_object.location
+            if traversing_object.redirectable_move_to(target_location):
+                self.at_after_traverse(traversing_object, source_location)
+            else:
+                self.at_failed_traverse(traversing_object)
 
     def at_after_traverse(self, traveller, source_loc):
         # Check for followers
@@ -97,7 +103,7 @@ class Exit(Object, EvenniaExit):
                 break
             # Bring the follower alonga
             self.at_before_follow(traveller, follower)
-            follower.move_to(traveller.location)
+            follower.redirectable_move_to(traveller.location)
             self.at_after_follow(traveller, follower, source_loc)
 
     def at_before_follow(self, leader, follower):

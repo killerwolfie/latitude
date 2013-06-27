@@ -6,12 +6,12 @@ class PromptState(Script):
     Base class for a character state which requires user input.  (i.e. menus, NCP dialogs, multiple choice events, etc.)
 
     To use this script, create a child class, and define the methods:
-        show_options()
+        prompt_options()
             - Ouputs a list of options to self.obj
         option_<option name>
             - Handlers for each possible option selection (alphanumeric names only).
-            - If the user selects an undefined option they will get an error, and show_options() will be called again.
-            - If the return value is a script class (string or class) that is the same as the eisting class, then show_options() is called and no further action is taken.
+            - If the user selects an undefined option they will get an error, and prompt_options() will be called again.
+            - If the return value is a script class (string or class) that is the same as the eisting class, then prompt_options() is called and no further action is taken.
             - If the return value is a script class (string or class) that is different from the existing class, then the existing class is stop()'d, and a new class with the given type is created.  (All db values are copied over)
             - If the return value is None, then the script will be stop()'d, and the prompt will end.
     """
@@ -20,7 +20,6 @@ class PromptState(Script):
         self.key = "prompt_state"
 	self.interval = 0
 	self.persistent = True
-        self.db.prompt_finish_cmds = ['look']
 
     def is_valid(self):
         if not self.obj:
@@ -38,10 +37,18 @@ class PromptState(Script):
         cmd_entry.scriptobj = self
         cmdset.add(cmd_entry)
         self.obj.cmdset.add(cmdset)
-        self.show_options()
+        self.prompt_options()
 
     def at_stop(self):
         self.obj.cmdset.delete('PromptState')
+
+    def prompt_end(self):
+        """
+        This handles cleanup after a user selection has been made and processed, and the prompt is over, because no script is going to take its place.
+
+        This is called after the cmdset is removed from the character, so execute_cmd can be used safely.
+        """
+        self.obj.execute_cmd('look')
 
 class PromptStateCmdset(CmdSet):
     """
@@ -75,12 +82,12 @@ class PromptStateCommand(Command):
         # A 'scriptobj' variable is set on this command by the PromptState script when the command is constructed.
         scriptobj = self.scriptobj
         # Search the script object for a matching command
-        if self.args.isalnum() and hasattr(scriptobj, 'option_' + self.args):
-            newclass = getattr(scriptobj, 'option_' + self.args)()
+        if self.args.isalnum() and hasattr(scriptobj, 'prompt_option_' + self.args):
+            newclass = getattr(scriptobj, 'prompt_option_' + self.args)()
             if newclass:
                 if isinstance(newclass, basestring) and newclass == scriptobj.__module__ + '.' + scriptobj.__name__ or newclass is type(scriptobj):
                     # The class that's already in use was returned.  So just show the options again.
-                    scriptobj.show_options()
+                    scriptobj.prompt_options()
                 else:
                     # We're being replaced by a different class!  Create the new script
                     newscript = create_script(newclass, obj=scriptobj.obj, autostart=False)
@@ -89,14 +96,19 @@ class PromptStateCommand(Command):
                         newscript.set_attribute(attr.key, attr.value)
                     # Stop the existing script
                     scriptobj.stop()
+                    scriptobj = None
                     # Start the new one
                     newscript.start()
             else:
                 # We're done, and there's nothing to replace us.
-                finish_cmds = scriptobj.db.prompt_finish_cmds or []
-                scriptobj.stop()
-                for cmd in finish_cmds:
-                    self.caller.execute_cmd(cmd, sessid=self.sessid)
+                try:
+                    scriptobj.obj.cmdset.delete('PromptState') # The script at_stop will do this again for safety
+                    scriptobj.prompt_end()
+                except Exception:
+                    raise
+                finally:
+                    scriptobj.stop()
+                    scriptobj = None
         else:
             self.msg('{R[That selection is not recognized]')
-            scriptobj.show_options()
+            scriptobj.prompt_options()

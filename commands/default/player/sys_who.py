@@ -128,8 +128,8 @@ class CmdSysWho(default_cmds.MuxPlayerCommand):
                 if user.status_online():
                     idle_time = int(user.status_idle())
                     if idle_time < idle_threshhold:
-                        val_stamina_max = user.game_attribute('STAMINA')
-                        val_stamina = user.game_attribute_current('STAMINA')
+                        val_stamina_max = user.game_attribute('stamina')
+                        val_stamina = user.game_attribute_current('stamina')
                         stamina = '%d/%d' % (val_stamina, val_stamina_max)
                         fraction = val_stamina_max > 0 and float(val_stamina / val_stamina_max) or 0.0
                         if fraction > 0.8:

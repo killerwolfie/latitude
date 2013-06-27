@@ -28,6 +28,8 @@ from game.gamesrc.latitude.commands.default.character import taste
 from game.gamesrc.latitude.commands.default.character import unequip 
 from game.gamesrc.latitude.commands.default.character import unlock
 from game.gamesrc.latitude.commands.default.character import use
+from game.gamesrc.latitude.commands.default.character import visit
+from game.gamesrc.latitude.commands.default.character import wander
 from game.gamesrc.latitude.commands.default.character import whisper
 
 from game.gamesrc.latitude.utils import menusystem
@@ -63,6 +65,8 @@ class LatitudeCmdsetCharacter(CmdSet):
 	self.add(unequip.CmdUnequip)
 	self.add(unlock.CmdUnlock)
 	self.add(use.CmdUse)
+	self.add(visit.CmdVisit)
+	self.add(wander.CmdWander)
 	self.add(whisper.CmdWhisper)
 
         #self.add(menusystem.CmdMenuTest())

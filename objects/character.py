@@ -174,4 +174,3 @@ class Character(Object, EvenniaCharacter):
     # I - Indefinite Name
     def objsub_i(self):
         return self.key
-

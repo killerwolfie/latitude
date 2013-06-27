@@ -1,4 +1,5 @@
-from ev import default_cmds
+from ev import default_cmds, settings, create_script
+from src.objects.models import ObjectDB
 
 class CmdLeave(default_cmds.MuxPlayerCommand):
     """
@@ -7,8 +8,6 @@ class CmdLeave(default_cmds.MuxPlayerCommand):
     Usage:
       leave
         Leave with a prompt
-      leave now
-        Bypass the prompt and leave now
     """
     key = "leave"
     aliases = []
@@ -18,17 +17,20 @@ class CmdLeave(default_cmds.MuxPlayerCommand):
 
     def func(self):
         character = self.character
-        if self.args.lower() == 'now':
-            if character.location:
-                if not character.location.access(character, 'leave'):
-                    # The access check should display a message
-                    return
-            # Determine the region object
-            region = character.get_region() or character.home.get_region()
-            if not region:
-                raise Exception('could not find region')
-            character.move_to(region)
-        elif not self.args:
-            character.scripts.add('game.gamesrc.latitude.scripts.prompt_leave.PromptLeave')
-        else:
-            self.msg('That doesn\'t seem to work.  (See "help leave")')
+        if character.location:
+            if not character.location.access(character, 'leave'):
+                # The access check should display a message
+                return
+        # Determine the region
+        region = character.get_region()
+        if not region and character.home:
+            region = character.home.get_region()
+        if not region:
+            default_home = ObjectDB.objects.get_id(settings.CHARACTER_DEFAULT_HOME)
+            region = default_home.get_region()
+        if not region:
+            raise Exception('could not find region')
+        # Create the prompt which will verify with the user, and then do the transporting
+        prompt_script = create_script('game.gamesrc.latitude.scripts.prompt_leave.PromptLeave', obj=character, autostart=False)
+        prompt_script.db.destination = region
+        prompt_script.start()

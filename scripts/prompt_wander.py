@@ -1,16 +1,15 @@
 from game.gamesrc.latitude.scripts.prompt_state import PromptState
 
-class PromptLeave(PromptState):
+class PromptWander(PromptState):
     """
     Prompt the user if they want to go, before moving them to their destination.
 
     Attributes:
-        destination - (required) The destination object to move the character to.
         cost - A list of pairs: attribute, and cost, if the user accepts the move.
                Any checks for sufficient attributes should be made before creating the
                script.
-        yes_message - A message to display to the user if they choose to leave.
-        no_message - A message to display to the user if they choose to not leave.
+        yes_message - A message to display to the user if they choose to wander.
+        no_message - A message to display to the user if they choose to not wander.
     """
     def prompt_options(self):
         self.obj.msg('Are you sure you want to leave the area? (y/n)')
@@ -25,11 +24,11 @@ class PromptLeave(PromptState):
 
     def prompt_end(self):
         if self.ndb.user_picked_yes:
-            message = [self.db.yes_message or 'You head off toward your destination.']
+            region = self.obj.get_region()
+            message = [self.db.yes_message or 'You set off to explore your surroundings.']
             if self.db.cost:
-                for attr, cost in self.db.cost:
-                    message.append(self.obj.game_attribute_offset(attr, -cost))
+                message.extend([self.obj.game_attribute_offset(attr, -cost) for attr, cost in self.db.cost])
             self.obj.msg(' '.join(message))
-            self.obj.redirectable_move_to(self.db.destination)
+            region.wander(self.obj)
         else:
             self.obj.msg(self.db.no_message or 'You decide to stay where you are.')

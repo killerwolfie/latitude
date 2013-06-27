@@ -1,6 +1,8 @@
 from ev import CmdSet
 
 from game.gamesrc.latitude.commands.region import look
+from game.gamesrc.latitude.commands.default.character import visit
+from game.gamesrc.latitude.commands.default.character import wander
 
 class RegionCmdSet(CmdSet):
     key = "RegionCmdSet"
@@ -18,3 +20,5 @@ class RegionCmdSet(CmdSet):
         Populates the cmdset
         """
 	self.add(look.CmdLook)
+        self.add(visit.CmdVisit)
+        self.add(wander.CmdWander)
