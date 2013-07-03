@@ -18,23 +18,23 @@ class Region(Object):
             return 'region has a location'
         return super(Area, self).bad()
 
-    def return_styled_name(self, looker=None):
+    def get_desc_styled_name(self, looker=None):
         return '{m[' + self.key + ']'
 
-    def return_appearance_name(self, looker=None):
+    def get_desc_appearance_name(self, looker=None):
         return ('%cn%ch%cw' + self.key)
 
-    def return_appearance_desc(self, looker=None):
+    def get_desc_appearance_desc(self, looker=None):
         desc = self.db.desc_appearance
         if desc != None:
             return '%cn' + desc
         else:
             return None
 
-    def return_appearance_contents(self, looker=None):
+    def get_desc_appearance_contents(self, looker=None):
         return None
 
-    def return_appearance_exits(self, looker=None):
+    def get_desc_appearance_exits(self, looker=None):
         return '{x[Use "visit" or "wander" to find a specific location]'
 
     def wander(self, character):

@@ -22,9 +22,9 @@ class CmdMap(default_cmds.MuxPlayerCommand):
             return
         if self.character.location:
             if self.character.get_owner().status_online():
-                self.msg(self.character.location.return_map(mark_friends_of=self.character))
+                self.msg(self.character.location.get_desc_map(mark_friends_of=self.character))
             else:
                 # If the player is 'hiding' then hide friend markers for privacy
-                self.msg(self.character.location.return_map())
+                self.msg(self.character.location.get_desc_map())
 	else:
 	    self.character.msg("You have no location to find on the map!")

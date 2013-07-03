@@ -108,7 +108,7 @@ class CmdSysWho(default_cmds.MuxPlayerCommand):
             if not utils.inherits_from(user, "src.objects.objects.Character"):
                 num_awake += 1
                 # Player name
-                name = user.return_styled_name(self.caller)
+                name = user.get_desc_styled_name(self.caller)
                 # Status
                 status = '%cn%cw?%ch%cr?%cg?%cy?%cb?%cm?%cc?'
                 if user.status_online():
@@ -122,7 +122,7 @@ class CmdSysWho(default_cmds.MuxPlayerCommand):
                 self.msg('%s %s' % (evennia_color_left(name, 19, dots=True), evennia_color_left(status, 8)))
             else:
                 # Character Name
-                name = user.return_styled_name(self.caller)
+                name = user.get_desc_styled_name(self.caller)
                 # Stamina / Status readout
                 stamina = '%cn%cw?%ch%cr?%cg?%cy?%cb?%cm?%cc?'
                 if user.status_online():
@@ -145,9 +145,9 @@ class CmdSysWho(default_cmds.MuxPlayerCommand):
                 else:
                     stamina = '%cn%cgZzzz'
                 # Gender
-                gender = user.return_styled_gender(self.caller)
+                gender = user.get_desc_styled_gender(self.caller)
                 # Species
-                species = user.return_species(self.caller)
+                species = user.get_desc_species(self.caller)
                 if not species:
                     species = '%cn%cr-Unset-'
                 else:

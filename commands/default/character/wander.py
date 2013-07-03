@@ -29,7 +29,7 @@ class CmdWander(default_cmds.MuxPlayerCommand):
                     self.msg("{R[You need at least %s to explore this area.]" % (conj_join([str(cost) + ' ' + attr for attr, cost in wander_cost], 'and')))
                     return
         # Move the character
-        if character.containing_room():
+        if character.get_room():
             prompt_script = create_script('game.gamesrc.latitude.scripts.prompt_wander.PromptWander', obj=character, autostart=False)
             prompt_script.db.cost = wander_cost
             prompt_script.db.yes_message = 'You set off to explore your surroundings.'

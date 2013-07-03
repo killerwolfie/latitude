@@ -23,7 +23,7 @@ class CmdSysAccess(default_cmds.MuxPlayerCommand):
             pperms = "<Superuser>"
         else:
             pperms = ", ".join(self.caller.permissions)
-        self.msg('  Player %s{n: %s' % (self.caller.return_styled_name(self.caller), pperms))
+        self.msg('  Player %s{n: %s' % (self.caller.get_desc_styled_name(self.caller), pperms))
         # Character
         if not self.character:
             cperms = None
@@ -32,4 +32,4 @@ class CmdSysAccess(default_cmds.MuxPlayerCommand):
         else:
             cperms = ", ".join(self.character.permissions)
         if cperms:
-            self.msg('  Character %s{n: %s' % (self.character.return_styled_name(self.caller), cperms))
+            self.msg('  Character %s{n: %s' % (self.character.get_desc_styled_name(self.caller), cperms))

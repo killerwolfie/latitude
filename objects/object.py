@@ -19,7 +19,6 @@ class Object(EvenniaObject):
             "call:false()",                  # allow to call commands on this object (Used by the system itself)
             "puppet:id(%s) or pperm(Janitors)" % self.dbref,
         ])) # restricts puppeting of this object
-        self.db.equipment = set()
 
     # ----- Lock Messages -----
     def at_access_failure(self, accessing_obj, access_type):
@@ -78,27 +77,7 @@ class Object(EvenniaObject):
         return None
 
     # ----- Descriptions -----
-    def _desc_mod(self, method, value):
-        """
-        Return a value which is modified by any active mods.
-        """
-        max_prio = (float('-inf'), float('-inf'))
-        retval = value
-        for mod in self.get_mods():
-            this_prio = (mod.mod_priority(), mod.__hash__())
-            if this_prio < max_prio:
-                # We already have a higher priority than this
-                continue
-            new_desc = getattr(mod, method)(value)
-            if new_desc == None:
-                # Script doesn't provide a mod for this
-                continue
-            # New winner
-            max_prio = this_prio
-            retval = new_desc
-        return retval
-
-    def return_styled_name(self, looker=None):
+    def get_desc_styled_name(self, looker=None):
         """
         Returns the name of this object, styled (With colors, etc.) to help identify
         the type of the object.  This is used when displaying lists of objects, or
@@ -116,11 +95,11 @@ class Object(EvenniaObject):
         # So, make an accordingly ominous looking name.
         return '{x<<' + self.key + '>>'
 
-    def return_styled_gender(self, looker=None):
+    def get_desc_styled_gender(self, looker=None):
         """
         Returns the gender of this object, styled (With colors, etc.).
         """
-        gender = self.return_gender()
+        gender = self.get_desc_gender()
         if not gender:
             gender = '%cn%cr-Unset-'
         elif self.is_male():
@@ -133,39 +112,39 @@ class Object(EvenniaObject):
             gender = '%cn%ch%cw' + gender
         return gender
 
-    def return_appearance(self, looker=None):
+    def get_desc_appearance(self, looker=None):
         """
         Describes the appearance of this object.  Used by the "look" command.
 	This method, by default, delegates its desc generation into several other calls on the object.
-	   return_appearance_name for the name of the object. (Which defaults to showing nothing)
-	   return_apperaance_desc to generate the main description of the room.
-           return_appearance_exits to generate a line that shows you which exits are available for you to take
-	   return_appearance_contents to generate the description of the contents of the object
-	      (This, itself, calls return_appearance_contents_header if there are any contents to get the 'Carrying:' line by default)
+	   get_desc_appearance_name for the name of the object. (Which defaults to showing nothing)
+	   get_desc_apperaance_desc to generate the main description of the room.
+           get_desc_appearance_exits to generate a line that shows you which exits are available for you to take
+	   get_desc_appearance_contents to generate the description of the contents of the object
+	      (This, itself, calls get_desc_appearance_contents_header if there are any contents to get the 'Carrying:' line by default)
 	"""
         # By default, construct the appearance by calling other methods on the object
-	descs = [self.return_appearance_name(looker), self.return_appearance_desc(looker), self.return_appearance_exits(looker), self.return_appearance_contents(looker)]
+	descs = [self.get_desc_appearance_name(looker), self.get_desc_appearance_desc(looker), self.get_desc_appearance_exits(looker), self.get_desc_appearance_contents(looker)]
 	descs = [desc for desc in descs if desc != None]
-	return self._desc_mod('mod_appearance', '\n'.join(descs))
+	return '\n'.join(descs)
 
-    def return_appearance_name(self, looker=None):
+    def get_desc_appearance_name(self, looker=None):
         """
 	Return the name portion of the visual description.
 	By default, the name of the object is not announced when getting the description.
 	"""
-        return self._desc_mod('mod_appearance_name', None)
+        return None
 
-    def return_appearance_desc(self, looker=None):
+    def get_desc_appearance_desc(self, looker=None):
         """
 	Return the main portion of the visual description.
 	"""
         desc = self.db.desc_appearance
 	if desc != None:
-	    return self._desc_mod('mod_appearance_desc', '%cn' + self.objsub(desc))
+	    return '%cn' + self.objsub(desc)
 	else:
-	    return self._desc_mod('mod_appearance_desc', '%cnYou see nothing special.')
+	    return '%cnYou see nothing special.'
 
-    def return_appearance_exits(self, looker=None):
+    def get_desc_appearance_exits(self, looker=None):
         """
 	Return a line that describes the visible exits in the object.
 	"""
@@ -177,11 +156,11 @@ class Object(EvenniaObject):
                 exits.append(con.key)
 
         if exits:
-            return self._desc_mod('mod_appearance_exits', '%ch%cx[Exits: ' + ', '.join(exits) + ']%cn')
+            return '%ch%cx[Exits: ' + ', '.join(exits) + ']%cn'
 	else:
-	    return self._desc_mod('mod_appearance_exits', None)
+	    return None
 
-    def return_appearance_contents(self, looker):
+    def get_desc_appearance_contents(self, looker):
         """
 	Return a descriptive list of the contents held by this object.
 	"""
@@ -191,206 +170,119 @@ class Object(EvenniaObject):
             if isinstance(con, EvenniaExit):
 	        exits.append(con.key)
             elif con.player:
-                users.append(con.return_styled_name(looker))
+                users.append(con.get_desc_styled_name(looker))
             else:
-                things.append(con.return_styled_name(looker))
+                things.append(con.get_desc_styled_name(looker))
         if users or things:
-            string = self.return_appearance_contents_header(looker)
+            string = self.get_desc_appearance_contents_header(looker)
             if users:
                 string += '\n%ch%cc' + '\n'.join(users) + '%cn'
             if things:
                 string += '\n%cn%cc' + '\n'.join(things) + '%cn'
-            return self._desc_mod('mod_appearance_contents', string)
+            return string
 	else:
-	    return self._desc_mod('mod_appearance_contents', None)
+	    return None
 
-    def return_appearance_contents_header(self, looker=None):
+    def get_desc_appearance_contents_header(self, looker=None):
         """
 	Returns a header line to display just before outputting the contents of the object.
 	"""
-        return self._desc_mod('mod_appearance_contents_header', '%ch%cbContents:%cn')
+        return '%ch%cbContents:%cn'
 
-    def return_scent(self, looker=None):
+    def get_desc_scent(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
         if self.db.desc_scent:
-	    return self._desc_mod('mod_scent', self.objsub(self.db.desc_scent))
+	    return self.objsub(self.db.desc_scent)
 	else:
-	    return self._desc_mod('mod_scent', self.objsub("&0C doesn't seem to have any descernable scent."))
+	    return self.objsub("&0C doesn't seem to have any descernable scent.")
 
-    def return_texture(self, looker=None):
+    def get_desc_texture(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
         if self.db.desc_texture:
-	    return self._desc_mod('mod_texture', self.objsub(self.db.desc_texture))
+	    return self.objsub(self.db.desc_texture)
 	else:
-	    return self._desc_mod('mod_texture', self.objsub("&0C doesn't seem to have any descernable texture."))
+	    return self.objsub("&0C doesn't seem to have any descernable texture.")
 
-    def return_flavor(self, looker=None):
+    def get_desc_flavor(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
         if self.db.desc_flavor:
-	    return self._desc_mod('mod_flavor', self.objsub(self.db.desc_flavor))
+	    return self.objsub(self.db.desc_flavor)
 	else:
-	    return self._desc_mod('mod_flavor', self.objsub("&0C doesn't seem to have any descernable flavor."))
+	    return self.objsub("&0C doesn't seem to have any descernable flavor.")
 
-    def return_sound(self, looker=None):
+    def get_desc_sound(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
         if self.db.desc_sound:
-	    return self._desc_mod('mod_sound', self.objsub(self.db.desc_sound))
+	    return self.objsub(self.db.desc_sound)
 	else:
-	    return self._desc_mod('mod_sound', self.objsub("&0C doesn't seem to have any descernable sound."))
+	    return self.objsub("&0C doesn't seem to have any descernable sound.")
 
-    def return_aura(self, looker=None):
+    def get_desc_aura(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
         if self.db.desc_aura:
-	    return self._desc_mod('mod_aura', self.objsub(self.db.desc_aura))
+	    return self.objsub(self.db.desc_aura)
 	else:
-	    return self._desc_mod('mod_aura', self.objsub("&0C doesn't seem to have any descernable aura."))
+	    return self.objsub("&0C doesn't seem to have any descernable aura.")
 
-    def return_writing(self, looker=None):
+    def get_desc_writing(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
         if self.db.desc_writing:
-	    return self._desc_mod('mod_writing', self.objsub(self.db.desc_writing))
+	    return self.objsub(self.db.desc_writing)
 	else:
-	    return self._desc_mod('mod_writing', self.objsub("&0C doesn't seem to have any descernable writing."))
+	    return self.objsub("&0C doesn't seem to have any descernable writing.")
 
-    def return_gender(self, looker=None):
+    def get_desc_gender(self, looker=None):
         """
         Returns the gender description of the object.  (Typically one word)
         """
         if self.db.desc_gender:
-            return self._desc_mod('mod_gender', self.db.desc_gender)
+            return self.db.desc_gender
         else:
-            return self._desc_mod('mod_gender', 'thing')
+            return 'thing'
 
-    def return_species(self, looker=None):
+    def get_desc_species(self, looker=None):
         """
         Returns the species description of the object.  (Typically less than 25 characters)
         """
         if self.db.desc_species:
-            return self._desc_mod('mod_species', self.db.desc_species)
+            return self.db.desc_species
         else:
-            return self._desc_mod('mod_species', 'Object')
-
-    # ----- Speech -----
-    def speech_say(self, say_string, pose=False):
-        """
-        Take a string of words this object wants to say, and return a stylized string, suitable for messaging to others.
-        """
-        # Determine verb
-        if say_string.endswith('?'):
-	    verb = self.speech_asks()
-	elif say_string.endswith('!'):
-	    verb = self.speech_exclaims()
-	else:
-	    verb = self.speech_says()
-	return self.speech_color_name() + self.speech_name() + ' ' + self.speech_msg(verb + ', "' + say_string + '"')
-
-    def speech_pose(self, pose_string):
-        """
-        Take a string of words this object wants to 'pose', and return a stylized string, suitable for messaging to others.
-        """
-        sep = ' '
-        if [chk for chk in ["'s ", '-', ', ', ': ', ' '] if pose_string.startswith(chk)]:
-            sep = ''
-        return(self.speech_color_name() + self.speech_name() + sep + self.speech_msg(pose_string))
-
-    def speech_msg(self, msg_string, min_depth=0):
-        """
-        Process a message which this object wants to say, pose, whisper, etc. and stylize it with this object's speech style.
-
-        Typically this just adds some color, but it could be used to modify the object's words as well (Such as adding exclamatory suffixes, cleaning up swears, etc.)
-        """
-        retval = u''
-        current_color = min_depth
-        last_change = 1
-	msg_sections = []
-        for msg_section in msg_string.replace('%', '%%').replace('{', '{{').split('"'):
-            msg_sections.append(self.speech_color_depth(current_color >= min_depth and current_color or min_depth) + msg_section)
-	    if msg_section == '':
-	        current_color += last_change
-	    elif msg_section[-1] == ' ':
-	        current_color += 1
-		last_change = 1
-            else:
-	        current_color -= 1
-		last_change = -1
-        return((self.speech_color_quote() + '"').join(msg_sections))
-
-    def speech_name(self):
-        """
-        Returns this object's name, used for constructing speech messages.
-        """
-        return self.db.say_name or self.key
-
-    def speech_says(self):
-        """
-        Returns this object's 'says' verb, used for constructing speech messages.
-        """
-        return self.db.say_says or "says"
-
-    def speech_asks(self):
-        """
-        Returns this object's 'asks' verb, used for constructing speech messages.
-        """
-        return self.db.say_asks or "asks"
-
-    def speech_exclaims(self):
-        """
-        Returns this object's 'exclaims' verb, used for constructing speech messages.
-        """
-        return self.db.say_exclaims or "exclaims"
-
-    def speech_color_name(self):
-	return self.db.say_color_name or '%ch%cc'
-
-    def speech_color_quote(self):
-	return self.db.say_color_quote or '%cn%cw'
-
-    def speech_color_depth(self, depth):
-        if depth > 10:
-            depth = 10 # Depth limit, to limit recursion
-        if self.get_attribute('say_color_depth' + str(depth)):
-	    return self.get_attribute('say_color_depth' + str(depth))
-        if depth < 1:
-	    return '{C'
-        elif depth == 1:
-            return '{W'
-        else:
-            return self.speech_color_depth(depth - 1)
+            return 'Object'
 
     # ----- Maps -----
-    def return_map(self, mark_friends_of=None):
+    def get_desc_map(self, mark_friends_of=None):
         """
 	Return an ascii image representing the location of the object for helping users to navigate.
 	"""
-	room = self.containing_room()
-	if hasattr(room, 'return_map'):
-	    return room.return_map(mark_friends_of)
+	room = self.get_room()
+	if hasattr(room, 'get_desc_map'):
+	    return room.get_desc_map(mark_friends_of)
 	return None
 
     # ----- Gender -----
     def is_male(self):
-        return self.return_gender().lower().strip() in ['male', 'man', 'boy', 'dude', 'him']
+        return self.get_desc_gender().lower().strip() in ['male', 'man', 'boy', 'dude', 'him']
 
     def is_female(self):
-        return self.return_gender().lower().strip() in ['female', 'woman', 'girl', 'chick', 'lady', 'her']
+        return self.get_desc_gender().lower().strip() in ['female', 'woman', 'girl', 'chick', 'lady', 'her']
 
     def is_herm(self):
-        return self.return_gender().lower().strip() in ['herm', 'hermy', 'both', 'shemale']
+        return self.get_desc_gender().lower().strip() in ['herm', 'hermy', 'both', 'shemale']
 
     def is_neuter(self):
-        return self.return_gender().lower().strip() in ['neuter', 'asexual', 'it', 'thing', 'object', 'machine', 'genderless', 'sexless']
+        return self.get_desc_gender().lower().strip() in ['neuter', 'asexual', 'it', 'thing', 'object', 'machine', 'genderless', 'sexless']
 
     def is_androgynous(self):
         return not self.is_male() and not self.is_female() and not self.is_herm() and not self.is_neuter()
@@ -533,7 +425,7 @@ class Object(EvenniaObject):
                 return obj
         return None
 
-    def containing_room(self):
+    def get_room(self):
         """
 	Ascends the tree until it hits the first room, and returns it.
 	"""
@@ -574,18 +466,6 @@ class Object(EvenniaObject):
             # Looks good.  Change the destination.
             destination = new_destination
         return super(Object, self).move_to(destination, quiet=quiet, emit_to_obj=emit_to_obj, use_destination=use_destination, to_none=to_none)
-
-    # ----- Default Behavior -----
-    def at_after_move(self, source_location):
-        super(Object, self).at_after_move(source_location)
-        # Clear 'following'
-        following = self.db.follow_following
-        if following and (following.location == None or following.location != self.location):
-            self.msg('You move off, and stop following %s.' % (following.key))
-            del self.db.follow_following
-        # Clear any pending follow or lead requests
-        del self.db.follow_wantfollow
-        del self.db.follow_wantlead
 
     # ----- Object based string substitution -----
     def objsub(self, template, *args):
@@ -789,159 +669,3 @@ class Object(EvenniaObject):
     # Other
     def objsub_other(self, code):
         return None
-
-    # ---- Equipment / Status Effects / Etc. ----
-    def get_equipment(self, slot=None):
-        """
-        Return a list of equipment equipped by this Object.
-        """
-        if slot:
-            return set(item for item in self.db.equipment if item and item.get_equipper() == self and item.equipment_slot() == slot)
-        else:
-            return set(item for item in self.db.equipment if item and item.get_equipper() == self)
-
-    def get_mods(self, slot=None):
-        """
-        Returns a set of Mod objects which apply to this Object.
-        """
-        self.scripts.validate()
-        # Produce a list of all objects, which if derived from Mod, qualify on this character
-        candidates = set(self.get_equipment())
-        for script in self.scripts.all():
-            candidates.add(script)
-        candidates.add(self.location)
-        # TODO: Global mods
-        # Return the set of mods
-        return set(candidate for candidate in candidates if utils.inherits_from(candidate, 'game.gamesrc.latitude.struct.mod.Mod'))
-
-    # ---- 'Attributes' ----
-    def game_attribute(self, attribute, base=None):
-        """
-        Returns a character/npc/etc 'attribute', or 'stat' value.  (Not to be confused
-        with the class's attributes or database attributes)  These are integers which
-        represent the abilities of the object.
-        """
-        if base == None:
-            base = 0
-        value = int(base)
-        mods = self.get_mods()
-        # Check for any 'set' modifiers.  These override everything
-        setter_value = None
-        setter_priority = None
-        for mod in mods:
-            values = mod.mod_attr_set()
-            if not values or not attribute in values:
-                continue
-            value = int(values[attribute])
-            priority = (mod.priority(), mod.__hash__()) # The hash is included so that there's never a tie
-            if setter_value == None or setter_priority < priority:
-                setter_value = value
-                setter_priority = priority
-        if setter_value:
-            return setter_value
-        # Stacking offset
-        for mod in mods:
-            offset = mod.mod_attr_offset_stack()
-            if not offset or not attribute in offset:
-                continue
-            offset = int(offset[attribute])
-            if offset:
-                value += offset
-        # Non-stacking offset
-        positive_non_stacking_offset = 0
-        negative_non_stacking_offset = 0
-        for mod in mods:
-            offset = mod.mod_attr_offset_nostack()
-            if not offset or not attribute in offset:
-                continue
-            offset = int(offset[attribute])
-            # Non stacking offsets are applied at the end, once we figure out the best one(s)
-            if offset > 0:
-                if offset > positive_non_stacking_offset:
-                    positive_non_stacking_offset = offset
-            else:
-                if offset < negative_non_stacking_offset:
-                    negative_non_stacking_offset = offset
-        value += positive_non_stacking_offset
-        value += negative_non_stacking_offset
-        # Stacking multiplier
-        for mod in mods:
-            multiplier = mod.mod_attr_multiply_stack()
-            if not multiplier or not attribute in multiplier:
-                continue
-            multiplier = float(multiplier[attribute])
-            if multiplier:
-                value *= multiplier
-        # Non stacking multiplier
-        positive_non_stacking_multiplier = 1
-        negative_non_stacking_multiplier = 1
-        for mod in mods:
-            multiplier = mod.mod_attr_multiply_nostack()
-            if not multiplier or not attribute in multiplier:
-                continue
-            multiplier = float(multiplier[attribute])
-            # Non stacking multipliers are applied at the end, once we figure out the best one(s)
-            if multiplier > 1:
-                if multiplier > positive_non_stacking_multiplier:
-                    positive_non_stacking_multiplier = multiplier
-            else:
-                if multiplier < negative_non_stacking_multiplier:
-                    negative_non_stacking_multiplier = multiplier
-        value *= positive_non_stacking_multiplier
-        value *= negative_non_stacking_multiplier
-        return int(value)
-
-    def game_attribute_current(self, attribute):
-        """
-        Returns the current value of an attribute, taking stat offsets into account.
-
-        Attributes are normally fixed, and can only be changed by modifying the
-        object's equipment, scripts, etc.  But some attributes need to change all the
-        time and are largely temporary.  So this routine checks and accounts for
-        attr_offset_<stat> properties on the object.
-
-        For example, game_attribute() for maximum magic, and game_attribute_current()
-        for current magic, and modify obj.db.attr_offset_magic to consume (or boost
-        past max) your magic.  Gradual recovery can be done with a script by finding
-        objects with an offset, and moving it toward 0.
-
-        This can also be used in the same way for counter-like attributes, which have
-        no maximum, such as gold or experience points.
-
-        Bare in mind that stat multiplier mods affect the values returned by
-        game_attribute(), and are not affected by the offset value of the attribute.
-        """
-        offset = self.get_attribute('attr_offset_' + attribute) or 0
-        return self.game_attribute(attribute) + offset
-
-    def game_attribute_offset(self, attribute, offset):
-        """
-        Apply an offset to an attribute on this object, and msg the object about it.
-        Returns the output of game_attribute_offset_message()
-        """
-        if int(offset):
-            curval = self.get_attribute('attr_offset_' + attribute) or 0
-            newval = curval + int(offset)
-            if newval:
-                self.set_attribute('attr_offset_' + attribute, newval)
-            else:
-                self.del_attribute('attr_offset_' + attribute)
-        return self.game_attribute_offset_message(attribute, offset)
-
-    def game_attribute_offset_message(self, attribute, offset):
-        """
-        Produces a short message to describe a game attribute offset.
-        Examples:
-            (-5 magic)
-            (10XP)
-            (earned 10 gold)
-            (2 damage!)
-        """
-        # Generate and return message
-        if offset < 0:
-            message = '{Y(%d %s)' % (offset, attribute)
-        elif offset > 0:
-            message = '{G(+%d %s)' % (offset, attribute)
-        else:
-            message = '{Y(%s unchanged)' % (attribute)
-        return message

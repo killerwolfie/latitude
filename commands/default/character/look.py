@@ -38,7 +38,7 @@ class CmdLook(default_cmds.MuxPlayerCommand):
                 self.msg("You have no location to percieve!")
                 return
         # Get the object's description
-        self.msg(getattr(looking_at_obj, 'return_'+ sense)(character))
+        self.msg(getattr(looking_at_obj, 'get_desc_'+ sense)(character))
         # the object's at_desc() method.
 	if sense == 'appearance':
 	    sense_callback = 'at_desc'

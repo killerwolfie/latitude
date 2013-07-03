@@ -62,7 +62,7 @@ class CmdMenuQuit(CmdMenu):
 
 class CmdsetMenu(CmdSet):
     key = "menucmdset"
-    priority = 5
+    priority = 35
     no_objs = True
     no_exits = True
     no_channels = True

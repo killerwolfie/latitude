@@ -6,7 +6,7 @@ from game.gamesrc.latitude.commands.default.character import wander
 
 class RegionCmdSet(CmdSet):
     key = "RegionCmdSet"
-    priority = 9
+    priority = 29
     mergetype = "Replace"
     key_mergetypes = {
         'Player' : 'Union',

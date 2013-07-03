@@ -106,5 +106,5 @@ class CmdUnconnectedConnect(MuxCommand):
 
         # Now that we're connected, puppet the character, if requested.
         if character:
-            session.msg('\n{WLogging directly into {c%s{W...\n' % (character.return_styled_name(player)))
+            session.msg('\n{WLogging directly into {c%s{W...\n' % (character.get_desc_styled_name(player)))
             player.do_puppet(session.sessid, character)

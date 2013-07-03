@@ -57,18 +57,18 @@ class Player(EvenniaPlayer):
         the player)
         """
         if self.get_puppet(sessid) == new_character:
-            self.msg("{RYou already act as %s{R." % (new_character.return_styled_name(self)), sessid=sessid)
+            self.msg("{RYou already act as %s{R." % (new_character.get_desc_styled_name(self)), sessid=sessid)
             return
         if new_character in self.no_slot_chars():
-            self.msg("{R%s{R does not have a character slot.  Either delete a character, or acquire more character slots." % (new_character.return_styled_name(self)), sessid=sessid)
+            self.msg("{R%s{R does not have a character slot.  Either delete a character, or acquire more character slots." % (new_character.get_desc_styled_name(self)), sessid=sessid)
             self.msg("{RIf you believe this is an error, contact{rstaff@latitude.muck.ca{R.", sessid=sessid)
             return
         if not new_character.access(self, "puppet"):
-            self.msg("You are not allowed to control that character." % (new_character.return_styled_name(self)), sessid=sessid)
+            self.msg("You are not allowed to control that character." % (new_character.get_desc_styled_name(self)), sessid=sessid)
             self.msg("{RIf you believe this is an error, contact{rstaff@latitude.muck.ca{R.", sessid=sessid)
             return
         if new_character.player and new_character.player != self and new_character.player.is_connected:
-            self.msg("{R%s{R is already acted by another player.{n" % (new_character.return_styled_name(self)), sessid=sessid)
+            self.msg("{R%s{R is already acted by another player.{n" % (new_character.get_desc_styled_name(self)), sessid=sessid)
             return
         if new_character.player:
             # Steal the character (As a safeguard, we allow taking players from other sessions, subject to security checks above.)
@@ -76,7 +76,7 @@ class Player(EvenniaPlayer):
             self.do_unpuppet(new_character.sessid)
             self.msg("Taking over {c%s{n from another session..." % new_character.name, sessid=sessid)
         if not self.puppet_object(sessid, new_character):
-            self.msg("{RYou cannot become {R%s{n." % new_character.return_styled_name(self), sessid=sessid)
+            self.msg("{RYou cannot become {R%s{n." % new_character.get_desc_styled_name(self), sessid=sessid)
 
     def do_unpuppet(self, sessid):
         """
@@ -121,14 +121,7 @@ class Player(EvenniaPlayer):
         characters = sorted(characters, cmp=lambda b, a: cmp(a.db.stats_last_puppet_time, b.db.stats_last_puppet_time) or cmp(a.id, b.id))
         return characters[max_characters:]
 
-    def return_styled_name(self, looker=None):
-        """
-        Returns the name of this player, styled (With colors, etc.) to help identify
-        the type of the object.  This is used for compatibility with
-        Object.return_styled_name() objects.  For more details, look there.
-        """
-        # You shouldn't create any Objects directly.  This is meant to be a pure base class.
-        # So, make an accordingly ominous looking name.
+    def get_desc_styled_name(self, looker=None):
         if self.status_online():
             return '{b' + self.key
         else:

@@ -60,7 +60,7 @@ class LatitudeCmdsetPlayer(CmdSet):
     character connected to them (i.e. they are out-of-character, ooc).
     """
     key = "Player"
-    priority = -5
+    priority = 10
 
     def at_cmdset_creation(self):
         """

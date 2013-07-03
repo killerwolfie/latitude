@@ -44,24 +44,24 @@ class Room(Object, EvenniaRoom):
             return 'room has no area'
         return super(Room, self).bad()
 
-    def return_styled_name(self, looker=None):
+    def get_desc_styled_name(self, looker=None):
         return '{w' + self.key
 
-    def return_appearance_name(self, looker=None):
+    def get_desc_appearance_name(self, looker=None):
         return ('%cn%ch%cw' + self.key)
 
-    def return_appearance_desc(self, looker=None):
+    def get_desc_appearance_desc(self, looker=None):
         desc = self.db.desc_appearance
         if desc != None:
             return('%cn' + desc)
         else:
             return(None)
 
-    def return_scent(self, looker=None):
+    def get_desc_scent(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
-	retval = super(Room, self).return_scent(looker)
+	retval = super(Room, self).get_desc_scent(looker)
         visible = (con for con in self.contents if con != looker)
 	for con in visible:
 	    if con.db.desc_scent and not isinstance(con, EvenniaExit):
@@ -69,23 +69,23 @@ class Room(Object, EvenniaRoom):
 	# Return the scents of everything in the room as well
 	return retval
 
-    def return_texture(self, looker=None):
+    def get_desc_texture(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
-	return super(Room, self).return_texture(looker)
+	return super(Room, self).get_desc_texture(looker)
 
-    def return_flavor(self, looker):
+    def get_desc_flavor(self, looker):
         """
 	Returns the scent description of the object.
 	"""
-	return super(Room, self).return_flavor(looker)
+	return super(Room, self).get_desc_flavor(looker)
 
-    def return_sound(self, looker):
+    def get_desc_sound(self, looker):
         """
 	Returns the scent description of the object.
 	"""
-        retval = super(Room, self).return_sound(looker=None)
+        retval = super(Room, self).get_desc_sound(looker=None)
 	# Return the sounds of things in the room at random
         visible = (con for con in self.contents if con != looker)
 	for con in visible:
@@ -93,11 +93,11 @@ class Room(Object, EvenniaRoom):
 	        retval += '\n  %s' % (con.db.desc_sound)
 	return retval
 
-    def return_aura(self, looker=None):
+    def get_desc_aura(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
-	retval = super(Room, self).return_aura(looker)
+	retval = super(Room, self).get_desc_aura(looker)
 	# Return the auras of everything in the room as well
         visible = (con for con in self.contents if con != looker)
 	for con in visible:
@@ -105,14 +105,14 @@ class Room(Object, EvenniaRoom):
 	        retval += '\n[%s]\n%s\n' % (con.key, con.db.desc_aura)
 	return retval
 
-    def return_writing(self, looker=None):
+    def get_desc_writing(self, looker=None):
         """
 	Returns the scent description of the object.
 	"""
-	return super(Room, self).return_writing(looker)
+	return super(Room, self).get_desc_writing(looker)
 
     # ----- Maps -----
-    def return_map(self, print_location=False, mark_self=True, mark_friends_of=None):
+    def get_desc_map(self, print_location=False, mark_self=True, mark_friends_of=None):
         try:
 	    # Grab the time at which this call was made, so if the call takes a while it doesn't drift our 'idle time' calculations
 	    now = time.time()

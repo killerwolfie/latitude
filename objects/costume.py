@@ -30,7 +30,7 @@ class Costume(Equipment):
         Returns a stylized string, typically an object or status condition name, that describes the source of the mod.
         Returns None if this information is meant to be unknown to the user.
         """
-        return self.db.mod_desc_source or self.return_styled_name()
+        return self.db.mod_desc_source or self.get_desc_styled_name()
 
     def mod_desc_detail(self):
         """

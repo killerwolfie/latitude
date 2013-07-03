@@ -57,7 +57,7 @@ class CmdNoMatch(Command):
         player = self.caller
         # Display welcome screen
         self.msg('{w/-----------------------------------------------------------------------------\\')
-        self.msg('{w| ' + evennia_color_left("{WWelcome, {w%s{W, to the world of {CLatitude MUD{W;" % player.return_styled_name(self.caller), 75) + ' {w|')
+        self.msg('{w| ' + evennia_color_left("{WWelcome, {w%s{W, to the world of {CLatitude MUD{W;" % player.get_desc_styled_name(self.caller), 75) + ' {w|')
         self.msg('{w| ' + evennia_color_right("{Wa massively multiplayer, online text adventure game.", 75) + ' {w|')
         self.msg('{w|                                                                             |')
         self.msg("{w|   {WTo join the game, use {w@char/ic <character name>{W to select a character.    {w|")
@@ -114,8 +114,8 @@ class CmdNoMatch(Command):
         """
         block_canvas = EvenniaColorCanvas()
         block_canvas.evennia_import((disabled and '{R' or '{W') + self.character_border())
-        block_canvas.draw_string(1, 1, evennia_color_center(character.return_styled_name(self.caller), 22, dots=True))
-        block_canvas.draw_string(1, 3, evennia_color_left('{nSex: %s{n' % (character.return_styled_gender(self.caller)), 12, dots=True))
+        block_canvas.draw_string(1, 1, evennia_color_center(character.get_desc_styled_name(self.caller), 22, dots=True))
+        block_canvas.draw_string(1, 3, evennia_color_left('{nSex: %s{n' % (character.get_desc_styled_gender(self.caller)), 12, dots=True))
         block_canvas.draw_string(14, 3, evennia_color_left('{nSta: {g%s{n' % (character.game_attribute('STAMINA')), 9, dots=True))
         if disabled:
             block_canvas.draw_string(1, 6, evennia_color_center('{r' + disabled, 22, dots=True))

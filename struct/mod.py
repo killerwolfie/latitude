@@ -56,85 +56,85 @@ class Mod(object):
 
     def mod_appearance(self, appearance):
         """
-        Modifies return_appearance.  Returns a new value given an existing one, or None for no mod.
+        Modifies get_desc_appearance.  Returns a new value given an existing one, or None for no mod.
         """
         return None
 
     def mod_appearance_desc(self, appearance):
         """
-        Modifies return_appearance_desc.  Returns a new value given an existing one, or None for no mod
+        Modifies get_desc_appearance_desc.  Returns a new value given an existing one, or None for no mod
         """
         return None
 
     def mod_appearance_name(self, appearance):
         """
-        Modifies return_appearance_name.  Returns a new value given an existing one, or None for no mod.
+        Modifies get_desc_appearance_name.  Returns a new value given an existing one, or None for no mod.
         """
         return None
 
     def mod_appearance_contents_header(self, appearance):
         """
-        Modifies return_appearance_contents_header.  Returns a new value given an existing one, or None for no mod.
+        Modifies get_desc_appearance_contents_header.  Returns a new value given an existing one, or None for no mod.
         """
         return None
 
     def mod_appearance_contents(self, appearance):
         """
-        Modifies return_appearance_contents.  Returns a new value given an existing one, or None for no mod.
+        Modifies get_desc_appearance_contents.  Returns a new value given an existing one, or None for no mod.
         """
         return None
 
     def mod_appearance_exits(self, appearance):
         """
-        Modifies return_appearance_exits.  Returns a new value given an existing one, or None for no mod.
+        Modifies get_desc_appearance_exits.  Returns a new value given an existing one, or None for no mod.
         """
         return None
 
     def mod_aura(self, aura):
         """
-        Modifies return_aura.  Returns a new value given an existing one, or None for no mod.
+        Modifies get_desc_aura.  Returns a new value given an existing one, or None for no mod.
         """
         return None
 
     def mod_flavor(self, flavor):
         """
-        Modifies return_flavor.  Returns a new value given an existing one, or None for no mod.
+        Modifies get_desc_flavor.  Returns a new value given an existing one, or None for no mod.
         """
         return None
 
     def mod_scent(self, scent):
         """
-        Modifies return_scent.  Returns a new value given an existing one, or None for no mod.
+        Modifies get_desc_scent.  Returns a new value given an existing one, or None for no mod.
         """
         return None
 
     def mod_sound(self, sound):
         """
-        Modifies return_sound.  Returns a new value given an existing one, or None for no mod.
+        Modifies get_desc_sound.  Returns a new value given an existing one, or None for no mod.
         """
         return None
 
     def mod_texture(self, texture):
         """
-        Modifies return_texture.  Returns a new value given an existing one, or None for no mod.
+        Modifies get_desc_texture.  Returns a new value given an existing one, or None for no mod.
         """
         return None
 
     def mod_writing(self, writing):
         """
-        Modifies return_writing.  Returns a new value given an existing one, or None for no mod.
+        Modifies get_desc_writing.  Returns a new value given an existing one, or None for no mod.
         """
         return None
 
     def mod_species(self, species):
         """
-        Modifies return_species.  Returns a new value given an existing one, or None for no mod.
+        Modifies get_desc_species.  Returns a new value given an existing one, or None for no mod.
         """
         return None
 
     def mod_gender(self, gender):
         """
-        Modifies return_gender.  Returns a new value given an existing one, or None for no mod.
+        Modifies get_desc_gender.  Returns a new value given an existing one, or None for no mod.
         """
         return None
 

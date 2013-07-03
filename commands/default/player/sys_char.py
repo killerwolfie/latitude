@@ -81,7 +81,7 @@ class CmdSysChar(default_cmds.MuxPlayerCommand):
     def cmd_list(self):
         player = self.caller
         characters = sorted(player.get_characters(), cmp=lambda a, b: cmp(a.key,b.key))
-        self.msg('Your characters: ' + ', '.join([char.return_styled_name(player) for char in characters]))
+        self.msg('Your characters: ' + ', '.join([char.get_desc_styled_name(player) for char in characters]))
         if player.no_slot_chars():
             self.msg('\n{RYou appear to have more characters than character slots.  Some of your characters may be inaccessible.')
             self.msg('{RIf you believe this is an error, please contact {rstaff@latitude.muck.ca{R.')
@@ -180,4 +180,4 @@ class CmdSysChar(default_cmds.MuxPlayerCommand):
         if target_player:
             alertus.add(target_player)
         for alertme in alertus:
-            alertme.msg('{rThe character "%s" has been deleted by {c%s{r.' % (target_name, player.return_styled_name(alertme)))
+            alertme.msg('{rThe character "%s" has been deleted by {c%s{r.' % (target_name, player.get_desc_styled_name(alertme)))

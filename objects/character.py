@@ -1,10 +1,10 @@
 from ev import search_player, search_object, utils
 from ev import Character as EvenniaCharacter
 from src.scripts.models import ScriptDB
-from game.gamesrc.latitude.objects.object import Object
+from game.gamesrc.latitude.objects.actor import Actor
 import time
 
-class Character(Object, EvenniaCharacter):
+class Character(Actor, EvenniaCharacter):
     def basetype_setup(self):
         """
         This sets up the default properties of an Object,
@@ -57,7 +57,7 @@ class Character(Object, EvenniaCharacter):
     def at_post_login(self):
         super(Character, self).at_post_login() # For now call the default handler which unstows the character
 
-    def at_pre_puppet(self, player):
+    def at_pre_puppet(self, player, sessid):
         if self.location:
             self.location.msg_contents("%s has entered the game." % self.name, exclude=[self])
         # Update puppet statistics
@@ -78,7 +78,7 @@ class Character(Object, EvenniaCharacter):
                 if friend.status_online(): # Don't alert friends who show offline.
                     friend.msg('Your friend %s (%s) has just entered the game.' % (self.key, self.player.key))
 
-    def at_post_unpuppet(self, player):
+    def at_post_unpuppet(self, player, sessid):
         if self.location:
             self.location.msg_contents("%s has left the game." % self.name, exclude=[self])
         # Update puppet statistics
@@ -137,7 +137,7 @@ class Character(Object, EvenniaCharacter):
             return None
 
     # ---- Descriptions ----
-    def return_styled_name(self, looker=None):
+    def get_desc_styled_name(self, looker=None):
         if self.status_online():
             return '{c' + self.key
         else:

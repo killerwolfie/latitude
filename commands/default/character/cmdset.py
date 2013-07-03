@@ -36,6 +36,8 @@ from game.gamesrc.latitude.utils import menusystem
 
 class LatitudeCmdsetCharacter(CmdSet):
     key = "Character"
+    priority = 10
+    duplicates = False
 
     def at_cmdset_creation(self):
         """

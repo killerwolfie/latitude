@@ -125,7 +125,7 @@ class CmdsetEditObj(CmdSet):
     (Specifically, it imbuse the command with a reference to the ObjEdit class itself)
     """
     key = "ObjEdit"
-    priority = 11
+    priority = 33
     mergetype = "Replace"
     no_exits = True
     no_objs = True
@@ -201,7 +201,7 @@ class EditObj(object):
         header = EvenniaColorCanvas()
         header.evennia_import('{w------------------------------------------------------------------------------')
         header.draw_string(5, 0, '{B[{y %s {B]' % (self.key))
-        item_string = '{B[{c %s {B]' % (self.obj and self.obj.return_styled_name(self.caller) or '{g<New Object>')
+        item_string = '{B[{c %s {B]' % (self.obj and self.obj.get_desc_styled_name(self.caller) or '{g<New Object>')
         header.draw_string(73 - evennia_color_len(item_string), 0, item_string)
         menu_string += header.evennia_export() + '\n'
         if len(self.fields) > 0 and self.fields[0]['type'] != 'SEP':

@@ -78,9 +78,9 @@ class CmdSysWhereare(default_cmds.MuxPlayerCommand):
             self.msg('  {RNo rooms with %d or more characters.' % (threshold))
         else:
             for region in locations:
-                self.msg(' {C' + string.capwords(region.get_name_within()) + '{C:')
+                self.msg(' {C' + string.capwords(region.objsub('&0w')) + '{C:')
                 for area in locations[region]:
-                    self.msg('   {C' + string.capwords(area.get_name_within()) + '{C:')
+                    self.msg('   {C' + string.capwords(area.objsub('&0w')) + '{C:')
                     for location in locations[region][area]:
                         # Display the location
                         self.msg(evennia_color_left('     {c' + location.key + '{n'  + ('.' * 79), 73, dots=True) + evennia_color_right('{g' + str(len(locations[region][area][location])), 4, dots=True))
@@ -91,7 +91,7 @@ class CmdSysWhereare(default_cmds.MuxPlayerCommand):
                         # Display character lists
                         charline = '       {x: Characters :{n '
                         if friends_here:
-                            charline += '{n, '.join([friend.return_styled_name(self.caller) for friend in friends_here])
+                            charline += '{n, '.join([friend.get_desc_styled_name(self.caller) for friend in friends_here])
                             if strangers_here:
                                 charline += '{n, plus '
                             else:

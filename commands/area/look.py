@@ -20,4 +20,4 @@ class CmdLook(default_cmds.MuxPlayerCommand):
         if self.args:
             self.msg("There's nothing specific here to look at here.")
         else:
-            self.msg(self.character.location.return_appearance())
+            self.msg(self.character.location.get_desc_appearance())

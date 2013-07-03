@@ -57,7 +57,7 @@ class PromptStateCmdset(CmdSet):
     (Specifically, it imbuse the command with a reference to the PromptState class itself)
     """
     key = "PromptState"
-    priority = 10
+    priority = 37
     mergetype = "Replace"
     key_mergetypes = {
         'Player' : 'Union',
