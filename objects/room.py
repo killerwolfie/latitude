@@ -49,7 +49,10 @@ class Room(Object, EvenniaRoom):
         return '{w' + self.key
 
     def get_desc_appearance_name(self, looker=None):
-        return ('%cn%ch%cw' + self.key)
+        name = '{w' + self.key
+        if self.db.resident:
+            name += ' {B[Non-canon (%s)]' % (self.db.resident.key)
+        return name
 
     def get_desc_appearance_desc(self, looker=None):
         desc = self.db.desc_appearance
