@@ -45,6 +45,7 @@ class Object(EvenniaObject):
             'edit_texture' : "{RYou can't edit the {rtexture{R of that object",
             'edit_writing' : "{RYou can't edit the {rwriting{R on that object",
             'leave' : "{RYou can't leave this area right now.",
+            'kick_occupant' : "{RYou aren't allowed to kick a character from that location.",
             'follow' : None, # Follow system handles this by sending a follow request.
             'lead' : None, # Follow system handles this by sending a lead request.
         }

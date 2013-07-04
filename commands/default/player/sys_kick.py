@@ -1,6 +1,6 @@
-from game.gamesrc.latitude.commands.default.character.sys_say import CmdSysSay as CharacterCmdSysSay
+from game.gamesrc.latitude.commands.default.character.sys_kick import CmdSysKick as CharacterCmdSysKick
 
-class CmdSysSay(CharacterCmdSysSay):
+class CmdSysKick(CharacterCmdSysKick):
     def func(self):
         if self.character:
             self.msg("{R[That command isn't available right now]")

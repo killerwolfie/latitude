@@ -18,6 +18,7 @@ class Room(Object, EvenniaRoom):
         """
         super(Room, self).basetype_setup()
         self.locks.add(";".join([
+            "kick_occupant:resident()",   # Allows users to kick occupants from this room
             "rename:resident()",          # Allows users to rename this object
             "edit:resident()",            # Allows users to modify this object (required in addition to what is being edited, specifically)
             "edit_appearance:resident()", # Allows users to modify this object's 'appearance' description
