@@ -46,8 +46,8 @@ class Area(Object):
     def can_visit(self, character):
         """
         Returns whether a given character can explicitly visit this area (Without 'wandering').
-        - If not, then None is returned.
-        - If so, then a short string is returned explaining why. ('Landmark' for everyone has access.  'Known' for character just knows the way there.)
+        - If not, then None or [] is returned.
+        - If so, then a list of short strings is returned explaining why. ('Landmark' for everyone has access.  'Known' for character just knows the way there.)
 
         By default None is returned, unless one or more of the following are true:
             - If self.db.area_visit_landmark is true.
@@ -62,13 +62,18 @@ class Area(Object):
             'Night Vision'
             'A tattered treasure map'
             'Billy'
-            'From a dream, Billy, Residence'
+            'From a dream', 'Billy', 'Residence'
         """
         player = character.player
         ok_reasons = []
         # Landmarks
         if self.db.area_visit_landmark:
-            return 'Landmark'
+            ok_reasons.append('Landmark')
+        # Friends
+        if self.db.area_visit_friends:
+            for friend_character in player.get_friend_characters(online_only=True):
+                if friend_character.get_area() == self:
+                    ok_reasons.append(friend_character.get_desc_styled_name())
         # Residents
         if self.db.area_visit_residence:
             for area_room in self.contents:
@@ -80,21 +85,13 @@ class Area(Object):
             for item in character.contents:
                 if item.db.area_maps_to == self:
                     ok_reasons.append(item.get_desc_styled_name())
-        # Friends
-        if self.db.area_visit_friends:
-            for friend_character in player.get_friend_characters(online_only=True):
-                if friend_character.get_area() == self:
-                    ok_reasons.append(friend_character.get_desc_styled_name())
         # Self
         if self.db.area_visit_self:
             for self_character in player.get_all_puppets():
                 if not self_character == character and self_character.get_area() == self:
                     ok_reasons.append(self_character.get_desc_styled_name())
         # Return result
-        if ok_reasons:
-            return '{C, '.join(ok_reasons)
-        else:
-            return None
+        return ok_reasons
 
     def can_wander_to(self, character):
         """

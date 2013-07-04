@@ -1,6 +1,7 @@
 from ev import Object as EvenniaObject
 from ev import Exit as EvenniaExit
 from ev import Room as EvenniaRoom
+from ev import Character as EvenniaCharacter
 from ev import utils
 import re
 
@@ -422,6 +423,15 @@ class Object(EvenniaObject):
 	"""
         for obj in self.trace():
             if utils.inherits_from(obj, 'game.gamesrc.latitude.objects.region.Region'):
+                return obj
+        return None
+
+    def get_character(self):
+        """
+	Ascends the tree until it hits the first character, and returns it.
+	"""
+        for obj in self.trace():
+            if isinstance(obj, EvenniaCharacter):
                 return obj
         return None
 

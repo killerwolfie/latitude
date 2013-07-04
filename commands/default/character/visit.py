@@ -47,10 +47,17 @@ class CmdVisit(default_cmds.MuxPlayerCommand):
             reason = area.can_visit(character)
             if not reason:
                 continue
-            if reason in ['Known', 'Landmark']:
+            # Add this to the 'plain listing' section if applicable
+            if 'Known' in reason or 'Landmark' in reason:
                 areas_plain.append((area, reason))
-            else:
-                areas_reason.append((area, reason))
+            # Add this to the 'detailed reason listing' section if applicable
+            reason_misc = reason
+            if 'Known' in reason_misc:
+                reason.remove('Known')
+            if 'Landmark' in reason_misc:
+                reason.remove('Landmark')
+            if reason_misc:
+                areas_reason.append((area, reason_misc))
         if not (areas_plain or areas_reason):
             self.msg('{R[There are no areas you can currently visit.]')
             return
@@ -63,7 +70,7 @@ class CmdVisit(default_cmds.MuxPlayerCommand):
         if areas_plain and areas_reason:
             self.msg('  ---------------------------------------------------------------------------  ')
         for area, reason in areas_reason:
-            self.msg('{M%s {C(%s{C)' % (area.key, reason))
+            self.msg('{M%s {C(%s{C)' % (area.key, '{C,'.join(reason)))
         # Footer
         self.msg('  ---------------------------------------------------------------------------  ')
         self.msg(evennia_color_center('{CUse visit <area name> to visit an area.', 79))
