@@ -1,5 +1,16 @@
 from game.gamesrc.latitude.objects.object import Object
-from ev import utils
+from ev import utils, search_object
+
+def _color_at_depth(depth_spec, depth):
+    """
+    Grab the highest attribute available which is at this depth or below.
+    """
+    # By default take the lowest depth, even if it's higher than the requested depth
+    best_depth = min(depth_spec)
+    for this_depth in depth_spec:
+        if int(this_depth) <= int(depth) and int(this_depth) > int(best_depth):
+            best_depth = this_depth
+    return depth_spec[best_depth]
 
 class Actor(Object):
     """
@@ -16,7 +27,7 @@ class Actor(Object):
         self.db.equipment = set()
 
     # ----- Descriptions -----
-    def _desc_mod(self, method, value):
+    def _desc_mod(self, method, value, additional_args={}):
         """
         Return a value which is modified by any active mods.
         """
@@ -27,7 +38,7 @@ class Actor(Object):
             if this_prio < max_prio:
                 # We already have a higher priority than this
                 continue
-            new_desc = getattr(mod, method)(value)
+            new_desc = getattr(mod, method)(value, **additional_args)
             if new_desc == None:
                 # Script doesn't provide a mod for this
                 continue
@@ -116,6 +127,7 @@ class Actor(Object):
             sep = ''
         return(self.speech_color_name() + self.speech_name() + sep + self.speech_msg(pose_string))
 
+
     def speech_msg(self, msg_string, min_depth=0):
         """
         Process a message which this object wants to say, pose, whisper, etc. and stylize it with this object's speech style.
@@ -124,10 +136,11 @@ class Actor(Object):
         """
         retval = u''
         current_color = min_depth
+        depth_spec = self.speech_color_depth()
         last_change = 1
 	msg_sections = []
         for msg_section in msg_string.replace('%', '%%').replace('{', '{{').split('"'):
-            msg_sections.append(self.speech_color_depth(current_color >= min_depth and current_color or min_depth) + msg_section)
+            msg_sections.append(_color_at_depth(depth_spec, current_color >= min_depth and current_color or min_depth) + msg_section)
 	    if msg_section == '':
 	        current_color += last_change
 	    elif msg_section[-1] == ' ':
@@ -142,43 +155,44 @@ class Actor(Object):
         """
         Returns this object's name, used for constructing speech messages.
         """
-        return self.db.say_name or self.key
+        return self._desc_mod('mod_speech_name', self.db.say_name or self.key)
 
     def speech_says(self):
         """
         Returns this object's 'says' verb, used for constructing speech messages.
         """
-        return self.db.say_says or "says"
+        return self._desc_mod('mod_speech_says', self.db.say_says or "says")
 
     def speech_asks(self):
         """
         Returns this object's 'asks' verb, used for constructing speech messages.
         """
-        return self.db.say_asks or "asks"
+        return self._desc_mod('mod_speech_asks', self.db.say_asks or "asks")
 
     def speech_exclaims(self):
         """
         Returns this object's 'exclaims' verb, used for constructing speech messages.
         """
-        return self.db.say_exclaims or "exclaims"
+        return self._desc_mod('mod_speech_exclaims', self.db.say_exclaims or "exclaims")
 
     def speech_color_name(self):
-	return self.db.say_color_name or '%ch%cc'
+	return self._desc_mod('mod_speech_color_name', self.db.say_color_name or '%ch%cc')
 
     def speech_color_quote(self):
-	return self.db.say_color_quote or '%cn%cw'
+	return self._desc_mod('mod_speech_color_quote', self.db.say_color_quote or '%cn%cw')
 
-    def speech_color_depth(self, depth):
-        if depth > 10:
-            depth = 10 # Depth limit, to limit recursion
-        if self.get_attribute('say_color_depth' + str(depth)):
-	    return self.get_attribute('say_color_depth' + str(depth))
-        if depth < 1:
-	    return '{C'
-        elif depth == 1:
-            return '{W'
-        else:
-            return self.speech_color_depth(depth - 1)
+    def speech_color_depth(self):
+        retval = {}
+        for attr in self.get_all_attributes():
+            if not attr.key.startswith('say_color_depth'):
+                continue
+            this_depth = attr.key[15:]
+            if not this_depth.isdigit():
+                continue
+            retval[int(this_depth)] = attr.value
+        if not retval:
+            retval = {0: '{C', 1: '{W'}
+	return self._desc_mod('mod_speech_color_depth', self.db.say_color_depth or retval)
 
     # ---- 'Attributes' ----
     def game_attribute(self, attribute, base=None):

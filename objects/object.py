@@ -127,14 +127,13 @@ class Object(EvenniaObject):
         # By default, construct the appearance by calling other methods on the object
 	descs = [self.get_desc_appearance_name(looker), self.get_desc_appearance_desc(looker), self.get_desc_appearance_exits(looker), self.get_desc_appearance_contents(looker)]
 	descs = [desc for desc in descs if desc != None]
-	return '\n'.join(descs)
+	return '\n' + '\n'.join(descs)
 
     def get_desc_appearance_name(self, looker=None):
         """
 	Return the name portion of the visual description.
-	By default, the name of the object is not announced when getting the description.
 	"""
-        return None
+        return self.get_desc_styled_name(looker=looker)
 
     def get_desc_appearance_desc(self, looker=None):
         """

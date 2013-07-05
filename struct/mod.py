@@ -138,3 +138,46 @@ class Mod(object):
         """
         return None
 
+    def mod_speech_name(self, name):
+        """
+        Modifies speech_name.  Returns a new value given an existing one, or None for no mod.
+        """
+        return None
+
+    def mod_speech_says(self, says):
+        """
+        Modifies speech_says.  Returns a new value given an existing one, or None for no mod.
+        """
+        return None
+
+    def mod_speech_asks(self, asks):
+        """
+        Modifies speech_asks.  Returns a new value given an existing one, or None for no mod.
+        """
+        return None
+
+    def mod_speech_exclaims(self, exclaims):
+        """
+        Modifies speech_exclaims.  Returns a new value given an existing one, or None for no mod.
+        """
+        return None
+
+    def mod_speech_color_name(self, color_name):
+        """
+        Modifies speech_color_name.  Returns a new value given an existing one, or None for no mod.
+        """
+        return None
+
+    def mod_speech_color_quote(self, color_quote):
+        """
+        Modifies speech_color_quote.  Returns a new value given an existing one, or None for no mod.
+        """
+        return None
+
+    def mod_speech_color_depth(self, color_depth):
+        """
+        Modifies speech_color_depth.  Returns a new value given an existing one, or None for no mod.
+          color_depth - Original value
+          depth - Requested depth
+        """
+        return None

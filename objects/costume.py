@@ -83,3 +83,32 @@ class Costume(Equipment):
 
     def mod_gender(self, gender):
         return self.db.costume_gender
+
+    def mod_speech_name(self, name):
+        return self.db.costume_say_name
+
+    def mod_speech_says(self, says):
+        return self.db.costume_say_says
+
+    def mod_speech_asks(self, asks):
+        return self.db.costume_say_asks
+
+    def mod_speech_exclaims(self, exclaims):
+        return self.db.costume_say_exclaims
+
+    def mod_speech_color_name(self, color_name):
+        return self.db.costume_say_color_name
+
+    def mod_speech_color_quote(self, color_quote):
+        return self.db.costume_say_color_quote
+
+    def mod_speech_color_depth(self, color_depth):
+        retval = {}
+        for attr in self.get_all_attributes():
+            if not attr.key.startswith('costume_say_color_depth'):
+                continue
+            this_depth = attr.key[23:]
+            if not this_depth.isdigit():
+                continue
+            retval[int(this_depth)] = attr.value
+        return retval or None

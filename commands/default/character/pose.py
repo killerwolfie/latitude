@@ -7,6 +7,7 @@ class CmdPose(default_cmds.MuxPlayerCommand):
     Usage:
       pose <pose text>
       pose's <pose text>
+      :<pose text>
 
     Example:
       pose is standing by the wall, smiling.
@@ -18,7 +19,7 @@ class CmdPose(default_cmds.MuxPlayerCommand):
     """
 
     key = "pose"
-    aliases = [':']
+    aliases = [':', ';']
     locks = "cmd:all()"
 #    arg_regex=r"\s.*?|$"
     help_category = "Actions"
