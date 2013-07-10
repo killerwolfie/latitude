@@ -57,10 +57,10 @@ class Exit(Object, EvenniaExit):
 	Finds the exit on the other side which leads back here.
 	"""
 	if not self.destination:
-	    return None
+	    return []
 
         if not self.location:
-	    return None
+	    return []
 
 	return list(con for con in self.destination.contents if con.destination and con.destination == self.location)
 

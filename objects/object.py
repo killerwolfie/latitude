@@ -78,6 +78,93 @@ class Object(EvenniaObject):
                 return 'character and item data conflict (%s)' % item.key
         return None
 
+    # ----- Utilities -----
+    def trace(self):
+        """
+        Returns all objects up the tree starting with this object and ending with a base object.
+        """
+        objects = [self]
+        while True:
+            location = objects[-1].location
+            if not location:
+                break
+            if location in objects:
+                raise Exception('Object loop detected!  ' + obj.dbref + ' contains itself!')
+            objects.append(location)
+        return objects
+
+    def get_area(self):
+        """
+	Ascends the tree until it hits the first area, and returns it.
+	"""
+        for obj in self.trace():
+            if utils.inherits_from(obj, 'game.gamesrc.latitude.objects.area.Area'):
+                return obj
+        return None
+
+    def get_region(self):
+        """
+	Ascends the tree until it hits the first region, and returns it.
+	"""
+        for obj in self.trace():
+            if utils.inherits_from(obj, 'game.gamesrc.latitude.objects.region.Region'):
+                return obj
+        return None
+
+    def get_character(self):
+        """
+	Ascends the tree until it hits the first character, and returns it.
+	"""
+        for obj in self.trace():
+            if isinstance(obj, EvenniaCharacter):
+                return obj
+        return None
+
+    def get_room(self):
+        """
+	Ascends the tree until it hits the first room, and returns it.
+	"""
+        for obj in self.trace():
+            if isinstance(obj, EvenniaRoom):
+                return obj
+        return None
+
+    def is_inside(self, obj):
+        """
+	Ascends the tree to determine if this object is inside obj
+	"""
+        obj_seen = set([self])
+        parent = self.location
+        while parent:
+            if parent in obj_seen:
+                raise Exception('Object loop detected!  ' + parent.dbref + ' contains itself!')
+            obj_seen.add(parent)
+	    if parent == obj:
+	        return True
+            parent = parent.location
+	return False
+
+    def alias_highlight_name(self):
+        """
+        Returns the name of the object with its shortest matching alias
+        highlighted, so viewers will know that they don't have to type the
+        entire name.
+
+        For example
+        key='East', aliases=['east', 'e'] = '[E]ast'
+        """
+        key = self.key
+        aliases = sorted(self.aliases, key=lambda alias: (len(alias), alias))
+        # If there's no aliases, just return the name
+        if not self.aliases:
+            return key
+        # Check for an alias that's inside the name
+        for alias in aliases:
+            if re.search(r'(^|(?<=\s))%s' % (re.escape(alias)), key, flags=re.IGNORECASE):
+                return re.sub(r'(^|(?<=\s))%s' % (re.escape(alias)), lambda m: '[%s]' % (m.group(0)), key, count=1, flags=re.IGNORECASE)
+        # Simply return the smallest alias
+        return '[%s] %s' % (aliases[0], key)
+
     # ----- Descriptions -----
     def get_desc_styled_name(self, looker=None):
         """
@@ -154,7 +241,7 @@ class Object(EvenniaObject):
         exits = []
         for con in visible:
             if isinstance(con, EvenniaExit):
-                exits.append(con.key)
+                exits.append(con.alias_highlight_name())
 
         if exits:
             return '%ch%cx[Exits: ' + ', '.join(exits) + ']%cn'
@@ -392,72 +479,6 @@ class Object(EvenniaObject):
         This action is called when a player attempts to 'doff' the object
         """
         unequipper.msg("That's not something you can take off.")
-
-    # ----- Utilities -----
-    def trace(self):
-        """
-        Returns all objects up the tree starting with this object and ending with a base object.
-        """
-        objects = [self]
-        while True:
-            location = objects[-1].location
-            if not location:
-                break
-            if location in objects:
-                raise Exception('Object loop detected!  ' + obj.dbref + ' contains itself!')
-            objects.append(location)
-        return objects
-
-    def get_area(self):
-        """
-	Ascends the tree until it hits the first area, and returns it.
-	"""
-        for obj in self.trace():
-            if utils.inherits_from(obj, 'game.gamesrc.latitude.objects.area.Area'):
-                return obj
-        return None
-
-    def get_region(self):
-        """
-	Ascends the tree until it hits the first region, and returns it.
-	"""
-        for obj in self.trace():
-            if utils.inherits_from(obj, 'game.gamesrc.latitude.objects.region.Region'):
-                return obj
-        return None
-
-    def get_character(self):
-        """
-	Ascends the tree until it hits the first character, and returns it.
-	"""
-        for obj in self.trace():
-            if isinstance(obj, EvenniaCharacter):
-                return obj
-        return None
-
-    def get_room(self):
-        """
-	Ascends the tree until it hits the first room, and returns it.
-	"""
-        for obj in self.trace():
-            if isinstance(obj, EvenniaRoom):
-                return obj
-        return None
-
-    def is_inside(self, obj):
-        """
-	Ascends the tree to determine if this object is inside obj
-	"""
-        obj_seen = set([self])
-        parent = self.location
-        while parent:
-            if parent in obj_seen:
-                raise Exception('Object loop detected!  ' + parent.dbref + ' contains itself!')
-            obj_seen.add(parent)
-	    if parent == obj:
-	        return True
-            parent = parent.location
-	return False
 
     # ----- Movement -----
     def redirectable_move_to(self, destination, quiet=False, emit_to_obj=None, use_destination=True, to_none=False):
