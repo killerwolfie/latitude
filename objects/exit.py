@@ -64,23 +64,6 @@ class Exit(Object, EvenniaExit):
 
 	return list(con for con in self.destination.contents if con.destination and con.destination == self.location)
 
-    def at_traverse(self, traversing_object, target_location):
-        """
-        This implements the actual traversal. The traverse lock has already been
-        checked (in the Exit command) at this point.
-        """
-        if target_location == None:
-            # Leaves the 'area'
-            prompt_script = create_script('game.gamesrc.latitude.scripts.prompt_leave.PromptLeave', obj=traversing_object, autostart=False)
-            prompt_script.db.destination = self.get_region()
-            prompt_script.start()
-        else:
-            source_location = traversing_object.location
-            if traversing_object.redirectable_move_to(target_location):
-                self.at_after_traverse(traversing_object, source_location)
-            else:
-                self.at_failed_traverse(traversing_object)
-
     def at_after_traverse(self, traveller, source_loc):
         # Check for followers
         for follower in search_object(traveller, attribute_name='follow_following'):
