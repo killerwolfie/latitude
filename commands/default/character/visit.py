@@ -101,6 +101,7 @@ class CmdVisit(default_cmds.MuxPlayerCommand):
             prompt_script = create_script('game.gamesrc.latitude.scripts.prompt_leave.PromptLeave', obj=character, autostart=False)
             prompt_script.db.destination = destination
             prompt_script.db.cost = visit_cost
+            prompt_script.db.followers = True
             prompt_script.db.yes_message = 'You head off in search of your destination.'
             prompt_script.db.no_message = 'You decide to stay where you are.'
             prompt_script.start()
@@ -109,4 +110,4 @@ class CmdVisit(default_cmds.MuxPlayerCommand):
             if visit_cost:
                 message = [character.game_attribute_offset(attr, -cost) for attr, cost in visit_cost]
             self.msg(' '.join(message))
-            character.redirectable_move_to(destination)
+            character.move_to(destination, redirectable=True, followers=False) # If you're in the region object, then you shouldn't have followers.  If you somehow do, then it's best you lose them now rather than drag them off.

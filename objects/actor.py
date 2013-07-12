@@ -26,6 +26,21 @@ class Actor(Object):
         super(Actor, self).basetype_setup()
         self.db.equipment = set()
 
+    def at_after_move(self, source_location):
+        # Display the new location so the user gets an indication that they've moved
+        if self.db.prefs_automap == None or self.db.prefs_automap:
+	    self.execute_cmd('map', sessid=self.sessid)
+        self.execute_cmd('look', sessid=self.sessid)
+        # Clear 'following', if needed.
+        following = self.db.follow_following
+        if following and (following.location == None or following.location != self.location):
+            self.msg('You move off, and stop following %s.' % (following.key))
+            following.msg('%s moves off, and stops following you.' % (self.key))
+            del self.db.follow_following
+        # Clear any pending follow or lead requests
+        del self.db.follow_wantfollow
+        del self.db.follow_wantlead
+
     # ----- Descriptions -----
     def _desc_mod(self, method, value, additional_args={}):
         """
@@ -350,16 +365,25 @@ class Actor(Object):
         # Return the set of mods
         return set(candidate for candidate in candidates if utils.inherits_from(candidate, 'game.gamesrc.latitude.struct.mod.Mod'))
 
-    # ----- Default Behavior -----
-    def at_after_move(self, source_location):
-        super(Object, self).at_after_move(source_location)
-        # Clear 'following'
-        following = self.db.follow_following
-        if following and (following.location == None or following.location != self.location):
-            self.msg('You move off, and stop following %s.' % (following.key))
-            following.msg('%s moves off, and stops following you.') % (self.key)
+    # ---- Actions ----
+    def action_stop(self, stopper):
+        if self == stopper:
+            # Stopping yourself.  Stop following
+            leader = self.db.follow_following
+            # Ensure we're ready to clear the follow
+            if not leader:
+                self.msg("You're not currently following anyone.")
+                return
+            # Clear the follow
             del self.db.follow_following
-        # Clear any pending follow or lead requests
-        del self.db.follow_wantfollow
-        del self.db.follow_wantlead
+            self.msg(self.objsub('You stop following &1n.', leader))
+            leader.msg(self.objsub('&0N stops following you.', leader))
+        else:
+            # Stopping someone else.  Stop leading.
+            if not self.db.follow_following == stopper:
+                stopper.msg(self.objsub("&0N isn't following you.", stopper))
+                return
+            del self.db.follow_following
+            stopper.msg(self.objsub('You stop leading &0n.', stopper))
+            self.msg(self.objsub('&1n stops leading you.', stopper))
 

@@ -49,11 +49,6 @@ class Character(Actor, EvenniaCharacter):
         # Looks like we're good.
         return super(Character, self).bad()
 
-    def at_after_move(self, source_location):
-        if self.db.prefs_automap == None or self.db.prefs_automap:
-	    self.execute_cmd('map', sessid=self.sessid)
-        self.execute_cmd('look', sessid=self.sessid)
-
     def at_post_login(self):
         super(Character, self).at_post_login() # For now call the default handler which unstows the character
 
@@ -142,28 +137,6 @@ class Character(Actor, EvenniaCharacter):
             return '{c' + self.key
         else:
             return '{C' + self.key
-
-    # ---- Actions ----
-    def action_stop(self, stopper):
-        if self == stopper:
-            # Stopping yourself.  Stop following
-            leader = self.db.follow_following
-            # Ensure we're ready to clear the follow
-            if not leader:
-                self.msg("You're not currently following anyone.")
-                return
-            # Clear the follow
-            del self.db.follow_following
-            self.msg(self.objsub('You stop following &1n.', leader))
-            leader.msg(self.objsub('&0N stops following you.', leader))
-        else:
-            # Stopping someone else.  Stop leading.
-            if not self.db.follow_following == stopper:
-                stopper.msg(self.objsub("&0N isn't following you.", stopper))
-                return
-            del self.db.follow_following
-            stopper.msg(self.objsub('You stop leading &0n.', stopper))
-            self.msg(self.objsub('&1n stops leading you.', stopper))
 
     # ----- Object based string substitution -----
 

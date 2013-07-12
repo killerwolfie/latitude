@@ -2,7 +2,7 @@ from ev import Object as EvenniaObject
 from ev import Exit as EvenniaExit
 from ev import Room as EvenniaRoom
 from ev import Character as EvenniaCharacter
-from ev import utils
+from ev import utils, search_object
 import re
 
 class Object(EvenniaObject):
@@ -481,22 +481,53 @@ class Object(EvenniaObject):
         unequipper.msg("That's not something you can take off.")
 
     # ----- Movement -----
-    def redirectable_move_to(self, destination, quiet=False, emit_to_obj=None, use_destination=True, to_none=False):
-        seen_destinations = set()
-        while True:
-            # Check for a destination redirect
-            if not hasattr(destination, 'move_redirect'):
-                break
-            new_destination = destination.move_redirect(self)
-            if not new_destination:
-                break
-            # Ensure we haven't already seen this destination (there's a loop)
-            if new_destination in seen_destinations:
-                raise Exception('move_redirect() loop detected!  ' + destination.dbref + ' lead to itself!')
-            seen_destinations.add(new_destination)
-            # Looks good.  Change the destination.
-            destination = new_destination
-        return super(Object, self).move_to(destination, quiet=quiet, emit_to_obj=emit_to_obj, use_destination=use_destination, to_none=to_none)
+    def move_to(self, destination, quiet=False, emit_to_obj=None, use_destination=True, to_none=False, followers=None, redirectable=True):
+        # Check for a destination redirect
+        if redirectable:
+            seen_destinations = set()
+            while True:
+                if not hasattr(destination, 'move_redirect'):
+                    break
+                new_destination = destination.move_redirect(self)
+                if not new_destination:
+                    break
+                # Ensure we haven't already seen this destination (there's a loop)
+                if new_destination in seen_destinations:
+                    raise Exception('move_redirect() loop detected!  ' + destination.dbref + ' lead to itself!')
+                seen_destinations.add(new_destination)
+                # Looks good.  Change the destination.
+                destination = new_destination
+        # Perform the move
+        source_loc = self.location
+        retval = self.dbobj.move_to(destination, quiet=quiet, emit_to_obj=emit_to_obj, use_destination=use_destination)
+        # Manage followers if requested
+        if followers != None:
+            if followers:
+                # Bring followers as well
+                for follower in search_object(self, attribute_name='follow_following'):
+                    # Ensure that the follower is still at your source location.
+                    # (Safety check.  Moving around on your own should clear your 'following' attribute)
+                    if not follower.location or follower.location != source_loc:
+                        self.msg(self.objsub('You move away from &1N, and &1s loses you.', follower))
+                        self.msg(self.objsub('&0N moves away from you, you lose &1o.', follower))
+                        del follower.db.follow_following
+                        break
+                    # Check te ensure that the follower is awake.
+                    # (Safety check.  Disconnecting your character should clear your 'following' attribute)
+                    if not follower.player:
+                        self.msg(self.objsub('&1N has fallen asleep, and got left behind.', follower))
+                        self.msg(self.objsub('You fall asleep, and get left behind by &0N.', follower))
+                        del follower.db.follow_following
+                        break
+                    # Bring the follower alonga
+                    follower.move_to(self.location, redirectable=True, followers=True)
+            else:
+                # Drop followers
+                for follower in search_object(self, attribute_name='follow_following'):
+                    del follower.db.follow_following
+                    self.msg('%s seems to have lost you, and is no longer following you.' % follower.key)
+                    follower.msg('%s moves off, but you find yourself unable to follow.' % self.key)
+        return retval
 
     # ----- Object based string substitution -----
     def objsub(self, template, *args):

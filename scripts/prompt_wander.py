@@ -29,6 +29,6 @@ class PromptWander(PromptState):
             if self.db.cost:
                 message.extend([self.obj.game_attribute_offset(attr, -cost) for attr, cost in self.db.cost])
             self.obj.msg(' '.join(message))
-            region.wander(self.obj)
+            region.wander(self.obj.typeclass) # FIXME: Upstream issue 399
         else:
             self.obj.msg(self.db.no_message or 'You decide to stay where you are.')

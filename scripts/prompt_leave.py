@@ -30,6 +30,6 @@ class PromptLeave(PromptState):
                 for attr, cost in self.db.cost:
                     message.append(self.obj.game_attribute_offset(attr, -cost))
             self.obj.msg(' '.join(message))
-            self.obj.redirectable_move_to(self.db.destination)
+            self.obj.typeclass.move_to(self.db.destination, followers=bool(self.db.followers), redirectable=True) # FIXME: Upstream issue 399
         else:
             self.obj.msg(self.db.no_message or 'You decide to stay where you are.')

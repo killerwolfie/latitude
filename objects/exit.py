@@ -86,7 +86,7 @@ class Exit(Object, EvenniaExit):
                 break
             # Bring the follower alonga
             self.at_before_follow(traveller, follower)
-            follower.redirectable_move_to(traveller.location)
+            follower.move_to(traveller.location, redirectable=True, followers=None)
             self.at_after_follow(traveller, follower, source_loc)
 
     def at_before_follow(self, leader, follower):

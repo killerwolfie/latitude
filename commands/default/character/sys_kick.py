@@ -45,4 +45,4 @@ class CmdSysKick(default_cmds.MuxPlayerCommand):
         target.location.msg_contents("{Y[%s has been kicked from the area by %s]" % (target.key, character.key), exclude=[target, character])
         character.msg('{Y[%s has been kicked from "%s"]' % (target.key, target.location.key))
         target.msg('{Y[You have been kicked from this area by %s]' % (character.key))
-        target.move_to(region)
+        target.move_to(region, redirectable=True, followers=False)

@@ -44,4 +44,4 @@ class Region(Object):
         By default this just picks an area at random with an equal chance of giving you any area.
         """
         options = [area for area in self.contents if hasattr(area, 'can_wander_to') and area.can_wander_to(character)]
-        character.redirectable_move_to(choice(options))
+        character.move_to(choice(options), redirectable=True, followers=True)
