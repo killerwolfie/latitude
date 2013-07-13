@@ -189,9 +189,27 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
         Produces a pretty version of the message string requested by the user, handling page poses, etc.
         """
         message = raw_message
-        # Create a page pose if it startes with a :
-        if message.startswith(":"):
-            message = "In a page pose to %s, %s %s" % (conj_join([obj.key for obj in receivers], 'and'), sender.key, message.strip(':').strip())
+        player = self.caller
+        character = self.character
+        # Check whether it's a page pose
+        pose = message.startswith(":")
+        if pose:
+            message = message[1:]
+        # Colorize
+        if character:
+            message = character.speech_msg(message, min_depth=int(not pose))
+            sender_name = character.speech_color_name() + sender.key
+            color_depth = character.speech_color_depth()
+            if color_depth:
+                text_color = color_depth[min(color_depth.iterkeys())]
+            else:
+                text_color = '{n'
         else:
-            message = '%s pages, "%s" to %s.' % (sender.key, message, conj_join([obj.key for obj in receivers], 'and'))
+            sender_name = sender.get_desc_styled_name()
+            text_color = '{n'
+        # Create a page pose if it startes with a :
+        if pose:
+            message = "{Y[Page]%s In a page pose to %s, %s %s" % (text_color, conj_join([obj.key for obj in receivers], 'and'), sender_name, message.strip(':').strip())
+        else:
+            message = '{Y[Page]%s %s%s pages, "%s%s" to %s.' % (text_color, sender_name, text_color, message, text_color, conj_join([obj.key for obj in receivers], 'and'))
         return message
