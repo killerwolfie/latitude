@@ -562,7 +562,10 @@ class Object(EvenniaObject):
             if capitalize:
                 retval = retval[0].upper() + retval[1:]
             return retval
-        return re.sub(r'&([0-9])([a-zA-Z])', repl, template)
+        parts = []
+        for raw_part in template.split('&&'):
+            parts.append(re.sub(r'&([0-9])([a-zA-Z])', repl, raw_part))
+        return '&'.join(parts)
     
     # A - Absolute Pronoun
     def objsub_a(self):
