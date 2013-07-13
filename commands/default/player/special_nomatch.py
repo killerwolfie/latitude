@@ -21,7 +21,7 @@ class CmdNoMatch(Command):
                 self.cmd_ooc_look()
                 return
             elif lower_cmd == 'say' or lower_cmd == 'pose' or cmdline.startswith(':') or cmdline.startswith('"'):
-                self.msg("{RYou're not currently playing any character.  See {rhelp @char{R for help, or try talking on the public channel with {rpub <message>{R.")
+                self.msg("{R[You're not currently playing any character.  See {rhelp @char{R for help, or try talking on the public channel with {rpub <message>{R]")
                 return
         else:
             # If the character is IC, Check for a direction match, and tell them they can't go that way.
@@ -48,7 +48,7 @@ class CmdNoMatch(Command):
                     return
         if cmd[0] == '@' or not hasattr(caller, 'player'):
             # Unknown command.
-            self.msg('"%s" command not found.  (Try "help" for a list of commands)' % cmd)
+            self.msg('{R["%s" command not found.  (Try "{rhelp{R" for a list of commands)]' % cmd)
         else:
             # Unknown action.
             self.msg('You try to "%s" but it doesn\'t seem to work here.' % cmd)

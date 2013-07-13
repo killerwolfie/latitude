@@ -32,7 +32,8 @@ class CmdLead(default_cmds.MuxPlayerCommand):
             return
         already_following = search_object(leader, attribute_name='follow_following')
         if already_following:
-            leader.msg("You're already leading %s.  [Use \"stop leading\" to stop leading, first.]" % (conj_join([char.key for char in already_following], 'and')))
+            leader.msg("{Y[Try \"stop leading\" to stop leading, first.]")
+            leader.msg("You're already leading %s." % (conj_join([char.key for char in already_following], 'and')))
             return
         if follower.db.follow_following:
             leader.msg("%s is already following someone." % (follower.key))
@@ -57,7 +58,8 @@ class CmdLead(default_cmds.MuxPlayerCommand):
                 else:
                     leader.db.follow_pending = set([follower])
                 # Alert both parties
-                follower.msg('%s wants to lead you.  [Use "follow %s" to follow.]' % (leader.key, leader.key))
+                follower.msg('{Y[Use "{yfollow %s{Y" to follow.]' % (leader.key))
+                follower.msg('%s wants to lead you.' % (leader.key))
                 leader.msg('You wait for %s to follow you.' % (follower.key))
                 return
             # It's not a character.  Fail out.

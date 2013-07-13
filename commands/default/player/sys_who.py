@@ -96,11 +96,13 @@ class CmdSysWho(default_cmds.MuxPlayerCommand):
                 has_characters = True
                 break
         if has_characters:
-            self.msg("{CName                Stamina  Gender    Species           {b[{chelp @who{b for help]")
-            self.msg("{w------------------------------------------------------------------------------")
+            self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")
+            self.msg("{CName                Stamina  Gender    Species")
+            self.msg('')
         else:
-            self.msg("{CName     {b[{chelp @who{b for help]")
-            self.msg("{w-----------------------------")
+            self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")
+            self.msg("{CName")
+            self.msg('')
         # Output the body
 	if not users:
 	    self.msg('{RNo results')
@@ -161,10 +163,10 @@ class CmdSysWho(default_cmds.MuxPlayerCommand):
                     num_asleep += 1
         footer = EvenniaColorCanvas()
         if has_characters:
-            footer.evennia_import('{w------------------------------------------------------------------------------')
+            footer.evennia_import("{x________________{W_______________{w_______________{W_______________{x_________________")
             footer.draw_string(3, 0, '{b[ {C%s{b players listed ({C%d{b awake) ]' % (num_awake + num_asleep, num_awake))
         else:
-            footer.evennia_import("{w-----------------------------")
+            footer.evennia_import("{x________________{W_______________{w_______________{W_______________{x_________________")
             footer.draw_string(3, 0, '{b[ {C%s{b players ]' % (num_awake))
         self.msg(footer.evennia_export())
 

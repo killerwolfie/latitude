@@ -54,7 +54,7 @@ class Object(EvenniaObject):
         else:
             message = '{RAccess denied ({r%s{R)' % (access_type)
         if message:
-            accessing_obj.msg('{R[ %s{R ]' % message, sessid=accessing_obj.sessid)
+            accessing_obj.msg('{R[%s{R]' % message, sessid=accessing_obj.sessid)
 
     def at_access_success(self, accessing_obj, access_type):
         # Check for a message property (sending nothing by default)

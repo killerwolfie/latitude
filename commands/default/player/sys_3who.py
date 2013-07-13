@@ -16,7 +16,9 @@ class CmdSys3Who(default_cmds.MuxPlayerCommand):
 
     def func(self):
         char_num = 0
-        output = '%cnName         OnTime Idle  Name         OnTime Idle  Name         Ontime Idle\n'
+        output = "{x________________{W_______________{w_______________{W_______________{x_________________\n"
+        output += '%cnName         OnTime Idle  Name         OnTime Idle  Name         Ontime Idle\n'
+        output += '\n'
         for session in SESSIONS.get_sessions():
             character = session.get_character()
             if not character:
@@ -30,6 +32,9 @@ class CmdSys3Who(default_cmds.MuxPlayerCommand):
             output += '%-12s %6s %-5s ' % (name[:12], ontime[:6], idletime[:5])
             if char_num and char_num % 3 == 0:
                 output += '\n'
+        if not output.endswith('\n'):
+            output += '\n'
+        output += "{x________________{W_______________{w_______________{W_______________{x_________________\n"
         self.msg(output.rstrip('\n'))
 
     def tdelta_string(self, seconds):

@@ -40,14 +40,14 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
             self.cmd_page(targetstr=self.lhs, message=self.rhs, mail=True)
         else:
             # Unrecognized command
-            self.msg("Invalid '%s' command.  See 'help %s' for usage." % (self.cmdstring, self.key))
+            self.msg("{R[Invalid '{r%s{R' command.  See '{rhelp %s{R' for usage]" % (self.cmdstring, self.key))
 
     def cmd_last(self, num=None):
         player = self.caller
         if num:
             # Make sure the user didn't put in something silly
             if num > 10:
-                self.msg('{RSorry, you can only display a maximum of 10 messages.')
+                self.msg('{R[Sorry, you can only display a maximum of 10 messages]')
                 return
             # Get the messages we've sent (not to channels)
             pages = set(Msg.objects.get_messages_by_sender(player, exclude_channel_messages=True))
@@ -61,16 +61,16 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
             else:
                 lastpages = pages
             if not lastpages:
-                self.msg('You have no page history.')
+                self.msg('{Y[You have no page history]')
                 return
         else:
             if player.db.msg_unseen:
                 lastpages = player.db.msg_unseen
                 player.db.msg_unseen = None
             else:
-                self.msg('You have no unread pages.')
+                self.msg('{Y[You have no unread pages.]')
                 return
-        self.msg('Your latest %spages:' % (num and '' or '(offline) '))
+        self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")
         output = []
         for page in lastpages:
             if page.header:
@@ -79,6 +79,7 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
             else:
                 output.append("{n---- {nMessage sent at %s{n ----\n{n%s" % (utils.datetime_format(page.date_sent), page.message))
         self.msg("\n\n".join(output))
+        self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")
 
     def cmd_page(self, targetstr, message, mail=False):
         player = self.caller
@@ -88,16 +89,16 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
             # Grab the last page that we sent to
             lastpages = Msg.objects.get_messages_by_sender(player, exclude_channel_messages=True)
             if not lastpages:
-                self.msg('{RCould not re-send to previous recipient: No pages sent.')
+                self.msg('{R[Could not re-send to previous recipient: No pages sent]')
             lastpages.sort(cmp=lambda x, y: cmp(x.date_sent, y.date_sent))
             # Extract the header
             header = lastpages[-1].header
             if not header:
-                self.msg("{RCould not re-send to previous recipient: Your last page didn't have any sender information.")
+                self.msg("{R[Could not re-send to previous recipient: Your last page didn't have any sender information]")
                 return
             header = pickle.loads(header)
             if not 'from' in header or not 'to' in header:
-                self.msg("{RCould not re-send to previous recipient: Your last page didn't have any sender/recipients.")
+                self.msg("{R[Could not re-send to previous recipient: Your last page didn't have any sender/recipients]")
                 return
             new_targets = set(header['to'])
             targetstr = ','.join(new_targets)
@@ -105,16 +106,16 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
             # Grab the last received page
             lastpages = Msg.objects.get_messages_by_receiver(player)
             if not lastpages:
-                self.msg('{RCould not reply: No pages received.')
+                self.msg('{R[Could not reply: No pages received]')
             lastpages.sort(cmp=lambda x, y: cmp(x.date_sent, y.date_sent))
             # Extract the header
             header = lastpages[-1].header
             if not header:
-                self.msg("{RCould not reply: Your last page didn't have any sender information.")
+                self.msg("{R[Could not reply: Your last page didn't have any sender information]")
                 return
             header = pickle.loads(header)
             if not 'from' in header or not 'to' in header:
-                self.msg("{RCould not reply: Your last page didn't have any sender/recipients.")
+                self.msg("{R[Could not reply: Your last page didn't have any sender/recipients]")
                 return
             new_targets = set()
             if targetstr == '#R':
@@ -133,15 +134,15 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
             if receiver:
                 receivers.add(receiver)
             else:
-                self.msg('{RCould not find "%s", cancelling message.' % (targetname))
+                self.msg('{R[Could not find "%s", cancelling message]' % (targetname))
                 return
         # Verify that everyone is online
         if not mail:
             for receiver in receivers:
                 if not receiver.status_online():
-                    self.msg('{R"%s" is not currently online.  Cancelling message.' % (receiver.key))
-                    self.msg("{RIf you want to send a message to someone who's offline, use '%s/mail', and they will be alerted the next time they log in." % (self.key))
-                    self.msg("{RSee help %s for details" % (self.key))
+                    self.msg('{R["%s" is not currently online, cancelling message]' % (receiver.key))
+                    self.msg("{R[If you want to send a message to someone who's offline, use '{r%s/mail{R', and they will be alerted the next time they log in]" % (self.key))
+                    self.msg("{R[See {rhelp %s{R for details]" % (self.key))
                     return
         # Generate message header, to store the 'to' and 'from' as provided.  (The recievers and sender field of the Msg object will be the player, and never a character)
         header = {
@@ -168,9 +169,9 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
         # Tell the players they got a message.
         if mail:
             for receiver_player in receiver_players:
-                receiver_player.msg("You've received a page mail.  Use \"@page\" to view it.")
+                receiver_player.msg("{Y[You've received a page mail.  Use \"{y@page{Y\" to view it]")
             if player not in receiver_players:
-                self.msg('Page mail sent.')
+                self.msg('{G[Page mail sent]')
         else:
             # To eliminate duplicates, produce a set() of sessid/player pairs.
             msg_targets = set()
@@ -182,34 +183,31 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
                     for session in receiver.get_all_sessions():
                         msg_targets.add((receiver, session.sessid))
             for msg_target in msg_targets:
-                msg_target[0].msg(message, sessid=msg_target[1])
+                msg_target[0].msg('{Y[Page] {n' + message, sessid=msg_target[1])
 
     def gen_message_text(self, sender, receivers, raw_message):
         """
         Produces a pretty version of the message string requested by the user, handling page poses, etc.
         """
-        message = raw_message
-        player = self.caller
         character = self.character
-        # Check whether it's a page pose
-        pose = message.startswith(":")
-        if pose:
-            message = message[1:]
-        # Colorize
+        player = self.caller
+        message = raw_message
         if character:
-            message = character.speech_msg(message, min_depth=int(not pose))
-            sender_name = character.speech_color_name() + sender.key
-            color_depth = character.speech_color_depth()
-            if color_depth:
-                text_color = color_depth[min(color_depth.iterkeys())]
+            # If we have a character, then we can use the 'say' routines to format the message.
+            if message.startswith(':'):
+                message = character.speech_pose(message[1:])
+            elif message.startswith('"'):
+                message = character.speech_say(message[1:])
             else:
-                text_color = '{n'
+                message = character.speech_say(message)
         else:
-            sender_name = sender.get_desc_styled_name()
-            text_color = '{n'
-        # Create a page pose if it startes with a :
-        if pose:
-            message = "{Y[Page]%s In a page pose to %s, %s %s" % (text_color, conj_join([obj.key for obj in receivers], 'and'), sender_name, message.strip(':').strip())
-        else:
-            message = '{Y[Page]%s %s%s pages, "%s%s" to %s.' % (text_color, sender_name, text_color, message, text_color, conj_join([obj.key for obj in receivers], 'and'))
+            # If we have no character, we'll have to take care of the formatting
+            if message.startswith(':'):
+                message = '{b' + player.key + '{n ' + message[1:].replace('{', '{{').replace('%', '%%')
+            elif message.startswith('"'):
+                message = '{b' + player.key + '{n: ' + message[1:].replace('{', '{{').replace('%', '%%')
+            else:
+                message = '{b' + player.key + '{n: ' + message.replace('{', '{{').replace('%', '%%')
+        if len(receivers) > 1:
+            message = "{Y(To %s) {n%s" % (conj_join([obj.key for obj in receivers], 'and'), message)
         return message

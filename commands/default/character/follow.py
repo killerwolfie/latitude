@@ -31,7 +31,8 @@ class CmdFollow(default_cmds.MuxPlayerCommand):
             follower.msg("You can't follow that!")
             return
         if follower.db.follow_following:
-            follower.msg("You're already following %s.  [Use \"stop\" to stop following, first.]" % (follower.db.follow_following.key))
+            follower.msg("{Y[Try \"{ystop{Y\" to stop following, first.]")
+            follower.msg("You're already following %s." % (follower.db.follow_following.key))
             return
         # Start following, if we have permissions.
         if not leader.access(follower, 'follow') and not (leader.db.follow_pending and leader.db.follow_pending_tolead and follower in leader.db.follow_pending):
@@ -48,7 +49,8 @@ class CmdFollow(default_cmds.MuxPlayerCommand):
                 follower.db.follow_pending = leader
                 follower.db.follow_pending_tolead = False
                 # Alert both parties
-                leader.msg('%s wants to follow you.  [Use "lead %s" to lead.]' % (follower.key, follower.key))
+                leader.msg('{Y[Use "{ylead %s{Y" to lead.]' % (follower.key))
+                leader.msg('%s wants to follow you.' % (follower.key))
                 follower.msg('You wait for %s to lead you.' % (leader.key))
                 return
             # It's not a character.  Fail out.

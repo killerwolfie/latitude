@@ -71,7 +71,7 @@ class Equipment(Item, Mod):
         current_equip = equipper.get_equipment(slot=this_slot)
         if len(current_equip) == 1:
             current_equip = list(current_equip)[0]
-            equipper.msg(self.objsub("{R[Try '{runequip &1n{R' first.]", current_equip))
+            equipper.msg(self.objsub("{Y[Try '{yunequip &1n{Y' first.]", current_equip))
             equipper.msg(self.objsub("You're already wearing &1i.", current_equip))
             return
         elif len(current_equip) > 1:

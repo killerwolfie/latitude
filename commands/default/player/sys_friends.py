@@ -67,25 +67,26 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
                 self.cmd_optout(self.rhs)
                 return
         # Unrecognized command
-        self.msg("Invalid '%s' command.  See 'help %s' for usage" % (self.cmdstring, self.key))
+        self.msg("{R[Invalid '{r%s{R' command.  See '{rhelp %s{R' for usage]" % (self.cmdstring, self.key))
 
     def cmd_online(self):
         if not self.check_optout():
             return
         online_friends = []
         for friend_char in sorted(self.caller.get_friend_characters(online_only=True), key=lambda char: char.key.lower()):
-            online_friends.append('{n%s{n (%s{n)' % (friend_char.get_desc_styled_name(self.caller), friend_char.get_owner().get_desc_styled_name(self.caller)))
+            online_friends.append('{Y%s{Y (%s{Y)' % (friend_char.get_desc_styled_name(self.caller), friend_char.get_owner().get_desc_styled_name(self.caller)))
         for friend in self.caller.get_friend_players(online_only=True):
             if not friend.get_all_puppets(): # @ooc friend
                 online_friends.append('{c%s{n' % (friend.key))
         if online_friends:
-            self.msg('Online friends: ' + "{n, ".join(online_friends))
+            self.msg('{Y[Online friends: ' + "{Y, ".join(online_friends) + '{Y]')
         else:
-            self.msg('None of your friends are currently online.')
+            self.msg('{Y[None of your friends are currently online.]')
 
     def cmd_list(self):
         if not self.check_optout():
             return
+        self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")
         friends = self.caller.get_friend_players()
         if not friends:
             self.msg('You have no friends :(')
@@ -118,6 +119,7 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
         for character in self.caller.get_characters():
             if character.db.friends_optout:
                 self.msg('{ROpt-out: %s' % character.key)
+        self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")
    
     def cmd_add(self, targetname):
         player = self.caller
@@ -125,24 +127,24 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
         if hasattr(target, 'get_owner'):
             target = target.get_owner()
         if not target:
-            self.msg('{RPlayer not found.')
+            self.msg('{R[Player not found]')
             return
         # Check if this player is already a friend
         if target in player.get_friend_players():
-            self.msg('"%s" is already your friend.' % target.key)
+            self.msg('{R["%s" is already your friend]' % target.key)
             return
         # Add the player to the friend list if needed
         if player in target.db.friends_list:
             # Already in the target's friend list.  Mutual friendship begins!  Bunnies and rainbows.
             player.db.friends_list.add(target)
-            self.msg('Added "%s" as a friend!' % target.key)
+            self.msg('{G[Added "%s" as a friend!]' % target.key)
         else:
             # Alert the target user (only if this isn't already a 'friend request' state.)
             if not target in player.db.friends_list:
                 self.msg('STUB: Alert other user.  Mail system?')
             player.db.friends_list.add(target)
             # Not already in the target's friend list, so let them know this is only a 'friend request' state.
-            self.msg('Friend request sent.  In order for this player to appear in your friend list, they will have to add you as well.  Use %s/del %s to cancel the request if needed.' % (self.key, targetname))
+            self.msg('{Y[Friend request sent.  In order for this player to appear in your friend list, they will have to add you as well.  Use {y%s/del %s{Y to cancel the request if needed.]' % (self.key, targetname))
 
     def cmd_del(self, targetname):
         player = self.caller
@@ -150,18 +152,18 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
         if hasattr(target, 'get_owner'):
             target = target.get_owner()
         if not target:
-            self.msg('{RPlayer not found.')
+            self.msg('{R[Player not found.]')
             return
         if target in player.get_friend_players():
             if target in player.db.friends_list:
                 player.db.friends_list.remove(target)
             if player in target.db.friends_list:
                 target.db.friends_list.remove(player)
-            self.msg("You're no longer friends with \"%s\" D:", target.key)
+            self.msg("{G[You're no longer friends with \"%s\"  D:  Sadface.]", target.key)
         else:
             if target in player.db.friends_list:
                 player.db.friends_list.remove(target)
-            self.msg('Cancelling any outstanding friend requests with "%s".', targetname)
+            self.msg('{G[Cancelling any outstanding friend requests with "%s".]', targetname)
 
     def cmd_optout(self, targetname):
         if targetname[:1] == '!':
@@ -171,21 +173,21 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
             optout = True
             target = match_character(targetname, exact=True)
         if not target:
-            self.msg('{RPlayer not found.')
+            self.msg('{R[Player not found]')
             return
         if target.get_owner() != self.caller:
-            self.msg('"%s" is not one of your characters.' % (target.key))
+            self.msg('{R["%s" is not one of your characters]' % (target.key))
             return
         target.db.friends_optout = optout
         if optout:
-            self.msg('"%s" is now invisible to the friend system.' % (target.key))
+            self.msg('{G["%s" is now invisible to the friend system.]' % (target.key))
         else:
-            self.msg('"%s" has opted back into the friend system.' % (target.key))
+            self.msg('{G["%s" has opted back into the friend system.]' % (target.key))
 
     def cmd_whereis(self, targetname):
         friend = match_character(targetname, exact=False)
         if not friend:
-            self.msg('{RCharacter not found.')
+            self.msg('{R[Character not found]')
             return
 #        if not friend in self.caller.get_friend_characters(online_only=False):
 #            self.msg('{R%s is not on your friend list.' % (friend.key))
@@ -202,8 +204,7 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
 
     def check_optout(self):
         if not self.caller.status_online():
-            self.msg('{RSorry.  All of your currently connected characters are opting out of the friend system.')
-            self.msg('{RTo continue using the friend system, you need to connect at least one character without the "opt out" flag, or you can remove it with:')
-            self.msg('{r  @friends optout=!<character>')
+            self.msg('{R[Sorry.  All of your currently connected characters are opting out of the friend system.]')
+            self.msg('{R[To continue using the friend system, you need to connect at least one character without the "opt out" flag, or you can remove it with: {r@friends optout=!<character>{R]')
             return False
         return True

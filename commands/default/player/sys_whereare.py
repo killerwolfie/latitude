@@ -31,7 +31,7 @@ class CmdSysWhereare(default_cmds.MuxPlayerCommand):
                     characters += 1
             self.show_whereare(characters / 20)
         else:
-            self.msg("Invalid '%s' command.  See 'help %s' for usage." % (self.cmdstring, self.key))
+            self.msg("{R[Invalid '{r%s{R' command.  See '{rhelp %s{R' for usage]" % (self.cmdstring, self.key))
 
     def show_whereare(self, threshold):
         # Produce a list of locations
@@ -73,7 +73,7 @@ class CmdSysWhereare(default_cmds.MuxPlayerCommand):
         my_friends = self.caller.get_friend_characters(online_only=False)
         my_friends |= self.caller.get_characters(online_only=False)
         # Output the results
-        self.msg('{W-{wLocation{W---------------------------------------------------------------{wPeople{W-')
+        self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")
         if not locations:
             self.msg('  {RNo rooms with %d or more characters.' % (threshold))
         else:
@@ -99,4 +99,4 @@ class CmdSysWhereare(default_cmds.MuxPlayerCommand):
                         if strangers_here:
                             charline += '{n%d awake and %d asleep.' % (len([stranger for stranger in strangers_here if stranger.sessid]), len([stranger for stranger in strangers_here if not stranger.sessid]))
                         self.msg(charline)
-        self.msg('-------------------------------------------------------------------------------')
+        self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")

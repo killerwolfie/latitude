@@ -16,8 +16,9 @@ class CmdSysAccess(default_cmds.MuxPlayerCommand):
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):
-        self.msg('{wPermission Hierarchy{n (climbing): %s' % ', '.join(settings.PERMISSION_HIERARCHY))
-        self.msg('{wYour access{n:')
+        self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")
+        self.msg('{CPermission Hierarchy (climbing): {n%s' % ', '.join(settings.PERMISSION_HIERARCHY))
+        self.msg('{CYour access:')
         # Player
         if self.caller.is_superuser:
             pperms = "<Superuser>"
@@ -33,3 +34,4 @@ class CmdSysAccess(default_cmds.MuxPlayerCommand):
             cperms = ", ".join(self.character.permissions)
         if cperms:
             self.msg('  Character %s{n: %s' % (self.character.get_desc_styled_name(self.caller), cperms))
+        self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")

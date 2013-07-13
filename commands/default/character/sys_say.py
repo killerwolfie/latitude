@@ -17,12 +17,12 @@ class CmdSysSay(default_cmds.MuxPlayerCommand):
     Example:
       @say Hello, there!
        -> others will see:
-      <OOC> Tom says, "Hello, there!"
+      [OOC] Tom says, "Hello, there!"
 
     Example 2:
       @say :waves.
        -> others will see:
-      <OOC> Tom waves.
+      [OOC] Tom waves.
     """
     key = "@say"
     locks = "cmd:all()"
@@ -38,7 +38,7 @@ class CmdSysSay(default_cmds.MuxPlayerCommand):
             message = character.speech_say(self.args[1:])
         else:
             message = character.speech_say(self.args)
-        message = '{w<{rOOC{w> {n' + message
+        message = '{Y[OOC{Y] {n' + message
         if character.location:
             character.location.msg_contents(message)
         else:

@@ -158,7 +158,7 @@ class CmdSysExamine(default_cmds.ObjManipCommand):
             if things:
                 string += "\n{wContents{n: %s" % ", ".join([cont.name for cont in obj.contents
                                                            if cont not in exits and cont not in pobjs])
-        separator = "-"*78
+        separator = "{x________________{W_______________{w_______________{W_______________{x_________________"
         #output info
         return '%s\n%s\n%s' % ( separator, string.strip(), separator )
 

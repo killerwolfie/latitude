@@ -30,6 +30,7 @@ class CmdSysChannel(default_cmds.MuxPlayerCommand):
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):
+        self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")
         switches = [switch.lower() for switch in self.switches]
         if (not self.switches or self.switches == [ 'list' ]) and not self.args:
             self.cmd_list()
@@ -42,6 +43,7 @@ class CmdSysChannel(default_cmds.MuxPlayerCommand):
         else:
             # Unrecognized command
             self.msg("Invalid '%s' command.  See 'help %s' for usage" % (self.cmdstring, self.key))
+        self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")
 
     def cmd_list(self):
         caller = self.caller
@@ -53,10 +55,11 @@ class CmdSysChannel(default_cmds.MuxPlayerCommand):
         # Get all channel we are already subscribed to
         subs = [conn.channel for conn in PlayerChannelConnection.objects.get_all_player_connections(caller)]
         # Show the user a table
-        comtable = prettytable.PrettyTable(["{wSub", "{wChannel", "{wDescription"])
+        comtable = prettytable.PrettyTable(["{CSub", "{CChannel", "{CDescription"], border=False)
+        comtable.add_row(['', '', ''])
         for chan in channels:
             nicks = [nick for nick in caller.nicks.get(nick_type="channel")]
-            comtable.add_row([chan in subs and "{GYes{n" or "{RNo{n", "%s%s" % (chan.key, chan.aliases and "(%s)" % ",".join(chan.aliases) or ""), chan.desc])
+            comtable.add_row([chan in subs and "{GYes{n" or "{RNo{n", "%s%s" % (chan.key, chan.aliases and " (%s)" % ",".join(chan.aliases) or ""), chan.desc])
         self.msg(comtable)
 
     def cmd_who(self, channelname):
@@ -77,7 +80,7 @@ class CmdSysChannel(default_cmds.MuxPlayerCommand):
             if not channel.access(self.caller, "listen"):
                 self.msg("You can't access this channel.")
                 return
-            self.msg('{w%s:' % channel.key)
+            self.msg('{C%s:' % channel.key)
             players = [conn.player for conn in PlayerChannelConnection.objects.get_all_connections(channel) if conn.player.status_online()]
             if players:
                 self.msg('  ' + ', '.join([player.get_desc_styled_name(caller) for player in players]))

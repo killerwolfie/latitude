@@ -34,21 +34,24 @@ class CmdSysPref(default_cmds.MuxPlayerCommand):
             self.cmd_set(self.lhs, self.rhs)
             return
         # Unrecognized command
-        self.msg("Invalid '%s' command.  See 'help %s' for usage" % (self.cmdstring, self.key))
+        self.msg("{R[Invalid '{r%s{R' command.  See '{rhelp %s{R' for usage]" % (self.cmdstring, self.key))
 
     def cmd_list(self):
+        self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")
+        self.msg('')
         for option in self.prefs():
-            self.msg('%s: %s' % (option, str(getattr(self, 'pref_' + option)())))
+            self.msg('{C%s:{n %s' % (option, str(getattr(self, 'pref_' + option)())))
+        self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")
 
     def cmd_set(self, option, value):
         if not option in self.prefs():
-            self.msg('{R"%s" is not a valid option.' % (option))
+            self.msg('{R["%s" is not a valid option]' % (option))
             return
         try:
             getattr(self, 'pref_' + option)(value)
-            self.msg('Preference set.')
+            self.msg('{G[Preference set]')
         except PrefValueException as e:
-            self.msg('{RCould not set value: %s' % e)
+            self.msg('{R[Could not set value: %s]' % e)
         except:
             raise
 

@@ -25,18 +25,18 @@ class CmdChannel(default_cmds.MuxPlayerCommand):
         # Check arguments
         channelkey, message = self.args
         if not message:
-            self.msg("{RSay what?")
+            self.msg("{R[Say what?]")
             return
         channel = Channel.objects.get_channel(channelkey)
         if not channel:
-            self.msg("{RChannel '%s' not found." % channelkey)
+            self.msg("{R[Channel '%s' not found]" % channelkey)
             return
         # Verify permissions
         if not channel.has_connection(player):
-            self.msg("{RYou are not connected to channel '%s'." % channelkey)
+            self.msg("{R[You are not connected to channel '%s']" % channelkey)
             return
         if not channel.access(player, 'send'):
-            self.msg("{RYou are not permitted to send to channel '%s'." % channelkey)
+            self.msg("{R[You are not permitted to send to channel '%s']" % channelkey)
             return
         # Format the message
         if self.character:
@@ -55,7 +55,7 @@ class CmdChannel(default_cmds.MuxPlayerCommand):
                 message = '{b' + player.key + '{n: ' + message[1:].replace('{', '{{').replace('%', '%%')
             else:
                 message = '{b' + player.key + '{n: ' + message.replace('{', '{{').replace('%', '%%')
-        message = "[%s] " % (channel.key) + message
+        message = "{Y[%s] {n" % (channel.key) + message
         # Send it
         msgobj = create_message(player, message, channels=[channel])
         channel.msg(msgobj)

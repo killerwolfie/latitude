@@ -50,10 +50,7 @@ class CmdSysChar(default_cmds.MuxPlayerCommand):
         args = self.args
         switches = [switch.lower() for switch in self.switches]
 
-        if self.cmdstring.lower() == 'look' or self.cmdstring.lower() == 'l':
-            self.cmd_look()
-            return
-        elif self.cmdstring.lower() == '@ic' and not switches:
+        if self.cmdstring.lower() == '@ic' and not switches:
             self.cmd_ic()
             return
         elif self.cmdstring.lower() == '@ooc' and not switches and not args:
@@ -76,15 +73,19 @@ class CmdSysChar(default_cmds.MuxPlayerCommand):
                 self.cmd_del()
                 return
         # Unrecognized command
-        self.msg("Invalid '%s' command.  See 'help %s' for usage" % (self.cmdstring, self.key))
+        self.msg("{R[Invalid '{r%s{R' command.  See '{rhelp %s{R' for usage]" % (self.cmdstring, self.key))
 
     def cmd_list(self):
         player = self.caller
         characters = sorted(player.get_characters(), cmp=lambda a, b: cmp(a.key,b.key))
-        self.msg('Your characters: ' + ', '.join([char.get_desc_styled_name(player) for char in characters]))
+        self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")
+        self.msg('{CYour characters:')
+        for char in characters:
+            self.msg('  ' + char.get_desc_styled_name(player))
         if player.no_slot_chars():
             self.msg('\n{RYou appear to have more characters than character slots.  Some of your characters may be inaccessible.')
             self.msg('{RIf you believe this is an error, please contact {rstaff@latitude.muck.ca{R.')
+        self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")
 
     def cmd_new(self):
         player = self.caller
@@ -97,17 +98,17 @@ class CmdSysChar(default_cmds.MuxPlayerCommand):
             return
         # Check the character name
         if re.search('[^a-zA-Z0-9._-]', key) or not (3 <= len(key) <= 20):
-            self.msg('{RCharacter names must be between 3 and 20 characters, and only contain english letters, numbers, dot (.), underscore (_), or dash(-)')
+            self.msg('{R[Character names must be between 3 and 20 characters, and only contain english letters, numbers, dot (.), underscore (_), or dash(-)]')
             return
         # Verify that the character name is not already taken
         for existing_object in search_object(key, attribute_name='key'):
             if utils.inherits_from(existing_object, "src.objects.objects.Character"):
-                self.msg("{RThat character name is already taken.")
+                self.msg("{R[That character name is already taken]")
                 return
         # Verify that this is not the name of a player, unless it's your own
         if key.lower() != player.key.lower():
             if search_player(key):
-                self.msg("{RThat name is already taken by a player account.")
+                self.msg("{R[That name is already taken by a player account]")
                 return
         # create the character
         from src.objects.models import ObjectDB
@@ -122,7 +123,7 @@ class CmdSysChar(default_cmds.MuxPlayerCommand):
         # Configure the character as a new character in the world
         new_character.db.desc = "This is a Player."
         # Inform the user that we're done.
-        self.msg("Created new character %s. Use {w%s/ic %s{n to enter the game as this character." % (new_character.key, self.key, new_character.key))
+        self.msg("{G[Created new character %s. Use {g%s/ic %s{G to enter the game as this character]" % (new_character.key, self.key, new_character.key))
 
     def cmd_ic(self):
         player = self.caller
@@ -131,12 +132,12 @@ class CmdSysChar(default_cmds.MuxPlayerCommand):
         if self.args:
             target = match_character(self.args)
             if not target or not target in characters:
-                self.msg("{RThat's not a valid character selection.")
+                self.msg("{R[That's not a valid character selection]")
                 return
         else:
             target = player.last_puppet()
             if not target or not target in characters:
-                self.msg("{RPlease specify a character.  See {r%s/list{R for a list." % (self.key))
+                self.msg("{R[Please specify a character.  See {r%s/list{R for a list]" % (self.key))
                 return
         # Puppet the character (and output success/failure messages)
         player.do_puppet(self.sessid, target)
@@ -151,16 +152,16 @@ class CmdSysChar(default_cmds.MuxPlayerCommand):
         # Find the character to nuke
         target = match_character(self.lhs)
         if not target:
-            self.msg("{RThat's not a valid character selection.")
+            self.msg("{R[That's not a valid character selection]")
             return
         # Ensure you have permissions
         if not player.user.check_password(self.rhs):
-            self.msg("{RPassword incorrect.")
+            self.msg("{R[Password incorrect]")
             return
         if not target.access(player, 'char_delete'):
-            self.msg("{RYou're not allowed to delete that character.")
+            self.msg("{R[You're not allowed to delete that character]")
             if target in characters:
-                self.msg('{RIf you believe this is an error, please contact {rstaff@latitude.muck.ca{R.')
+                self.msg('{R[If you believe this is an error, please contact {rstaff@latitude.muck.ca{R]')
             return
         # Bye bye character
         target_player = target.player
@@ -180,4 +181,4 @@ class CmdSysChar(default_cmds.MuxPlayerCommand):
         if target_player:
             alertus.add(target_player)
         for alertme in alertus:
-            alertme.msg('{rThe character "%s" has been deleted by {c%s{r.' % (target_name, player.get_desc_styled_name(alertme)))
+            alertme.msg('{R[The character "%s" has been deleted by {c%s{r]' % (target_name, player.get_desc_styled_name(alertme)))

@@ -23,7 +23,7 @@ class Player(EvenniaPlayer):
         self.execute_cmd("look", sessid=sessid)
         self.execute_cmd("@friends", sessid=sessid)
         if self.db.msg_unseen:
-            self.msg('{GYou have unread messages.  Type "@page" to read them.  See "help @page" for more information.')
+            self.msg('{Y[You have unread messages.  Type "@page" to read them.  See "help @page" for more information]')
         # Update same statistics
         self.db.stats_last_login_time = time.time()
         if self.db.stats_times_login:
@@ -57,26 +57,26 @@ class Player(EvenniaPlayer):
         the player)
         """
         if self.get_puppet(sessid) == new_character:
-            self.msg("{RYou already act as %s{R." % (new_character.get_desc_styled_name(self)), sessid=sessid)
+            self.msg("{R[You already act as %s{R]" % (new_character.get_desc_styled_name(self)), sessid=sessid)
             return
         if new_character in self.no_slot_chars():
-            self.msg("{R%s{R does not have a character slot.  Either delete a character, or acquire more character slots." % (new_character.get_desc_styled_name(self)), sessid=sessid)
-            self.msg("{RIf you believe this is an error, contact{rstaff@latitude.muck.ca{R.", sessid=sessid)
+            self.msg("{R[%s{R does not have a character slot.  Either delete a character, or acquire more character slots]" % (new_character.get_desc_styled_name(self)), sessid=sessid)
+            self.msg("{R[If you believe this is an error, contact{rstaff@latitude.muck.ca{R]", sessid=sessid)
             return
         if not new_character.access(self, "puppet"):
-            self.msg("You are not allowed to control that character." % (new_character.get_desc_styled_name(self)), sessid=sessid)
-            self.msg("{RIf you believe this is an error, contact{rstaff@latitude.muck.ca{R.", sessid=sessid)
+            self.msg("{R[You are not allowed to control that character]" % (new_character.get_desc_styled_name(self)), sessid=sessid)
+            self.msg("{R[If you believe this is an error, contact{rstaff@latitude.muck.ca{R]", sessid=sessid)
             return
         if new_character.player and new_character.player != self and new_character.player.is_connected:
-            self.msg("{R%s{R is already acted by another player.{n" % (new_character.get_desc_styled_name(self)), sessid=sessid)
+            self.msg("{R[%s{R is already acted by another player]" % (new_character.get_desc_styled_name(self)), sessid=sessid)
             return
         if new_character.player:
             # Steal the character (As a safeguard, we allow taking players from other sessions, subject to security checks above.)
-            new_character.msg("{c%s{n{R is now acted from another session.{n" % (new_character.name), sessid=new_character.sessid)
+            new_character.msg("{R[{c%s{R is now acted from another session]" % (new_character.name), sessid=new_character.sessid)
             self.do_unpuppet(new_character.sessid)
-            self.msg("Taking over {c%s{n from another session..." % new_character.name, sessid=sessid)
+            self.msg("{Y[Taking over {c%s{Y from another session...]" % new_character.name, sessid=sessid)
         if not self.puppet_object(sessid, new_character):
-            self.msg("{RYou cannot become {R%s{n." % new_character.get_desc_styled_name(self), sessid=sessid)
+            self.msg("{R[You cannot become {R%s{R]" % new_character.get_desc_styled_name(self), sessid=sessid)
 
     def do_unpuppet(self, sessid):
         """
@@ -86,10 +86,10 @@ class Player(EvenniaPlayer):
         """
         old_char = self.get_puppet(sessid)
         if not old_char:
-            self.msg('{RYou are already OOC.', sessid=sessid)
+            self.msg('{R[You are already OOC]', sessid=sessid)
             return
         if self.unpuppet_object(sessid):
-            self.msg("\n{GYou go OOC.{n\n", sessid=sessid)
+            self.msg("\n{G[You go OOC]\n", sessid=sessid)
             self.execute_cmd("look", sessid=sessid)
         else:
             raise RuntimeError("Could not unpuppet!")

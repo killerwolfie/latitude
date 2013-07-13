@@ -71,7 +71,7 @@ class Character(Actor, EvenniaCharacter):
         if not self.db.friends_optout:
             for friend in self.player.get_friend_players():
                 if friend.status_online(): # Don't alert friends who show offline.
-                    friend.msg('Your friend %s (%s) has just entered the game.' % (self.key, self.player.key))
+                    friend.msg('{Y[Your friend %s{Y (%s{Y) has just entered the game.]' % (self.key, self.player.key))
 
     def at_post_unpuppet(self, player, sessid):
         if self.location:
