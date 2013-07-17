@@ -28,4 +28,4 @@ class Item(Object):
         ]))
 
     def get_desc_styled_name(self, looker=None):
-        return '{G' + self.key
+        return '{g' + self.key
