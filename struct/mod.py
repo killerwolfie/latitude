@@ -60,33 +60,9 @@ class Mod(object):
         """
         return None
 
-    def mod_appearance_desc(self, appearance):
+    def mod_contents(self, appearance):
         """
-        Modifies get_desc_appearance_desc.  Returns a new value given an existing one, or None for no mod
-        """
-        return None
-
-    def mod_appearance_name(self, appearance):
-        """
-        Modifies get_desc_appearance_name.  Returns a new value given an existing one, or None for no mod.
-        """
-        return None
-
-    def mod_appearance_contents_header(self, appearance):
-        """
-        Modifies get_desc_appearance_contents_header.  Returns a new value given an existing one, or None for no mod.
-        """
-        return None
-
-    def mod_appearance_contents(self, appearance):
-        """
-        Modifies get_desc_appearance_contents.  Returns a new value given an existing one, or None for no mod.
-        """
-        return None
-
-    def mod_appearance_exits(self, appearance):
-        """
-        Modifies get_desc_appearance_exits.  Returns a new value given an existing one, or None for no mod.
+        Modifies get_desc_contents.  Returns a new value given an existing one, or None for no mod.
         """
         return None
 

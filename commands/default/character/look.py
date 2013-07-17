@@ -19,7 +19,7 @@ class CmdLook(default_cmds.MuxPlayerCommand):
     def func(self):
         self.percieve('appearance')
 
-    def percieve(self, sense):
+    def percieve(self, sense, default_obj=None):
         """
         Handle the percieving.
         """
@@ -32,13 +32,15 @@ class CmdLook(default_cmds.MuxPlayerCommand):
             looking_at_obj = character.search(args, use_nicks=True)
             if not looking_at_obj:
                 return
+        elif default_obj:
+            looking_at_obj = default_obj
         else:
             looking_at_obj = character.location
             if not looking_at_obj:
                 self.msg("You have no location to percieve!")
                 return
         # Get the object's description
-        self.msg(getattr(looking_at_obj, 'get_desc_'+ sense)(character))
+        self.msg(getattr(looking_at_obj, 'get_desc_'+ sense)(looker=character))
         # the object's at_desc() method.
 	if sense == 'appearance':
 	    sense_callback = 'at_desc'

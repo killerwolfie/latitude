@@ -7,8 +7,9 @@ import time
 from ev import search_script, search_player, utils
 from ev import Room as EvenniaRoom
 from ev import Exit as EvenniaExit
+from ev import utils
 from game.gamesrc.latitude.objects.object import Object
-from game.gamesrc.latitude.utils import evennia_color
+from game.gamesrc.latitude.utils.evennia_color import *
 
 class Room(Object, EvenniaRoom):
     def basetype_setup(self):
@@ -48,18 +49,45 @@ class Room(Object, EvenniaRoom):
     def get_desc_styled_name(self, looker=None):
         return '{w' + self.key
 
-    def get_desc_appearance_name(self, looker=None):
-        name = self.get_desc_styled_name(looker=looker)
+    def get_desc_appearance(self, looker=None):
+        desc = []
+        # Title
         if self.db.resident:
-            name += ' {B[Non-canon (%s)]' % (self.db.resident.key)
-        return name
-
-    def get_desc_appearance_desc(self, looker=None):
-        desc = self.db.desc_appearance
-        if desc != None:
-            return('%cn' + desc)
+            desc.append(self.get_desc_styled_name(looker=looker) + ' {B[Non-canon (%s)]' % (self.db.resident.key))
         else:
-            return(None)
+            desc.append(self.get_desc_styled_name(looker=looker))
+        # Description
+        if self.db.desc_appearance:
+            desc.append(self.objsub(self.db.desc_appearance))
+        # Contents/Exits
+        characters = []
+        exits = []
+        items = []
+        for obj in self.contents:
+            if obj == looker:
+                continue
+            if utils.inherits_from(obj, 'game.gamesrc.latitude.objects.character.Character'):
+                characters.append(obj)
+            elif utils.inherits_from(obj, 'game.gamesrc.latitude.objects.exit.Exit'):
+                exits.append(obj)
+            else:
+                items.append(obj)
+        characters.sort(key=lambda character: (not character.sessions, character.key))
+        exits.sort(key=lambda exit: exit.key)
+        items.sort(key=lambda item: item.key)
+        desc.append('{x[Exits: ' + ', '.join([exit.alias_highlight_name() for exit in exits]) + ']{n')
+        if characters or items:
+            desc.append('')
+            desc.append('{nYou see:')
+            for character_index in range(0, len(characters), 3):
+                desc.append('  ' + '  '.join([evennia_color_left(character.get_desc_styled_name(), 23, dots=True) for character in characters[character_index:character_index+3]]))
+            for item_index in range(0, len(items), 3):
+                desc.append('  ' + '  '.join([evennia_color_left(item.get_desc_styled_name(), 23, dots=True) for item in items[item_index:item_index+3]]))
+        # Return constructed string
+        return '\n{n'.join(desc)
+
+    def get_desc_contents(self, looker=None):
+        return self.get_desc_appearance(looker=looker)
 
     def get_desc_scent(self, looker=None):
         """
@@ -134,7 +162,7 @@ class Room(Object, EvenniaRoom):
             if not map_data:
                 return None
             # Parse the map data's color codes and create a canvas
-            canvas = evennia_color.EvenniaColorCanvas()
+            canvas = EvenniaColorCanvas()
             canvas.evennia_import(map_data)
             # Generate a list of marks, and associated legend entries.
 	    marks = {}

@@ -27,21 +27,11 @@ class Area(Object):
     def get_desc_styled_name(self, looker=None):
         return '{M[' + self.key + ']'
 
-    def get_desc_appearance_name(self, looker=None):
-        return ('%cn%ch%cw' + self.key)
+    def get_desc_appearance(self, looker=None):
+        return '{w%s\n{x[Use "leave" to return to the region menu]' % (self.key)
 
-    def get_desc_appearance_desc(self, looker=None):
-        desc = self.db.desc_appearance
-        if desc != None:
-            return '%cn' + desc
-        else:
-            return None
-
-    def get_desc_appearance_contents(self, looker=None):
-        return None
-
-    def get_desc_appearance_exits(self, looker=None):
-        return '{x[Use "leave" to return to the region menu]'
+    def get_desc_contents(self, looker=None):
+        return self.get_desc_appearance(looker=looker)
 
     def can_visit(self, character):
         """

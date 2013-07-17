@@ -25,6 +25,7 @@ class Character(Actor, EvenniaCharacter):
             "edit_writing:owner()",                 # Allows users to modify this object's 'writing' description
             "edit_gender:owner()",                  # Allows users to modify this object's 'gender' description
             "edit_species:owner()",                 # Allows users to modify this object's 'species' description
+            "view_contents:self()",                 # Allows users to view the contents of this object
             "follow:owner_lock(default_follow)",    # Who can automatically follow
             "lead:owner_lock(default_lead)",        # Who can automatically lead
             "get:false()",                          # Nobody can pick up the character

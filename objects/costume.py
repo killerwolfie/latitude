@@ -45,20 +45,8 @@ class Costume(Equipment):
     def mod_appearance(self, appearance):
         return self.db.costume_appearance
 
-    def mod_appearance_desc(self, appearance):
-        return self.db.costume_appearance_desc
-
-    def mod_appearance_name(self, appearance):
-        return self.db.costume_appearance_name
-
-    def mod_appearance_contents_header(self, appearance):
-        return self.db.costume_appearance_contents_header
-
-    def mod_appearance_contents(self, appearance):
-        return self.db.costume_appearance_contents
-
-    def mod_appearance_exits(self, appearance):
-        return self.db.costume_appearance_exits
+    def mod_contents(self, appearance):
+        return self.db.costume_contents
 
     def mod_aura(self, aura):
         return self.db.costume_aura

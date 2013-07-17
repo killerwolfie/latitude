@@ -26,6 +26,12 @@ class Actor(Object):
         super(Actor, self).basetype_setup()
         self.db.equipment = set()
 
+    def bad(self):
+        # Equipment
+        for item in self.db.equipment:
+            if item.get_equipper() != self:
+                return 'character and item data conflict (%s)' % item.key
+
     def at_after_move(self, source_location):
         # Display the new location so the user gets an indication that they've moved
         if self.db.prefs_automap == None or self.db.prefs_automap:
@@ -70,20 +76,11 @@ class Actor(Object):
     def get_desc_appearance(self, looker=None):
         return self._desc_mod('mod_appearance', super(Actor, self).get_desc_appearance(looker=looker))
 
-    def get_desc_appearance_name(self, looker=None):
-        return self._desc_mod('mod_appearance_name', super(Actor, self).get_desc_appearance_name(looker=looker))
-
-    def get_desc_appearance_desc(self, looker=None):
-        return self._desc_mod('mod_appearance_desc', super(Actor, self).get_desc_appearance_desc(looker=looker))
-
-    def get_desc_appearance_exits(self, looker=None):
-        return self._desc_mod('mod_appearance_exits', super(Actor, self).get_desc_appearance_exits(looker=looker))
-
-    def get_desc_appearance_contents(self, looker):
-        return self._desc_mod('mod_appearance_contents', super(Actor, self).get_desc_appearance_contents(looker=looker))
-
-    def get_desc_appearance_contents_header(self, looker=None):
-        return self._desc_mod('mod_appearance_contents_header', super(Actor, self).get_desc_appearance_contents_header(looker=looker))
+    def get_desc_contents(self, looker=None):
+        """
+        Returns the visual description of the object, if looking inside.
+        """
+        return self._desc_mod('mod_contents', super(Actor, self).get_desc_contents(looker=looker))
 
     def get_desc_scent(self, looker=None):
         return self._desc_mod('mod_scent', super(Actor, self).get_desc_scent(looker=looker))

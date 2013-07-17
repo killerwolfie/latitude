@@ -80,7 +80,7 @@ class CmdVisit(default_cmds.MuxPlayerCommand):
         character = self.character
         region = character.get_region()
         areas = [area for area in region.contents if hasattr(area, 'can_visit') and area.can_visit(character)]
-        results = areas and search_object(self.args, exact=False, candidates=areas) or []
+        results = search_object(self.args, exact=False, candidates=areas)
         destination = _AT_SEARCH_RESULT(character, self.args, results, global_search=False, nofound_string="You can't find that area.", multimatch_string="More than one area matches '%s':" % (self.args))
         if not destination:
             return # The search result hook should have informed the user

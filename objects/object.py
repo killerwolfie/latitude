@@ -2,8 +2,10 @@ from ev import Object as EvenniaObject
 from ev import Exit as EvenniaExit
 from ev import Room as EvenniaRoom
 from ev import Character as EvenniaCharacter
-from ev import utils, search_object
+from ev import utils, settings, search_object, create_object
+from game.gamesrc.latitude.utils.evennia_color import *
 import re
+import sys
 
 class Object(EvenniaObject):
     def basetype_setup(self):
@@ -48,6 +50,7 @@ class Object(EvenniaObject):
             'kick_occupant' : "{RYou aren't allowed to kick a character from that location.",
             'follow' : None, # Follow system handles this by sending a follow request.
             'lead' : None, # Follow system handles this by sending a lead request.
+            'view_contents' : None, # A description property, or default description is used and displayed to the user in this case.
         }
         if access_type in message_table:
             message = message_table[access_type]
@@ -72,10 +75,6 @@ class Object(EvenniaObject):
         """
         if type(self) is Object:
             return "object is a base 'Object' class"
-        # Equipment
-        for item in self.db.equipment:
-            if item.get_equipper() != self:
-                return 'character and item data conflict (%s)' % item.key
         return None
 
     # ----- Utilities -----
@@ -204,78 +203,38 @@ class Object(EvenniaObject):
     def get_desc_appearance(self, looker=None):
         """
         Describes the appearance of this object.  Used by the "look" command.
-	This method, by default, delegates its desc generation into several other calls on the object.
-	   get_desc_appearance_name for the name of the object. (Which defaults to showing nothing)
-	   get_desc_apperaance_desc to generate the main description of the room.
-           get_desc_appearance_exits to generate a line that shows you which exits are available for you to take
-	   get_desc_appearance_contents to generate the description of the contents of the object
-	      (This, itself, calls get_desc_appearance_contents_header if there are any contents to get the 'Carrying:' line by default)
 	"""
-        # By default, construct the appearance by calling other methods on the object
-	descs = [self.get_desc_appearance_name(looker), self.get_desc_appearance_desc(looker), self.get_desc_appearance_exits(looker), self.get_desc_appearance_contents(looker)]
-	descs = [desc for desc in descs if desc != None]
-	return '\n' + '\n'.join(descs)
+	if not self.db.desc_appearance:
+	    return 'You see nothing special.'
+	return self.objsub(self.db.desc_appearance)
 
-    def get_desc_appearance_name(self, looker=None):
+    def get_desc_contents(self, looker=None):
         """
-	Return the name portion of the visual description.
-	"""
-        return self.get_desc_styled_name(looker=looker)
-
-    def get_desc_appearance_desc(self, looker=None):
+        Returns the visual description of the object, if looking inside.
         """
-	Return the main portion of the visual description.
-	"""
-        desc = self.db.desc_appearance
-	if desc != None:
-	    return '%cn' + self.objsub(desc)
-	else:
-	    return '%cnYou see nothing special.'
-
-    def get_desc_appearance_exits(self, looker=None):
-        """
-	Return a line that describes the visible exits in the object.
-	"""
-        # get and identify all objects
-        visible = (con for con in self.contents if con != looker)
-        exits = []
-        for con in visible:
-            if isinstance(con, EvenniaExit):
-                exits.append(con.alias_highlight_name())
-
-        if exits:
-            return '%ch%cx[Exits: ' + ', '.join(exits) + ']%cn'
-	else:
-	    return None
-
-    def get_desc_appearance_contents(self, looker):
-        """
-	Return a descriptive list of the contents held by this object.
-	"""
-        visible = [con for con in self.contents if con != looker]
-        exits, users, things = [], [], []
-        for con in visible:
-            if isinstance(con, EvenniaExit):
-	        exits.append(con.key)
-            elif con.player:
-                users.append(con.get_desc_styled_name(looker))
-            else:
-                things.append(con.get_desc_styled_name(looker))
-        if users or things:
-            string = self.get_desc_appearance_contents_header(looker)
-            if users:
-                string += '\n%ch%cc' + '\n'.join(users) + '%cn'
-            if things:
-                string += '\n%cn%cc' + '\n'.join(things) + '%cn'
-            return string
-	else:
-	    return None
-
-    def get_desc_appearance_contents_header(self, looker=None):
-        """
-	Returns a header line to display just before outputting the contents of the object.
-	"""
-        return '%ch%cbContents:%cn'
+        if self.access(looker, 'view_contents'):
+            # Dynamically generate a contents list
+            items = sorted(self.contents, key=lambda item: item.key)
+            if not items:
+                return self.objsub("&0S's empty.")
+            contents = ["You see:"]
+            for index in range(0, len(items), 3):
+                contents.append('  ' + '  '.join([evennia_color_left(item.get_desc_styled_name(), 23, dots=True) for item in items[index:index+3]]))
+            # Display statistics if appropriate
+            if self.weight_capacity() > 0:
+                weight = _percentage_color(self.weight_contents(), self.weight_capacity()) + '%0.2f' % (self.weight_contents() / 1000.0) # Kilogram
+                weight_max = '{W%0.2f' % (self.weight_capacity() / 1000.0)
+                contents.append("{CTotal weight: %s{C (Max: %s{C)" % (weight, weight_max))
+            if self.volume_capacity() > 0:
+                volume = _percentage_color(self.volume_contents(), self.volume_capacity()) + '%0.2f' % (self.volume_contents() / 1000000.0) # Cubic decimeter
+                volume_max = '{W%0.2f' % (self.volume_capacity() / 1000000.0)
+                contents.append("{CTotal volume: %s{C (Max: %s{C)" % (volume, volume_max))
+            # Return result
+            return '\n'.join(contents)
+        else:
+            if not self.db.desc_contents:
+                return self.objsub("You can't see inside &0o.")
+	    return self.objsub(self.db.desc_contents)
 
     def get_desc_scent(self, looker=None):
         """
@@ -409,10 +368,37 @@ class Object(EvenniaObject):
     def at_desc_writing(self, looker):
         pass
 
+    def at_desc_contents(self, looker):
+        pass
+
     def at_say(self, speaker, message):
         pass
 
     def at_whisper(self, speaker, message):
+        pass
+
+    def at_get(self, getter, quantity=1):
+        """
+        Called when this object has been picked up.
+
+        This has an optional 'quantity' value for stackable objects, to
+        indicate how many elements of this stack were just picked up.  For
+        example, if you have a stack of 5, and you pick up 5 more, then you
+        will now have a stack of 10, but the quantity value passed to at_get
+        will be 5.
+        """
+        pass
+
+    def at_drop(self, dropper, quantity=1):
+        """
+        Called when this object has been dropped..
+
+        This has an optional 'quantity' value for stackable objects, to
+        indicate how many elements of this stack were just dropped.  For
+        example, if you have a nearby stack of 5, and you drop 5 more, then
+        you will now have a stack of 10, but the quantity value passed to
+        at_drop will be 5.
+        """
         pass
 
     # ----- Player Actions -----
@@ -529,6 +515,98 @@ class Object(EvenniaObject):
                     follower.msg('%s moves off, but you find yourself unable to follow.' % self.key)
         return retval
 
+    # ----- Inventory -----
+    def give(self, typeclass, quantity=1):
+        """
+        Create one or more new objects with the specified typeclass.
+        Returns a list of created or modified objects.
+
+        Stackable objects are handled correctly.
+        """
+        quantity = int(quantity)
+        if quantity < 1:
+            raise ValueError('quantity must be greater than 0')
+        if not callable(typeclass):
+            typeclass = _get_object_class(typeclass)
+        # If there's an existing stackable object of this type, just add to it
+        if utils.inherits_from(typeclass, 'game.gamesrc.latitude.objects.stackable.Stackable'):
+            for con in self.contents:
+                if type(con) is typeclass:
+                    con.db.quantity += quantity
+                    return [con]
+        # Create a new object
+        if utils.inherits_from(typeclass, 'game.gamesrc.latitude.objects.stackable.Stackable'):
+            obj = create_object(typeclass, location=self)
+            obj.db.quantity = quantity
+            return [obj]
+        else:
+            retval = []
+            for i in range(quantity):
+                retval.append(create_object(typeclass, location=self))
+            return(retval)
+
+    def stack_contents(self):
+        """
+        Combines all stacks of the same type, for the contents of this object.
+        """
+        # Produce a mapping from stackable classes to objects
+        class_map = {}
+        for con in self.contents:
+            if not utils.inherits_from(con, 'game.gamesrc.latitude.objects.stackable.Stackable'):
+                continue
+            stackable_class = type(con)
+            if not stackable_class in class_map:
+                class_map[stackable_class] = []
+            class_map[stackable_class].append(con)
+        # Combine classes
+        for stackable_class, objects in class_map.iteritems():
+            for combine_me in objects[1:]:
+                objects[0].combine(combine_me)
+
+    def weight(self):
+        """
+        Returns the weight of the object in grams. (This typically includes the weight of its contents)
+        """
+        return 0
+
+    def weight_contents(self):
+        """
+        Returns the weight of the object's contents only, in grams.
+        """
+        weight = 0
+        for con in self.contents:
+            weight += con.weight()
+        return weight
+
+    def weight_capacity(self):
+        """
+        Returns the weight capacity for the object.
+        Negative values for infinite.
+        """
+        return 0
+
+    def volume(self):
+        """
+        Returns the valume of the object in cubic millimeters.  (This may include the volume of its contents, but typically won't)
+        """
+        return 0 # BLACK HOLE! :p
+
+    def volume_contents(self):
+        """
+        Returns the volume of the object's contents only, in cubic millimeters.
+        """
+        volume = 0
+        for con in self.contents:
+            volume += con.volume()
+        return volume
+
+    def volume_capacity(self):
+        """
+        Returns the volume capacity of the object.
+        Negative values for infinite.
+        """
+        return 0
+
     # ----- Object based string substitution -----
     def objsub(self, template, *args):
         def repl(codeseq):
@@ -595,7 +673,7 @@ class Object(EvenniaObject):
 
         In almost all cases, a character's name should be their casual name, but for objects it's often not.
         """
-        return self.key
+        return 'a ' + self.key
 
     # C - Casual Definite Name
     def objsub_c(self):
@@ -613,7 +691,7 @@ class Object(EvenniaObject):
 
         In almost all cases, a character's name should be their casual name, but for objects it's often not.
         """
-        return self.key
+        return 'the ' + self.key
 
     # D - Specific Definite Name
     def objsub_d(self):
@@ -657,6 +735,18 @@ class Object(EvenniaObject):
         their definite name.  (For 'vague', see 'B' - 'Casual Indefinite Name')
         """
         return 'a ' + self.key
+
+    # M - Plural name
+    def objsub_m(self):
+        """
+        This is the plural name of the object
+
+        Examples:
+            Fish -> Fish
+            Cat -> Cats
+            King Henry -> King Henries
+        """
+        return self.key + 's'
 
     # N - Object Name
     def objsub_n(self):
@@ -734,3 +824,39 @@ class Object(EvenniaObject):
     # Other
     def objsub_other(self, code):
         return None
+
+def _get_object_class(typeclass_path):
+    errors = []
+    for path in [typeclass_path] + [add_path + '.' + typeclass_path for add_path in settings.OBJECT_TYPECLASS_PATHS]:
+        try:
+            module_path, class_name = path.rsplit('.', 1)
+            module =  __import__(module_path, fromlist=["none"])
+            return module.__dict__[class_name]
+        except ImportError:
+            trc = sys.exc_traceback
+            if not trc.tb_next:
+                # we separate between not finding the module, and finding a buggy one.
+                errors.append("Typeclass not found trying path '%s'." % path)
+            else:
+                # a bug in the module is reported normally.
+                trc = traceback.format_exc()
+                errors.append("\n%sError importing '%s'." % (trc, path))
+        except (ValueError, TypeError):
+            errors.append("Malformed typeclass path '%s'." % path)
+        except KeyError:
+            errors.append("No class '%s' was found in module '%s'." % (class_name, modpath))
+        except Exception:
+            trc = traceback.format_exc()
+            errors.append("\n%sException importing '%s'." % (trc, path))
+    raise Exception('\n'.join(errors))
+
+def _percentage_color(current, maximum):
+    if not maximum > 0:
+        return '{W'
+    fraction = current / maximum
+    if fraction < 0.2:
+        return '{R'
+    if fraction < 0.5:
+        return '{Y'
+    return '{G'
+

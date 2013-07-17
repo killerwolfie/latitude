@@ -208,6 +208,5 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
                 message = '{b' + player.key + '{n: ' + message[1:].replace('{', '{{').replace('%', '%%')
             else:
                 message = '{b' + player.key + '{n: ' + message.replace('{', '{{').replace('%', '%%')
-        if len(receivers) > 1:
-            message = "{Y(To %s) {n%s" % (conj_join([obj.key for obj in receivers], 'and'), message)
+        message = "{n%s {Y(To %s)" % (message, conj_join([obj.key for obj in receivers], 'and'))
         return message

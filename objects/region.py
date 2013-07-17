@@ -21,21 +21,15 @@ class Region(Object):
     def get_desc_styled_name(self, looker=None):
         return '{m[' + self.key + ']'
 
-    def get_desc_appearance_name(self, looker=None):
-        return ('%cn%ch%cw' + self.key)
-
-    def get_desc_appearance_desc(self, looker=None):
-        desc = self.db.desc_appearance
-        if desc != None:
-            return '%cn' + desc
+    def get_desc_appearance(self, looker=None):
+        if self.db.desc_appearance:
+            desc = self.db.desc_appearance + '\n'
         else:
-            return None
+            desc = ''
+        return '{w%s{n\n%s{x[Use "visit" or "wander" to find a specific location]' % (self.key, desc)
 
-    def get_desc_appearance_contents(self, looker=None):
-        return None
-
-    def get_desc_appearance_exits(self, looker=None):
-        return '{x[Use "visit" or "wander" to find a specific location]'
+    def get_desc_contents(self, looker=None):
+        return self.get_desc_appearance(looker=looker)
 
     def wander(self, character):
         """
