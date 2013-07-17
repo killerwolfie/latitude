@@ -80,6 +80,10 @@ class Character(Actor, EvenniaCharacter):
         # Update puppet statistics
         self.db.stats_last_unpuppet_time = time.time()
 
+    def at_whisper(self, speaker, message):
+        if not self.sessid:
+            speaker.msg("{R[%s is asleep, and can't hear your whisper]" % (self.key))
+
     def set_owner(self, new_owner):
         # Remove current owner
         owner = self.get_owner()
