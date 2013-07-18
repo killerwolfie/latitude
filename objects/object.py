@@ -516,7 +516,7 @@ class Object(EvenniaObject):
         return retval
 
     # ----- Inventory -----
-    def give(self, typeclass, quantity=1):
+    def give(self, typeclass, quantity=1, key=None, attributes=None):
         """
         Create one or more new objects with the specified typeclass.
         Returns a list of created or modified objects.
@@ -524,25 +524,35 @@ class Object(EvenniaObject):
         Stackable objects are handled correctly.
         """
         quantity = int(quantity)
-        if quantity < 1:
-            raise ValueError('quantity must be greater than 0')
         if not callable(typeclass):
             typeclass = _get_object_class(typeclass)
+        is_stackable = utils.inherits_from(typeclass, 'game.gamesrc.latitude.objects.stackable.Stackable')
+        # Verify parameters
+        if quantity < 1:
+            raise ValueError('quantity must be greater than 0')
+        if is_stackable and key:
+            raise ValueError('name specified for stackable item')
+        if is_stackable and attributes:
+            raise ValueError('attributes specified for stackable item')
         # If there's an existing stackable object of this type, just add to it
-        if utils.inherits_from(typeclass, 'game.gamesrc.latitude.objects.stackable.Stackable'):
+        if is_stackable:
             for con in self.contents:
                 if type(con) is typeclass:
                     con.db.quantity += quantity
                     return [con]
         # Create a new object
-        if utils.inherits_from(typeclass, 'game.gamesrc.latitude.objects.stackable.Stackable'):
+        if is_stackable:
             obj = create_object(typeclass, location=self)
             obj.db.quantity = quantity
             return [obj]
         else:
             retval = []
             for i in range(quantity):
-                retval.append(create_object(typeclass, location=self))
+                new_obj = create_object(typeclass, location=self, key=key)
+                if attributes:
+                    for name, val in attributes.iteritems():
+                        new_obj.set_attribute(name, val)
+                retval.append(new_obj)
             return(retval)
 
     def stack_contents(self):
@@ -844,7 +854,7 @@ def _get_object_class(typeclass_path):
         except (ValueError, TypeError):
             errors.append("Malformed typeclass path '%s'." % path)
         except KeyError:
-            errors.append("No class '%s' was found in module '%s'." % (class_name, modpath))
+            errors.append("No class '%s' was found in module '%s'." % (class_name, path))
         except Exception:
             trc = traceback.format_exc()
             errors.append("\n%sException importing '%s'." % (trc, path))

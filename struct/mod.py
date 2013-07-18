@@ -1,4 +1,16 @@
 class Mod(object):
+    """
+    This class represents a 'character mod' state.  Basically a status condition,
+    or statistic modification, which can be applied at a given time to an actor
+    object, such as a character.
+
+    If the actor object chooses to use this Mod object, then it will check its
+    routines as appropriate.
+
+    Equipment and Scripts derive from Mod, so the actor class checks all its
+    currently applied equipment and scripts to find Mod objects.
+    """
+
     def mod_desc_source(self):
         """
         Returns a stylized string, typically an object or status condition name, that describes the source of the mod.
