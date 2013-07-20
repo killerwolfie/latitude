@@ -29,7 +29,7 @@ class CmdDrop(default_cmds.MuxPlayerCommand):
         # Parse arguments
         target_name = self.args
         quantity = None
-        match = re.match(r'(\d)+\s+of\s+(.*)$', target_name)
+        match = re.match(r'(\d+)\s+of\s+(.*)$', target_name)
         if match:
             target_name = match.group(2)
             quantity = int(match.group(1))
