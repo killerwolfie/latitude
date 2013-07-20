@@ -183,7 +183,7 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
                     for session in receiver.get_all_sessions():
                         msg_targets.add((receiver, session.sessid))
             for msg_target in msg_targets:
-                msg_target[0].msg('{Y[Page] {n' + message, sessid=msg_target[1])
+                msg_target[0].msg('{Y[ {bPage {Y| {n%s {Y]' % (message), sessid=msg_target[1])
 
     def gen_message_text(self, sender, receivers, raw_message):
         """
@@ -208,5 +208,5 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
                 message = '{b' + player.key + '{n: ' + message[1:].replace('{', '{{').replace('%', '%%')
             else:
                 message = '{b' + player.key + '{n: ' + message.replace('{', '{{').replace('%', '%%')
-        message = "{n%s {Y(To %s)" % (message, conj_join([obj.key for obj in receivers], 'and'))
+        message = "{n%s {Y| To %s" % (message, conj_join([obj.key for obj in receivers], 'and'))
         return message

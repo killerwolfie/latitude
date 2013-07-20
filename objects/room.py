@@ -175,10 +175,10 @@ class Room(Object, EvenniaRoom):
 		else:
 		    marks[location] = [ marker ]
             if mark_friends_of:
-	        if mark_friends_of.player:
+	        if hasattr(mark_friends_of, 'player'):
 		    mark_friends_of = mark_friends_of.player
                 for friend in mark_friends_of.get_friend_characters(online_only=True):
-                    if friend.location and friend.location.db.area_id == area.dbref and friend.location.db.area_map_x and friend.location.db.area_map_y:
+                    if friend.location and friend.get_area() == area and friend.location.db.area_id == area.db.area_id and friend.location.db.area_map_x and friend.location.db.area_map_y:
                         location = (friend.location.db.area_map_x, friend.location.db.area_map_y)
                         friend_owner = friend.get_owner()
                         # Determine the best prio

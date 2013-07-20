@@ -55,7 +55,7 @@ class CmdChannel(default_cmds.MuxPlayerCommand):
                 message = '{b' + player.key + '{n: ' + message[1:].replace('{', '{{').replace('%', '%%')
             else:
                 message = '{b' + player.key + '{n: ' + message.replace('{', '{{').replace('%', '%%')
-        message = "{Y[%s] {n" % (channel.key) + message
+        message = "{Y[ {g%s {Y| {n%s {Y]" % (channel.key, message)
         # Send it
         msgobj = create_message(player, message, channels=[channel])
         channel.msg(msgobj)

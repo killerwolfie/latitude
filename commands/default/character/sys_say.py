@@ -38,7 +38,7 @@ class CmdSysSay(default_cmds.MuxPlayerCommand):
             message = character.speech_say(self.args[1:])
         else:
             message = character.speech_say(self.args)
-        message = '{Y[OOC{Y] {n' + message
+        message = '{Y[ {rOOC {Y| {n%s {Y]' % message
         if character.location:
             character.location.msg_contents(message)
         else:
