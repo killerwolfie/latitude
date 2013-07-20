@@ -32,6 +32,9 @@ class Reward(object):
     is that the user will receive it (Compared to other competing rewards which
     could be offered at the same time)
     """
+    def __repr__(self):
+        return 'Reward()'
+
     def chance(self, character):
         """
         Returns an integer representing the chance this object should
@@ -51,13 +54,18 @@ class RewardItem(Reward):
     This reward class generates an item.  Which object to create, and how, are
     stored as attributes.
     """
-    item_chance = 1
-    item_key = None
-    item_typeclass = 'prop.Prop'
-    item_quantity = 1
-    item_attributes = None
-    item_give_msg = 'You recieve &0i.'
-    item_give_msg_others = None
+
+    def __init__(self, chance=1, key=None, typeclass='prop.Prop', quantity=1, attributes=None, give_msg='You recieve &0i', give_msg_others=None):
+        self.item_chance = chance
+        self.item_key = key
+        self.item_typeclass = typeclass
+        self.item_quantity = quantity
+        self.item_attributes = attributes
+        self.item_give_msg = give_msg
+        self.item_give_msg_others = give_msg_others
+
+    def __repr__(self):
+        return 'RewardItem(chance=%r, key=%r, typeclass=%r, quantity=%r, attributes=%r, give_msg=%r, give_msg_others=%r)' % (self.item_chance, self.item_key, self.item_typeclass, self.item_quantity, self.item_attributes, self.item_give_msg, self.item_give_msg_others)
 
     def chance(self, character):
         return self.item_chance
