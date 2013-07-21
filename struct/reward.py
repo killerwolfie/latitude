@@ -17,7 +17,6 @@ def pick_reward(rewards, character):
         return None
     # Pick a point in the chance pool at random
     roll = random.randint(1, total_chance)
-    character.msg(roll)
     # Iterate through the items until we land on our rolled number
     current_chance = 0
     for reward_index in range(len(rewards)):

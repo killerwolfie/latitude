@@ -6,12 +6,18 @@ class Stackable(Item):
     """
     def basetype_setup(self):
         super(Stackable, self).basetype_setup()
+        # By default the quantity is 1
         self.db.quantity = 1
+        # Like the properties, the locks of a stackable item should also never be modified.
+        self.locks.replace("call:false();get:true();drop:true()")
 
     def at_object_creation(self):
         self.key = 'Stackable'
 
     def bad(self):
+        # The locks should never change from the default
+        if not sorted(str(self.locks).split(';')) == ['call:false()', 'drop:true()', 'get:true()']:
+            return 'stackable item has custom locks'
         # There should not be any attributes except for 'quantity'
         for attr in self.get_all_attributes():
             if attr.key != 'quantity':
