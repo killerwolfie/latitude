@@ -462,9 +462,21 @@ class Object(EvenniaObject):
 
     def action_unequip(self, unequipper):
         """
-        This action is called when a player attempts to 'doff' the object
+        This action is called when a player attempts to 'unequip' the object
         """
         unequipper.msg("That's not something you can take off.")
+
+    def action_withdraw(self, withdrawer, requested_obj=None):
+        """
+        This action is called when the player attempts to 'get from' the object, or 'get <requested_obj> from' the object.
+        """
+        withdrawer.msg("You can't remove anything from that.")
+
+    def action_deposit(self, depositer, obj):
+        """
+        This action is called when the player attempts to 'drop <obj> in' the object.
+        """
+        withdrawer.msg("You can't put anything in that.")
 
     # ----- Movement -----
     def move_to(self, destination, quiet=False, emit_to_obj=None, use_destination=True, to_none=False, followers=None, redirectable=True):
