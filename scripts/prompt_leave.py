@@ -27,8 +27,7 @@ class PromptLeave(PromptState):
         if self.ndb.user_picked_yes:
             message = [self.db.yes_message or 'You head off toward your destination.']
             if self.db.cost:
-                for attr, cost in self.db.cost:
-                    message.append(self.obj.game_attribute_offset(attr, -cost))
+                message.extend([self.obj.game_attribute_offset(attr, -cost) for attr, cost in self.db.cost.iteritems()])
             self.obj.msg(' '.join(message))
             self.obj.typeclass.move_to(self.db.destination, followers=bool(self.db.followers), redirectable=True) # FIXME: Upstream issue 399
         else:

@@ -1,6 +1,7 @@
 from game.gamesrc.latitude.objects.object import Object
 from game.gamesrc.latitude.commands.region.cmdset import RegionCmdSet
 from random import choice
+from game.gamesrc.latitude.utils.stringmanip import conj_join
 
 class Region(Object):
     """
@@ -17,6 +18,12 @@ class Region(Object):
         if self.location:
             return 'region has a location'
         return super(Area, self).bad()
+
+    def at_wander_insufficient(self, wanderer):
+        wanderer.msg("{R[You require %s to explore this region]" % (conj_join([str(cost) + ' ' + attr for attr, cost in self.db.region_wander_cost.iteritems()], 'and')))
+
+    def at_visit_insufficient(self, wanderer):
+        wanderer.msg("{R[You require %s to visit an area in this region]" % (conj_join([str(cost) + ' ' + attr for attr, cost in self.db.region_visit_cost.iteritems()], 'and')))
 
     def get_desc_styled_name(self, looker=None):
         return '{m[' + self.key + ']'

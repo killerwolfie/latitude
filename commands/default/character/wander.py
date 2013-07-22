@@ -24,9 +24,10 @@ class CmdWander(default_cmds.MuxPlayerCommand):
         # Ensure the user has enough points to travel
         wander_cost = region.db.region_wander_cost
         if wander_cost:
-            for attr, cost in wander_cost:
+            for attr, cost in wander_cost.iteritems():
                 if character.game_attribute_current(attr) < cost:
-                    self.msg("{R[You need at least %s to explore this area.]" % (conj_join([str(cost) + ' ' + attr for attr, cost in wander_cost], 'and')))
+                    region.at_wander_insufficient(character)
+                    self.msg("You're too tired.")
                     return
         # Move the character
         if character.get_room():
@@ -38,6 +39,6 @@ class CmdWander(default_cmds.MuxPlayerCommand):
         else:
             message = ['You set off to explore your surroundings.']
             if wander_cost:
-                message.extend([character.game_attribute_offset(attr, -cost) for attr, cost in wander_cost])
+                message.extend([character.game_attribute_offset(attr, -cost) for attr, cost in wander_cost.iteritems()])
             self.msg(' '.join(message))
             region.wander(character)

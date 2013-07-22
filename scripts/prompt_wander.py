@@ -27,7 +27,7 @@ class PromptWander(PromptState):
             region = self.obj.get_region()
             message = [self.db.yes_message or 'You set off to explore your surroundings.']
             if self.db.cost:
-                message.extend([self.obj.game_attribute_offset(attr, -cost) for attr, cost in self.db.cost])
+                message.extend([self.obj.game_attribute_offset(attr, -cost) for attr, cost in self.db.cost.iteritems()])
             self.obj.msg(' '.join(message))
             region.wander(self.obj.typeclass) # FIXME: Upstream issue 399
         else:

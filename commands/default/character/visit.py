@@ -34,11 +34,18 @@ class CmdVisit(default_cmds.MuxPlayerCommand):
         character = self.character
         region = character.get_region()
         visit_cost = region.db.region_visit_cost
+        wander_cost = region.db.region_wander_cost
         areas_plain = []
         areas_reason = []
         # Header
         self.msg('-------------------------------------------------------------------------------')
-        self.msg(evennia_color_center('{CRegion: {m%s   {CTravel Cost: {Y%s' % (region.key, visit_cost and conj_join([str(cost) + ' ' + attr for attr, cost in visit_cost], 'and') or '{GNone'), 79))
+        self.msg(evennia_color_center('{CRegion: {m%s   {CTravel Cost: %s%s   {CWander Cost: %s%s' % (
+            region.key,
+            self.satisfies_cost(visit_cost) and '{G' or '{R',
+            visit_cost and conj_join([str(cost) + ' ' + attr for attr, cost in visit_cost.iteritems()], 'and') or '{GNone',
+            self.satisfies_cost(wander_cost) and '{G' or '{R',
+            wander_cost and conj_join([str(cost) + ' ' + attr for attr, cost in wander_cost.iteritems()], 'and') or '{GNone',
+        ), 79))
         self.msg('  ---------------------------------------------------------------------------  ')
         # Get permissions (and returned reasons) for areas
         for area in region.contents:
@@ -79,7 +86,8 @@ class CmdVisit(default_cmds.MuxPlayerCommand):
     def cmd_visit(self):
         character = self.character
         region = character.get_region()
-        areas = [area for area in region.contents if hasattr(area, 'can_visit') and area.can_visit(character)]
+        area = character.get_area()
+        areas = [option for option in region.contents if hasattr(option, 'can_visit') and option.can_visit(character)]
         results = search_object(self.args, exact=False, candidates=areas)
         destination = _AT_SEARCH_RESULT(character, self.args, results, global_search=False, nofound_string="You can't find that area.", multimatch_string="More than one area matches '%s':" % (self.args))
         if not destination:
@@ -89,13 +97,16 @@ class CmdVisit(default_cmds.MuxPlayerCommand):
             if not character.location.access(character, 'leave'):
                 # The access check should display a message
                 return
+        # Ensure the user isn't trying to go where they already are
+        if area == destination:
+            self.msg("{Y[You're already in that area]")
+            return
         # Ensure the user has enough points to travel
         visit_cost = region.db.region_visit_cost
-        if visit_cost:
-            for attr, cost in visit_cost:
-                if character.game_attribute_current(attr) < cost:
-                    self.msg("{R[You need at least %s to visit an area in this region]" % (conj_join([str(cost) + ' ' + attr for attr, cost in visit_cost], 'and')))
-                    return
+        if not self.satisfies_cost(visit_cost):
+            region.at_visit_insufficient(character)
+            self.msg("You're too tired.")
+            return
         # Move the character
         if character.get_room():
             prompt_script = create_script('game.gamesrc.latitude.scripts.prompt_leave.PromptLeave', obj=character, autostart=False)
@@ -108,6 +119,14 @@ class CmdVisit(default_cmds.MuxPlayerCommand):
         else:
             message = ['You head off in search of your destination.']
             if visit_cost:
-                message = [character.game_attribute_offset(attr, -cost) for attr, cost in visit_cost]
+                message = [character.game_attribute_offset(attr, -cost) for attr, cost in visit_cost.iteritems()]
             self.msg(' '.join(message))
             character.move_to(destination, redirectable=True, followers=False) # If you're in the region object, then you shouldn't have followers.  If you somehow do, then it's best you lose them now rather than drag them off.
+
+    def satisfies_cost(self, attr_cost):
+        character = self.character
+        if attr_cost:
+            for attr, cost in attr_cost.iteritems():
+                if character.game_attribute_current(attr) < cost:
+                    return False
+        return True 
