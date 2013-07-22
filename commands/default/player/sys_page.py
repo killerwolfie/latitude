@@ -3,6 +3,7 @@ from src.comms.models import Msg
 from game.gamesrc.latitude.utils.search import match, match_character
 from game.gamesrc.latitude.utils.stringmanip import conj_join
 import pickle
+from datetime import datetime, timedelta
 
 class CmdSysPage(default_cmds.MuxPlayerCommand):
     """
@@ -43,32 +44,31 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
             self.msg("{R[Invalid '{r%s{R' command.  See '{rhelp %s{R' for usage]" % (self.cmdstring, self.key))
 
     def cmd_last(self, num=None):
+        now = datetime.now()
         player = self.caller
         if num:
-            # Make sure the user didn't put in something silly
-            if num > 10:
-                self.msg('{R[Sorry, you can only display a maximum of 10 messages]')
-                return
             # Get the messages we've sent (not to channels)
             pages = set(Msg.objects.get_messages_by_sender(player, exclude_channel_messages=True))
             # Get the messages we've received
             pages |= set(Msg.objects.get_messages_by_receiver(player))
             # Sort them in chronological order
             pages = sorted(pages, cmp=lambda x, y: cmp(x.date_sent, y.date_sent))
+            # Filter out old messages.
+            pages = filter(lambda page: page.date_sent > now - timedelta(days=14), pages)
             # Grab only the last 'num' pages
             if len(pages) > num:
                 lastpages = pages[-num:]
             else:
                 lastpages = pages
             if not lastpages:
-                self.msg('{Y[You have no page history]')
+                self.msg('{Y[You have no recent page history]')
                 return
         else:
             if player.db.msg_unseen:
                 lastpages = player.db.msg_unseen
                 player.db.msg_unseen = None
             else:
-                self.msg('{Y[You have no unread pages.]')
+                self.msg('{Y[You have no unread pages]')
                 return
         self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")
         output = []
