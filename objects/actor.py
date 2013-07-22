@@ -302,22 +302,29 @@ class Actor(Object):
 
         Bare in mind that stat multiplier mods affect the values returned by
         game_attribute(), and are not affected by the offset value of the attribute.
+
+        The offsets may be fractional, but only whole numbers (rounded down) are
+        returned.
         """
         offset = self.get_attribute('attr_offset_' + attribute) or 0
-        return self.game_attribute(attribute) + offset
+        return int(self.game_attribute(attribute) + offset)
 
-    def game_attribute_offset(self, attribute, offset):
+    def game_attribute_offset(self, attribute, offset, keep_small_values=False):
         """
         Apply an offset to an attribute on this object, and msg the object about it.
         Returns the output of game_attribute_offset_message()
+
+        If the resulting offset is between -0.5 and 0.5, then it will be rounded to 0
+        and cleared, unless keep_small_values is specified, in which case it will only
+        be cleared if it equals 0.
         """
         if int(offset):
             curval = self.get_attribute('attr_offset_' + attribute) or 0
             newval = curval + int(offset)
-            if newval:
-                self.set_attribute('attr_offset_' + attribute, newval)
-            else:
+            if newval == 0 or (not keep_small_values and newval > -0.5 and newval < 0.5):
                 self.del_attribute('attr_offset_' + attribute)
+            else:
+                self.set_attribute('attr_offset_' + attribute, newval)
         return self.game_attribute_offset_message(attribute, offset)
 
     def game_attribute_offset_message(self, attribute, offset):

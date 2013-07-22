@@ -133,9 +133,9 @@ class CmdSysWho(default_cmds.MuxPlayerCommand):
                         val_stamina_max = user.game_attribute('stamina')
                         val_stamina = user.game_attribute_current('stamina')
                         stamina = '%d/%d' % (val_stamina, val_stamina_max)
-                        fraction = val_stamina_max > 0 and float(val_stamina / val_stamina_max) or 0.0
+                        fraction = val_stamina_max > 0 and float(val_stamina) / float(val_stamina_max) or 0.0
                         if fraction > 0.8:
-                            sstamina = '%ch%cg' + stamina
+                            stamina = '%ch%cg' + stamina
                         elif fraction > 0.5:
                             stamina = '%cn%cg' + stamina
                         elif fraction > 0.2:
