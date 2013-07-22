@@ -9,6 +9,7 @@ from game.gamesrc.latitude.commands.default.player import special_nomatch
 from game.gamesrc.latitude.commands.default.player import sys_3who
 from game.gamesrc.latitude.commands.default.player import sys_about
 from game.gamesrc.latitude.commands.default.player import sys_access
+from game.gamesrc.latitude.commands.default.player import sys_announce
 from game.gamesrc.latitude.commands.default.player import sys_ban
 from game.gamesrc.latitude.commands.default.player import sys_boot
 from game.gamesrc.latitude.commands.default.player import sys_cboot
@@ -72,6 +73,7 @@ class LatitudeCmdsetPlayer(CmdSet):
         self.add(sys_3who.CmdSys3Who)
         self.add(sys_about.CmdSysAbout)
         self.add(sys_access.CmdSysAccess)
+        self.add(sys_announce.CmdSysAnnounce)
         self.add(sys_ban.CmdSysBan)
         self.add(sys_boot.CmdSysBoot)
         self.add(sys_cboot.CmdSysCBoot)
