@@ -6,10 +6,6 @@ import time
 
 class Character(Actor, EvenniaCharacter):
     def basetype_setup(self):
-        """
-        This sets up the default properties of an Object,
-        just before the more general at_object_creation.
-        """
         super(Character, self).basetype_setup()
         self.permissions = ['Player'] # This is the default permissions that a quelled administrator will want
         self.locks.add(";".join([
@@ -54,8 +50,6 @@ class Character(Actor, EvenniaCharacter):
         super(Character, self).at_post_login() # For now call the default handler which unstows the character
 
     def at_pre_puppet(self, player, sessid):
-        if self.location:
-            self.location.msg_contents("%s has entered the game." % self.name, exclude=[self])
         # Update puppet statistics
         self.db.stats_last_puppet_time = time.time()
         self.db.stats_last_puppet_player = player
@@ -65,9 +59,19 @@ class Character(Actor, EvenniaCharacter):
             self.db.stats_times_puppeted = 1
 
     def at_post_puppet(self):
-        if self.db.prefs_automap == None or self.db.prefs_automap:
-	    self.execute_cmd('map', sessid=self.sessid)
-        self.execute_cmd('look', sessid=self.sessid)
+        # Beam you back to where you where if you were autoswept
+        if self.db.autosweep_bringback_to:
+            room = self.db.autosweep_bringback_to
+            if room and room.db.autosweep_active and room.db.autosweep_bringback:
+                self.move_to(self.db.autosweep_bringback_to, quiet=True)
+            del self.db.autosweep_bringback_to
+        else:
+            if self.db.prefs_automap == None or self.db.prefs_automap:
+                self.execute_cmd('map', sessid=self.sessid)
+            self.execute_cmd('look', sessid=self.sessid)
+        # Alert nearby characters of the newly awakened character
+        if self.location:
+            self.location.msg_contents("%s has entered the game." % self.name, exclude=[self])
         # Alert all your friends :D
         if not self.db.friends_optout:
             for friend in self.player.get_friend_players():
