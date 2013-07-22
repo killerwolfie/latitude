@@ -6,7 +6,7 @@ class AutoSweep(Script):
     def at_script_creation(self):
         self.key = "auto_sweep"
         self.desc = "Automatically moves sleeping characters"
-        self.interval = 30
+        self.interval = 5
         self.persistent = True
 
     def at_repeat(self):
