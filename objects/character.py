@@ -79,11 +79,12 @@ class Character(Actor, EvenniaCharacter):
                     friend.msg('{Y[Your friend %s{Y (%s{Y) has just entered the game.]' % (self.key, self.player.key))
 
     def at_post_unpuppet(self, player, sessid):
+        # Update puppet statistics
+        self.db.stats_last_unpuppet_time = time.time()
+        # Alert, and trigger sweeps if needed
         if self.location:
             self.location.msg_contents("%s has left the game." % self.name, exclude=[self])
             self.location.autosweep()
-        # Update puppet statistics
-        self.db.stats_last_unpuppet_time = time.time()
 
     def at_whisper(self, speaker, message):
         if not self.sessid:

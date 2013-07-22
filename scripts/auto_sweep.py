@@ -11,5 +11,5 @@ class AutoSweep(Script):
 
     def at_repeat(self):
         now = time.time()
-        for room in [obj for obj in ev.managers.objects.get_objs_with_attr('autosweep_active') if hasattr(obj, 'autosweep')]:
+        for room in [obj for obj in managers.objects.get_objs_with_attr('autosweep_active') if hasattr(obj, 'autosweep')]:
             room.autosweep()
