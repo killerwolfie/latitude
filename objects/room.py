@@ -46,6 +46,42 @@ class Room(Object, EvenniaRoom):
             return 'room has no area'
         return super(Room, self).bad()
 
+    def autosweep(self):
+        """
+        Sweep sleeping occupants if configured to do so
+        """
+        if not self.db.autosweep_active:
+            return
+        now = time.time()
+        for character in self.contents:
+            # Ensure we're dealing with a player character
+            if not utils.inherits_from(character, 'game.gamesrc.latitude.objects.character.Character'):
+                continue
+            # Ensure the character is awake
+            if character.sessions:
+                continue
+            # Ensure the time delay hasn't run out yet
+            if self.db.autosweep_delay:
+                last_unpuppet = character.db.stats_last_unpuppet_time
+                if last_unpuppet and now - last_unpuppet <= self.db.autosweep_delay:
+                    # Time's not up yet
+                    continue
+            # Inform the room about the sweep
+            if self.db.autosweep_msg:
+                self.msg_contents(self.objsub(self.db.autosweep_msg, character))
+            else:
+                self.msg_contents(self.objsub('&1N is sent home.', character))
+            # Perform the sweep
+            destination = character.get_region()
+            if not destination:
+                destination = character.home.get_region()
+            if not destination:
+                destination = character.home
+            character.move_to(destination, quiet=True)
+            # Mark the user for bringback if appropriate
+            if self.db.autosweep_bringback:
+                character.db.autosweep_bringback_to = self
+
     def get_desc_styled_name(self, looker=None):
         return '{w' + self.key
 

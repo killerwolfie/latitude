@@ -81,6 +81,7 @@ class Character(Actor, EvenniaCharacter):
     def at_post_unpuppet(self, player, sessid):
         if self.location:
             self.location.msg_contents("%s has left the game." % self.name, exclude=[self])
+            self.location.autosweep()
         # Update puppet statistics
         self.db.stats_last_unpuppet_time = time.time()
 
