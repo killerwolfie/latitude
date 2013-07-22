@@ -9,8 +9,8 @@ class CmdSysAnnounce(default_cmds.MuxCommand):
 
     key = "@announce"
     aliases = []
-    locks = "cmd:all()"
-    help_category = "Communication"
+    locks = "cmd:perm(commands_@announce) or perm(Janitors)"
+    help_category = "=== Admin ==="
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):
@@ -45,12 +45,12 @@ class CmdAnnounceEdit(lineeditor.CmdLineEditorVi):
             if not self.editor.is_unchanged():
                 self.msg('{rText has changed.  Use ":wq" to send, or ":q!" to quit.')
                 return
-            self.finish()
+            self.cancel()
         elif self.editor_cmdstring == ':q!':
             if self.editor_args:
                 self.msg('{rThe ":q!" command takes no arguments.')
                 return
-            self.finish()
+            self.cancel()
         elif self.editor_cmdstring == ':w':
             if self.editor_args:
                 self.msg('{rThe ":w" command takes no arguments.')
