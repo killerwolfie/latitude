@@ -155,7 +155,7 @@ class CmdSysChar(default_cmds.MuxPlayerCommand):
             self.msg("{R[That's not a valid character selection]")
             return
         # Ensure you have permissions
-        if not player.user.check_password(self.rhs):
+        if not player.check_password(self.rhs):
             self.msg("{R[Password incorrect]")
             return
         if not target.access(player, 'char_delete'):

@@ -154,8 +154,9 @@ class Object(EvenniaObject):
         """
         key = self.key
         aliases = sorted(self.aliases, key=lambda alias: (len(alias), alias))
+#        aliases = sorted(self.aliases.all(), key=lambda alias: (len(alias), alias))  # FIXME-UPDATE
         # If there's no aliases, just return the name
-        if not self.aliases:
+        if not aliases:
             return key
         # Check for an alias that's inside the name
         for alias in aliases:

@@ -84,6 +84,6 @@ class CmdSysMerge(default_cmds.MuxPlayerCommand):
             self.msg('    lat1')
             to_player.db.bonus_lat1 = True
         self.msg('  Deleting "%s"...' % (from_player))
-        from_player.user.delete()
+#        from_player.user.delete()
         from_player.delete()
         self.msg('Merge from "%s" to "%s" complete.' % (from_player, to_player))

@@ -58,6 +58,7 @@ class CmdUnconnectedConnect(MuxCommand):
         pswd = None
         if player:
             pswd = player.user.check_password(password)
+#            pswd = player.check_password(password) # FIXME-UPDATE
 
         if not (player and pswd):
         # No playername or password match

@@ -1,9 +1,8 @@
 from ev import default_cmds
 from ev import utils
 from src.commands import cmdhandler
-from src.objects.models import ObjAttribute
-from src.players.models import PlayerAttribute
 from src.utils.ansi import raw
+from src.commands.cmdhandler import get_and_merge_cmdsets
 
 class CmdSysExamine(default_cmds.ObjManipCommand):
     """
@@ -55,10 +54,7 @@ class CmdSysExamine(default_cmds.ObjManipCommand):
             except Exception:
                 ndb_attr = None
         else:
-            if self.player_mode:
-                db_attr = [(attr.key, attr.value) for attr in PlayerAttribute.objects.filter(db_obj=obj)]
-            else:
-                db_attr = [(attr.key, attr.value) for attr in ObjAttribute.objects.filter(db_obj=obj)]
+            db_attr = [(attr.key, attr.value) for attr in obj.db_attributes.all()]
             try:
                 ndb_attr = [(aname, avalue) for aname, avalue in obj.ndb.__dict__.items() if not aname.startswith("_")]
             except Exception:
@@ -66,11 +62,11 @@ class CmdSysExamine(default_cmds.ObjManipCommand):
         string = ""
         if db_attr and db_attr[0]:
             string += "\n{wPersistent attributes{n:"
-            for attr, value in sorted(db_attr):
+            for attr, value in db_attr:
                 string += self.list_attribute(crop, attr, value)
         if ndb_attr and ndb_attr[0]:
             string += "\n{wNon-Persistent attributes{n:"
-            for attr, value in sorted(ndb_attr):
+            for attr, value in ndb_attr:
                 string += self.list_attribute(crop, attr, value)
         return string
 
@@ -82,8 +78,8 @@ class CmdSysExamine(default_cmds.ObjManipCommand):
         """
 
         string = "\n{wName/key{n: {c%s{n (%s)" % (obj.name, obj.dbref)
-        if hasattr(obj, "aliases") and obj.aliases:
-            string += "\n{wAliases{n: %s" % (", ".join(utils.make_iter(obj.aliases)))
+        if hasattr(obj, "aliases") and obj.aliases.all():
+            string += "\n{wAliases{n: %s" % (", ".join(utils.make_iter(str(obj.aliases))))
         if hasattr(obj, "sessid") and obj.sessid:
             string += "\n{wsession{n: %s" % obj.sessid
         elif hasattr(obj, "sessions") and obj.sessions:
@@ -158,7 +154,7 @@ class CmdSysExamine(default_cmds.ObjManipCommand):
             if things:
                 string += "\n{wContents{n: %s" % ", ".join([cont.name for cont in obj.contents
                                                            if cont not in exits and cont not in pobjs])
-        separator = "{x________________{W_______________{w_______________{W_______________{x_________________"
+        separator = "-"*78
         #output info
         return '%s\n%s\n%s' % ( separator, string.strip(), separator )
 
@@ -183,7 +179,7 @@ class CmdSysExamine(default_cmds.ObjManipCommand):
             if hasattr(caller, "location"):
                 obj = caller.location
                 # using callback for printing result whenever function returns.
-                cmdhandler.get_and_merge_cmdsets(obj).addCallback(get_cmdset_callback)
+                get_and_merge_cmdsets(obj).addCallback(get_cmdset_callback)
             else:
                 self.msg("You need to supply a target to examine.")
             return
@@ -213,5 +209,4 @@ class CmdSysExamine(default_cmds.ObjManipCommand):
                     caller.msg(self.format_attributes(obj, attrname, crop=False))
             else:
                 # using callback to print results whenever function returns.
-                cmdhandler.get_and_merge_cmdsets(obj).addCallback(get_cmdset_callback)
-
+                get_and_merge_cmdsets(obj).addCallback(get_cmdset_callback)
