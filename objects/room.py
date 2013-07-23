@@ -41,6 +41,24 @@ class Room(Object, EvenniaRoom):
     def at_object_creation(self):
         self.db.desc_gender = 'Object'
 
+    def at_desc_scent(self, looker):
+        if not looker.location or (not looker.location == self.location and not looker.location == self):
+            return()
+        if looker.location:
+            looker.location.msg_contents(self.objsub('&1N sniffs everything in the room.', looker), exclude=[self, looker])
+
+    def at_desc_flavor(self, looker):
+        if not looker.location or (not looker.location == self.location and not looker.location == self):
+            return()
+        if looker.location:
+            looker.location.msg_contents(self.objsub('&1N licks the area at random.', looker), exclude=[self, looker])
+
+    def at_desc_texture(self, looker):
+        if not looker.location or (not looker.location == self.location and not looker.location == self):
+            return()
+        if looker.location:
+            looker.location.msg_contents(self.objsub('&1N touches things in the area.', looker), exclude=[self, looker])
+
     def bad(self):
         if not utils.inherits_from(self.location, 'game.gamesrc.latitude.objects.area.Area'):
             return 'room has no area'

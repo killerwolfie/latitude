@@ -10,7 +10,7 @@ class CmdSys3Who(default_cmds.MuxPlayerCommand):
 
     key = "@3who"
     locks = "cmd:all()"
-    aliases = ['3w']
+    aliases = ['3w', '3who']
     help_category = "Information"
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 

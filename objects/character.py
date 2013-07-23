@@ -149,12 +149,3 @@ class Character(Actor, EvenniaCharacter):
         else:
             return '{C' + self.key
 
-    # ----- Object based string substitution -----
-
-    # D - Definite Name
-    def objsub_d(self):
-        return self.key
-
-    # I - Indefinite Name
-    def objsub_i(self):
-        return self.key

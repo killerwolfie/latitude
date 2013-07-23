@@ -47,6 +47,27 @@ class Actor(Object):
         del self.db.follow_wantfollow
         del self.db.follow_wantlead
 
+    def at_desc_scent(self, looker):
+        if not looker.location or (not looker.location == self.location and not looker.location == self):
+            return()
+        self.msg(self.objsub('&1N just smelled you!', looker))
+        if looker.location:
+            looker.location.msg_contents(self.objsub('&1N just smelled &0d.', looker), exclude=[self, looker])
+
+    def at_desc_flavor(self, looker):
+        if not looker.location or (not looker.location == self.location and not looker.location == self):
+            return()
+        self.msg(self.objsub('&1N just tasted you!', looker))
+        if looker.location:
+            looker.location.msg_contents(self.objsub('&1N just tasted &0d.', looker), exclude=[self, looker])
+
+    def at_desc_texture(self, looker):
+        if not looker.location or (not looker.location == self.location and not looker.location == self):
+            return()
+        self.msg(self.objsub('&1N just felt you!', looker))
+        if looker.location:
+            looker.location.msg_contents(self.objsub('&1N just felt &0d.', looker), exclude=[self, looker])
+
     # ----- Descriptions -----
     def _desc_mod(self, method, value, additional_args={}):
         """
@@ -391,3 +412,20 @@ class Actor(Object):
             stopper.msg(self.objsub('You stop leading &0n.', stopper))
             self.msg(self.objsub('&1n stops leading you.', stopper))
 
+    # ----- Object based string substitution -----
+
+    # I - Indefinite Name
+    def objsub_b(self):
+        return 'someone'
+
+    # D - Definite Name
+    def objsub_c(self):
+        return 'the ' + self.get_desc_species().lower()
+
+    # D - Definite Name
+    def objsub_d(self):
+        return self.key
+
+    # I - Indefinite Name
+    def objsub_i(self):
+        return self.key

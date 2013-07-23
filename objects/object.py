@@ -340,25 +340,13 @@ class Object(EvenniaObject):
         pass
 
     def at_desc_scent(self, looker):
-        if not looker.location or (not looker.location == self.location and not looker.location == self):
-            return()
-        self.msg(self.objsub('&1N just smelled you!', looker))
-        if looker.location:
-            looker.location.msg_contents(self.objsub('&1N just smelled &0c.', looker), exclude=[self, looker])
+        pass
 
     def at_desc_flavor(self, looker):
-        if not looker.location or (not looker.location == self.location and not looker.location == self):
-            return()
-        self.msg(self.objsub('&1N just tasted you!', looker))
-        if looker.location:
-            looker.location.msg_contents(self.objsub('&1N just tasted &0c.', looker), exclude=[self, looker])
+        pass
 
     def at_desc_texture(self, looker):
-        if not looker.location or (not looker.location == self.location and not looker.location == self):
-            return()
-        self.msg(self.objsub('&1N just felt you!', looker))
-        if looker.location:
-            looker.location.msg_contents(self.objsub('&1N just felt &0c.', looker), exclude=[self, looker])
+        pass
 
     def at_desc_sound(self, looker):
         pass
