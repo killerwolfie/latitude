@@ -1,5 +1,5 @@
 from ev import utils, search_object, search_player
-from ev import Player as EvenniaPlayer
+from ev import Player as EvenniaPlayer, ansi
 import time
 import sys
 
@@ -52,6 +52,11 @@ class Player(EvenniaPlayer):
     def at_disconnect(self, reason=None):
         # Update some statistics
         self.db.stats_last_logout_time = time.time()
+
+    def msg(self, outgoing_string, from_obj=None, data=None, sessid=None):
+        if self.db.pref_color != None and not self.db.pref_color:
+            outgoing_string = ansi.parse_ansi(outgoing_string, strip_ansi=True)
+        self.dbobj.msg(outgoing_string, from_obj=from_obj, data=data, sessid=sessid)
 
     def bad(self):
         """
