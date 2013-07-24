@@ -14,6 +14,9 @@ class CmdSysAnnounce(default_cmds.MuxCommand):
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):
+        if self.args:
+            self.msg("{R[Invalid '{r%s{R' command.  See '{rhelp %s{R' for usage]" % (self.cmdstring, self.key))
+            return
         input_cmd = CmdAnnounceEdit()
         input_cmd.editor = lineeditor.LineEditor(self.caller, maxchars=None, maxlines=None, color=True, key='Announcement Text')
         input_cmd.editor.display_buffer()
