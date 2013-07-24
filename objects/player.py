@@ -20,16 +20,34 @@ class Player(EvenniaPlayer):
         self.set_attribute('stats_last_logout_time', None)
 
     def at_post_login(self, sessid):
-        self.execute_cmd("look", sessid=sessid)
-        self.execute_cmd("@friends", sessid=sessid)
-        if self.db.msg_unseen:
-            self.msg('{Y[You have unread messages.  Type "@page" to read them.  See "help @page" for more information]')
         # Update same statistics
         self.db.stats_last_login_time = time.time()
         if self.db.stats_times_login:
             self.db.stats_times_login += 1
         else:
             self.db.stats_times_login = 1
+
+    def at_display_alerts(self, sessid):
+        """
+        This is called in order to display any general alerts (Such as whether any friends are online, or you have unread mail)
+        It's intended to be called after any other output, so that it is not scrolled off by large amounts of text.
+        """
+        self.execute_cmd("@friends", sessid=sessid)
+        if self.db.msg_unseen:
+            self.msg('{Y[You have unread messages.  Type "@page" to read them.  See "help @page" for more information]')
+
+    def at_display_context(self, sessid):
+        """
+        Called when the session's context changes (New room, just logged in, etc.)
+        This routine is expected to inform the user about where they are and what's going on.  Typically this just means calling 'look'
+        """
+        character = self.get_puppet(sessid=sessid)
+        if character:
+            if self.db.pref_automap == None or self.db.pref_automap:
+                character.execute_cmd('map', sessid=sessid)
+            character.execute_cmd('look', sessid=sessid)
+        else:
+            self.execute_cmd('look', sessid=sessid)
 
     def at_disconnect(self, reason=None):
         # Update some statistics
@@ -90,7 +108,7 @@ class Player(EvenniaPlayer):
             return
         if self.unpuppet_object(sessid):
             self.msg("\n{G[You go OOC]\n", sessid=sessid)
-            self.execute_cmd("look", sessid=sessid)
+            self.at_display_context(sessid=sessid)
         else:
             raise RuntimeError("Could not unpuppet!")
 
@@ -252,3 +270,4 @@ class Player(EvenniaPlayer):
             if char.db.friends_optout:
                 return True
         return False
+

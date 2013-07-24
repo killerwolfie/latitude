@@ -63,12 +63,8 @@ class Character(Actor, EvenniaCharacter):
         if self.db.autosweep_bringback_to:
             room = self.db.autosweep_bringback_to
             if room and room.db.autosweep_active and room.db.autosweep_bringback:
-                self.move_to(self.db.autosweep_bringback_to, quiet=True)
+                self.move_to(self.db.autosweep_bringback_to, quiet=True, look=False)
             del self.db.autosweep_bringback_to
-        else:
-            if self.db.prefs_automap == None or self.db.prefs_automap:
-                self.execute_cmd('map', sessid=self.sessid)
-            self.execute_cmd('look', sessid=self.sessid)
         # Alert nearby characters of the newly awakened character
         if self.location:
             self.location.msg_contents("%s has entered the game." % self.name, exclude=[self])

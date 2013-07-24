@@ -81,21 +81,26 @@ class CmdUnconnectedConnect(MuxCommand):
             session.execute_cmd("quit")
             return
 
-        # If they've requested a character name, verify that they have puppet access.
+        # Identify which character to puppet, if any
         if charname:
+            # Find the explicitly requested character
             character = search.object_search(charname)
             if not character:
                 session.msg("{rThat character name doesn't appear to be valid.{x")
                 return
             character = character[0]
-            if not character.access(player, "puppet"):
+            if character in player.get_characters():
                 string = "{rThat does not appear to be one of your characters.  Try logging in\n"
                 string += "without specifying a character name, and examine your list of available\n"
                 string += "characters.{x"
                 session.msg(string)
                 return
+        elif player.db.pref_auto_ic:
+            # Find the most recently puppeted character
+            character = player.last_puppet()
         else:
             character = None
+
 
         # actually do the login. This will call all other hooks:
         #   session.at_login()
@@ -109,3 +114,6 @@ class CmdUnconnectedConnect(MuxCommand):
         if character:
             session.msg('\n{WLogging directly into {c%s{W...\n' % (character.get_desc_styled_name(player)))
             player.do_puppet(session.sessid, character)
+
+        player.at_display_context(session.sessid)
+        player.at_display_alerts(session.sessid)

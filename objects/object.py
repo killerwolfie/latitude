@@ -468,7 +468,7 @@ class Object(EvenniaObject):
         withdrawer.msg("You can't put anything in that.")
 
     # ----- Movement -----
-    def move_to(self, destination, quiet=False, emit_to_obj=None, use_destination=True, to_none=False, followers=None, redirectable=True):
+    def move_to(self, destination, quiet=False, emit_to_obj=None, use_destination=True, to_none=False, followers=None, redirectable=True, look=True):
         # Check for a destination redirect
         if redirectable:
             seen_destinations = set()
@@ -487,6 +487,9 @@ class Object(EvenniaObject):
         # Perform the move
         source_loc = self.location
         retval = self.dbobj.move_to(destination, quiet=quiet, emit_to_obj=emit_to_obj, use_destination=use_destination)
+        # Display the new location to the user if requested
+        if look and self.player:
+            self.player.at_display_context(self.sessid)
         # Manage followers if requested
         if followers != None:
             if followers:

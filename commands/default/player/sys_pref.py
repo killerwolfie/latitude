@@ -58,6 +58,16 @@ class CmdSysPref(default_cmds.MuxPlayerCommand):
     def prefs(self):
         return [name[5:] for name, val in inspect.getmembers(self) if name.startswith('pref_')]
 
+    def pref_auto_ic(self, newval = None):
+        player = self.caller
+        if newval:
+            if not newval in ['yes', 'no']:
+                raise PrefValueException('Value must be "yes", or "no"')
+            player.db.pref_auto_ic = newval == 'yes'
+            return newval
+        else:
+            return player.db.pref_auto_ic and 'yes' or 'no'
+
     def pref_autofollow(self, newval = None):
         player = self.caller
         if newval:

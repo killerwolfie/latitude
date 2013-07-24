@@ -34,9 +34,8 @@ class Actor(Object):
 
     def at_after_move(self, source_location):
         # Display the new location so the user gets an indication that they've moved
-        if self.db.prefs_automap == None or self.db.prefs_automap:
-	    self.execute_cmd('map', sessid=self.sessid)
-        self.execute_cmd('look', sessid=self.sessid)
+        if self.player:
+            self.player.at_display_context(self.sessid)
         # Clear 'following', if needed.
         following = self.db.follow_following
         if following and (following.location == None or following.location != self.location):

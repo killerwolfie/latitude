@@ -141,6 +141,7 @@ class CmdSysChar(default_cmds.MuxPlayerCommand):
                 return
         # Puppet the character (and output success/failure messages)
         player.do_puppet(self.sessid, target)
+        player.at_display_context(self.sessid)
 
     def cmd_ooc(self):
         # Unpuppet the character (and output success/failure messages)
