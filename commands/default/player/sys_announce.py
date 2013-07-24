@@ -69,7 +69,7 @@ class CmdAnnounceEdit(lineeditor.CmdLineEditorVi):
         self.send_message_run()
         # We're done.  Finish up the command
         self.caller.cmdset.delete('CmdsetAnnounce')
-        self.msg('Message sent, editor closed.')
+        self.msg('{G[Message sent, editor closed]')
 
     def send_message_run(self):
         # Determine the sender object (Won't actually be seen in the message.  The header is used for that.)
@@ -98,4 +98,4 @@ class CmdAnnounceEdit(lineeditor.CmdLineEditorVi):
 
     def cancel(self):
         self.caller.cmdset.delete('CmdsetAnnounce')
-        self.msg('Message not sent, editor closed.')
+        self.msg('{Y[Message not sent, editor closed]')
