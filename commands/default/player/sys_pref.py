@@ -120,6 +120,16 @@ class CmdSysPref(default_cmds.MuxPlayerCommand):
             else:
                 return 'unknown'
 
+    def pref_automap(self, newval = None):
+        player = self.caller
+        if newval:
+            if not newval in ['yes', 'no']:
+                raise PrefValueException('Value must be "yes", or "no"')
+            player.db.pref_automap = newval == 'yes'
+            return newval
+        else:
+            return (player.db.pref_automap == None or player.db.pref_automap) and 'yes' or 'no'
+
     def pref_color(self, newval = None):
         player = self.caller
         if newval:
@@ -129,7 +139,6 @@ class CmdSysPref(default_cmds.MuxPlayerCommand):
             return newval
         else:
             return (player.db.pref_color == None or player.db.pref_color) and 'yes' or 'no'
-
 
     def pref_encoding(self, newval = None):
         player = self.caller

@@ -33,9 +33,6 @@ class Actor(Object):
                 return 'character and item data conflict (%s)' % item.key
 
     def at_after_move(self, source_location):
-        # Display the new location so the user gets an indication that they've moved
-        if self.player:
-            self.player.at_display_context(self.sessid)
         # Clear 'following', if needed.
         following = self.db.follow_following
         if following and (following.location == None or following.location != self.location):

@@ -80,7 +80,8 @@ class Character(Actor, EvenniaCharacter):
         # Alert, and trigger sweeps if needed
         if self.location:
             self.location.msg_contents("%s has left the game." % self.name, exclude=[self])
-            self.location.autosweep()
+            if hasattr(self.location, 'autosweep'):
+                self.location.autosweep()
 
     def at_whisper(self, speaker, message):
         if not self.sessid:
