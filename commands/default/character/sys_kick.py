@@ -3,9 +3,7 @@ from ev import default_cmds
 
 class CmdSysKick(default_cmds.MuxPlayerCommand):
     """
-    @kick
-    
-    Kick a character out to the region menu.
+    @kick - Kick a character out to the region menu
 
     Usage:
       @kick <character>

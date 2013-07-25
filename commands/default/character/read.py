@@ -2,13 +2,12 @@ from game.gamesrc.latitude.commands.default.character import look
 
 class CmdRead(look.CmdLook):
     """
-    listen
+    read - Read something
 
     Usage:
-      listen
-      listen <obj>
-
-    Used to examine any writing that may be on your location or objects in your vicinity.
+      read
+      read <obj>
+        Examine any writing that may be on your location or objects in your vicinity.
     """
     key = "read"
     aliases = []

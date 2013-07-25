@@ -2,13 +2,12 @@ from ev import default_cmds, settings
 
 class CmdSysAccess(default_cmds.MuxPlayerCommand):
     """
-    access - show access groups
+    access - Show access groups
 
     Usage:
       @access
-
-    This command shows you the permission hierarchy and
-    which permission groups you are a member of.
+        This command shows you the permission hierarchy and which permission
+        groups you are a member of.
     """
     key = "@access"
     locks = "cmd:all()"

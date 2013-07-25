@@ -2,13 +2,11 @@ from ev import default_cmds
 
 class CmdSysCdesc(default_cmds.CmdCdesc):
     """
-    @cdesc - set channel description
+    @cdesc - Set channel description
 
     Usage:
       @cdesc <channel> = <description>
-
-    Changes the description of the channel as shown in
-    channel lists.
+        Changes the description of the channel as shown in channel lists.
     """
 
     key = "@cdesc"

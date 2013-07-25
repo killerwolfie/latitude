@@ -2,11 +2,12 @@ from ev import default_cmds
 
 class CmdUnequip(default_cmds.MuxPlayerCommand):
     """
-    unequip <object>
+    unequip - Unequip object
     
-      Attempt to wear <object>
+    Usage:
+      unequip <object>
+        Attempt to remove a given equipped object.
     """
-
     key = "unequip"
     aliases = ['doff', 'remove', 'take off']
     locks = "cmd:all()"

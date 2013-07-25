@@ -2,7 +2,7 @@ from ev import default_cmds
 
 class CmdSpoof(default_cmds.MuxPlayerCommand):
     """
-    spoof
+    spoof - Make a freeform pose to the room
     
     Allows you to make a freeform pose to the room.
 
@@ -11,14 +11,13 @@ class CmdSpoof(default_cmds.MuxPlayerCommand):
 
     Example:
       spoof The parade has started!
-      -> others will see:
-      The parade has started! (Your Name)
+        -> (others will see:) The parade has started! (<Your name>)
     """
     key = "@spoof"
     locks = "cmd:all()"
     help_category = "Communication"
-    aliases = ['spoof']
-    arg_regex = r"\s.*?|$"
+    aliases = ['spoof', '|']
+#    arg_regex = r"\s.*?|$"
 
     def func(self):
         message = self.args.replace('%', '%%').replace('{', '{{') + ' %cn%cb(' + self.character.name + ')'

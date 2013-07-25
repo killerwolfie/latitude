@@ -2,12 +2,11 @@ from ev import default_cmds
 
 class CmdSysAbout(default_cmds.CmdAbout):
     """
-    @about - game engine info
+    @about - Game engine info
 
     Usage:
       @about
-
-    Display info about the game engine.
+        Display info about the game engine.
     """
 
     key = "@about"

@@ -2,12 +2,11 @@ from ev import default_cmds
 
 class CmdSysPassword(default_cmds.CmdPassword):
     """
-    @password - set your password
+    @password - Set your password
 
     Usage:
       @password <old password> = <new password>
-
-    Changes your password. Make sure to pick a safe one.
+        Changes your password. Make sure to pick a safe one.
     """
     key = "@password"
     locks = "cmd:all()"

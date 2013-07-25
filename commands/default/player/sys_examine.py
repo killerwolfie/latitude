@@ -6,21 +6,17 @@ from src.commands.cmdhandler import get_and_merge_cmdsets
 
 class CmdSysExamine(default_cmds.ObjManipCommand):
     """
-    examine - detailed info on objects
+    @examine - Detailed info on objects
 
     Usage:
-      examine [<object>[/attrname]]
-      examine [*<player>[/attrname]]
+      @examine [<object>[/attrname]]
+        The examine command shows detailed game info about an object and
+        optionally a specific attribute on it.  If object is not specified, the
+        current location is examined.
 
-    Switch:
-      player - examine a Player (same as adding *)
-
-    The examine command shows detailed game info about an
-    object and optionally a specific attribute on it.
-    If object is not specified, the current location is examined.
-
-    Append a * before the search string to examine a player.
-
+      @examine/player [<player>[/attrname]]
+      @examine [*<player>[/attrname]]
+        Examine a player object instead of a regular object.
     """
     key = "@examine"
     aliases = []

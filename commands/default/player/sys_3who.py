@@ -3,9 +3,12 @@ from ev import default_cmds, utils
 
 class CmdSys3Who(default_cmds.MuxPlayerCommand):
     """
-    @3who
+    @3who - Display a list of online characters
 
-      Display a list of players, with idle time and online time, in three columns.
+    Usage:
+      @3who
+        Displays a list of players, with idle time and online time, in three
+        columns.
     """
 
     key = "@3who"

@@ -2,19 +2,17 @@ from ev import default_cmds
 
 class CmdSysService(default_cmds.CmdService):
     """
-    @service - manage services
+    @service - Manage services
 
     Usage:
-      @service[/switch] <service>
+      @service/list
+        Shows all available services
 
-    Switches:
-      list   - shows all available services (default)
-      start  - activates a service
-      stop   - stops a service
+      @service/start <service>
+        Activates a service
 
-    Service management system. Allows for the listing,
-    starting, and stopping of services. If no switches
-    are given, services will be listed.
+      @service/stop <service>
+        Stops a service
     """
 
     key = "@service"

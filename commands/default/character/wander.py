@@ -6,6 +6,13 @@ _AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit
 class CmdWander(default_cmds.MuxPlayerCommand):
     """
     wander - visit a random area
+
+    Usage:
+      wander
+        Simply leave your current area, and end up somewhere else at random.
+        This is the only way to get to certain areas, and some areas will become
+        available to the visit command only after you've found them at least once
+        by wandering, or being led there by a friend.
     """
     key = "wander"
     aliases = []

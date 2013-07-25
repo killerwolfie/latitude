@@ -3,17 +3,18 @@ from src.server.sessionhandler import SESSIONS
 
 class CmdSysBoot(default_cmds.CmdBoot):
     """
-    @boot
+    @boot - Boot a player from the server
 
-    Usage
+    Usage:
       @boot[/switches] <player obj> [: reason]
+        Boot a player object from the server. If a reason is supplied it will be
+        echoed to the user unless /quiet is set.
 
     Switches:
-      quiet - Silently boot without informing player
-      port - boot by port number instead of name or dbref
-
-    Boot a player object from the server. If a reason is
-    supplied it will be echoed to the user unless /quiet is set.
+      quiet
+        Silently boot without informing player
+      port
+        Boot by port number instead of name or dbref
     """
 
     key = "@boot"

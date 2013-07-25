@@ -5,6 +5,11 @@ import pickle
 class CmdSysAnnounce(default_cmds.MuxCommand):
     """
     @announce - Send a system-wide @page mail
+
+    Usage:
+      @announce
+        Opens a line editor to construct a @page mail to send to all users (from
+        'Latitude MUD')
     """
 
     key = "@announce"

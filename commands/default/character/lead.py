@@ -4,11 +4,14 @@ import re
 
 class CmdLead(default_cmds.MuxPlayerCommand):
     """
-    lead - Start leading a character or object.
+    lead - Start leading a character or object
+
     Usage:
       lead <character/object>
+        Start automatically moving around another object or character with you as
+        you move.
     
-    To stop leading, use 'stop leading'.  See 'help stop' for more information.
+    To stop leading, use {wstop leading{n.  See 'help stop' for more information.
     """
     key = "lead"
     locks = "cmd:all()"

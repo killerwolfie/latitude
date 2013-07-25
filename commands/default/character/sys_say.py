@@ -2,27 +2,18 @@ from ev import default_cmds
 
 class CmdSysSay(default_cmds.MuxPlayerCommand):
     """
-    @say
+    @say - Speak out-of-character
     
-    Speak or pose with an Out of Character marker. Use this to make sure people
-    can tell you're not roleplaying.
-
-    Also, this is not an in-game action, so it doesn't trigger any 'say' sensitive
-    events.
-
     Usage:
-        @say <text>
-        @say :<pose>
+      @say <message>
+      @say :<pose>
+        Speak or pose with an Out of Character marker. Use this to make sure
+        people can tell you're not roleplaying.
 
-    Example:
-      @say Hello, there!
-       -> others will see:
-      [OOC] Tom says, "Hello, there!"
+        Also, this is not an in-game action, so it doesn't trigger any 'say'
+        sensitive events.
 
-    Example 2:
-      @say :waves.
-       -> others will see:
-      [OOC] Tom waves.
+    See {whelp say{n, and {whelp pose{n for more details.
     """
     key = "@say"
     locks = "cmd:all()"

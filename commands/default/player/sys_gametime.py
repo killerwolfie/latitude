@@ -3,6 +3,10 @@ from ev import default_cmds, search_script
 class CmdSysGameTime(default_cmds.MuxPlayerCommand):
     """
     @gametime - Display the current game world time.
+
+    Usage:
+      @gametime
+        Display the current time, date, and moon phase of the in-game world.
     """
 
     key = "@gametime"
@@ -37,6 +41,9 @@ class CmdSysGameTime(default_cmds.MuxPlayerCommand):
     }
 
     def func(self):
+        if self.args:
+            self.msg("{R[Invalid '{r%s{R' command.  See '{rhelp %s{R' for usage]" % (self.cmdstring, self.key))
+            return
         game_time = search_script('game_time')
         if not game_time:
             self.msg('{RThe game time system is not configured on this server.')

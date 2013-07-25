@@ -2,13 +2,12 @@ from game.gamesrc.latitude.commands.default.character import look
 
 class CmdFeel(look.CmdLook):
     """
-    feel
+    feel - Use your sense of touch
 
     Usage:
       feel
       feel <obj>
-
-    Used to examine the texture of your location or objects in your vicinity.
+        Used to examine the texture of your location or objects in your vicinity.
     """
     key = "feel"
     aliases = ["touch"]

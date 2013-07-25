@@ -2,12 +2,11 @@ from ev import default_cmds
 
 class CmdSysQuit(default_cmds.CmdQuit):
     """
-    quit
+    @quit - Quit
 
     Usage:
       @quit
-
-    Gracefully disconnect from the game.
+        Gracefully disconnect from the game.
     """
     key = "@quit"
     locks = "cmd:all()"

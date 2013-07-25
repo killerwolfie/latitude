@@ -2,13 +2,12 @@ from game.gamesrc.latitude.commands.default.character import look
 
 class CmdListen(look.CmdLook):
     """
-    listen
+    listen - Use your sense of hearing
 
     Usage:
       listen
       listen <obj>
-
-    Used to examine the sound of your location or objects in your vicinity.
+        Examine the sound of your location or objects in your vicinity.
     """
     key = "listen"
     aliases = ["hear", "listen to"]

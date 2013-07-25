@@ -8,10 +8,15 @@ from ev import default_cmds
 
 class CmdSay(default_cmds.MuxPlayerCommand):
     """
+    say - Speak
+
     Usage:
       say <message>
+        Talk to others in your current location.
 
-    Talk to others in your current location.
+    Examples:
+      pose Latitude is the best MUD in history.
+        (Others will see:) <Your name> says, "Latitude is the best MUD in history."
     """
     key = "say"
     aliases = ['"']

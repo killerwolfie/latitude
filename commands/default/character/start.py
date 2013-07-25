@@ -4,12 +4,12 @@ import re
 
 class CmdStart(default_cmds.MuxPlayerCommand):
     """
-    start
-       'Start' an object.
+    start - Start things
 
     Usage:
       start <name>
-          Start a specific character or object.
+        Start a specific character or object.  What this means will vary from
+        object to object, or it might not do anything.
     """
     key = "start"
     locks = "cmd:all()"

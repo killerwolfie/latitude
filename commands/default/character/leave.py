@@ -7,7 +7,7 @@ class CmdLeave(default_cmds.MuxPlayerCommand):
 
     Usage:
       leave
-        Leave with a prompt
+        Leave your current area, and return to the region menu.
     """
     key = "leave"
     aliases = []

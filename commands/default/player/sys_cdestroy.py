@@ -2,12 +2,11 @@ from ev import default_cmds
 
 class CmdSysCdestroy(default_cmds.CmdCdestroy):
     """
-    @cdestroy
+    @cdestroy - Destroy a channel
 
     Usage:
       @cdestroy <channel>
-
-    Destroys a channel that you control.
+        Destroys a channel that you control.
     """
 
     key = "@cdestroy"

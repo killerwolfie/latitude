@@ -6,9 +6,7 @@ class PrefValueException(Exception):
 
 class CmdSysPref(default_cmds.MuxPlayerCommand):
     """
-    @pref
-
-    Manage your player preferences.
+    @pref - Manage your player preferences
 
     Usage:
       @pref
@@ -17,7 +15,35 @@ class CmdSysPref(default_cmds.MuxPlayerCommand):
       @pref <name>=<value>
         Change a preference value.
 
-    For information on individual options, see help <option name>
+    Preferences:
+      auto_ic = [yes/no]
+        If this is 'yes', then logging in to your account will attempt to bypass
+        the character select screen, and connect to your most recent character
+        selection.
+
+      autofollow = [yes/no/friends]
+        This determines whether you need to be asked when someone wants to lead
+        one of your characters with the 'lead' command.  If 'friends' is
+        specified, then friends will be able to automatically lead you, but not
+        others.
+
+      autolead = [yes/no/friends]
+        This determines whether you need to be asked when someone wants to follow
+        one of your characters with the 'follow' command.  If 'friends' is
+        specified, then friends will be able to automatically follow you, but not
+        others.
+
+      automap = [yes/no]
+        If this is 'yes', then when you visit a new room, the room's map will be
+        displayed, in addition to the room's description.
+
+      color = [yes/no]
+        If this is 'no', then all color codes will be ignored for your
+        connections, and only plain text will be sent to your screen.
+        Some things on Latitude are color coded, so use this at your own risk.
+
+      encoding = [<valid encoding such as utf-8>]
+        This defines the text encoding for your connections.
     """
 
     key = "@pref"

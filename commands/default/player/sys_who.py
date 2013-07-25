@@ -11,14 +11,17 @@ class CmdSysWho(default_cmds.MuxPlayerCommand):
     Usage:
       @who
       @who/characters
-          List all connected characters
+        List all connected characters
+
       @who/players
-          List all connected players
+        List all connected players
+
       @who/room
       ws
-          Lists everyone in your current room
+        Lists everyone in your current room
+
       @who/far <character/player>
-          Shows information on a specific character/player
+        Shows information on a specific character/player
     """
 
     key = "@who"

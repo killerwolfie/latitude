@@ -1,27 +1,32 @@
 from ev import default_cmds
 from src.utils import prettytable
 from src.scripts.models import ScriptDB
+from src.objects.models import ObjectDB
 
 class CmdSysScripts(default_cmds.CmdScripts):
     """
-    Operate and list global scripts, list all scrips.
+    @scripts - Manage and list scripts
 
     Usage:
-      @scripts[/switches] [<obj or scriptid or script.path>]
+      @scripts
+        View all active scripts.
 
-    Switches:
-      start - start a script (must supply a script path)
-      stop - stops an existing script
-      kill - kills a script - without running its cleanup hooks
-      validate - run a validation on the script(s)
+      @scripts <obj or scriptid or script.path>
+        View scripts matching a given object, scriptid, or script.path.
 
-    If no switches are given, this command just views all active
-    scripts. The argument can be either an object, at which point it
-    will be searched for all scripts defined on it, or an script name
-    or dbref. For using the /stop switch, a unique script dbref is
-    required since whole classes of scripts often have the same name.
+      @scripts/start <script.path>
+        Start a script with a given path.
 
-    Use @script for managing commands on objects.
+      @scripts/stop <obj or scriptid or script.path>
+        Stops a script matching a given object, scriptid, or script.path.
+
+      @scripts/kill <obj or scriptid or script.path>
+        Stops a script matching a given object, scriptid, or script.path.  This
+        command doesn't run any cleanup hooks.
+
+      @scripts/validate <obj or scriptid or script.path>
+        Run the validation routine on a script matching a given object, scriptid,
+        or script.path.
     """
     key = "@scripts"
     aliases = []
@@ -50,7 +55,7 @@ class CmdSysScripts(default_cmds.CmdScripts):
             scripts = ScriptDB.objects.get_all_scripts(key=args)
             if not scripts:
                 # try to find an object instead.
-                objects = ObjectDB.objects.object_search(args, caller=caller)
+                objects = ObjectDB.objects.object_search(args)
                 if objects:
                     scripts = []
                     for obj in objects:

@@ -3,14 +3,12 @@ from ev import utils
 
 class CmdMap(default_cmds.MuxPlayerCommand):
     """
-    map
-
-    Get an overhead view of your surroundings.
+    map - Examine your surroundings topographically
 
     Usage:
       map
+        Get an overhead view of your surroundings.
     """
-
     key = "map"
     locks = "cmd:all()"
     help_category = "Actions"

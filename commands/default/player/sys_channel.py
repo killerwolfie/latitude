@@ -9,18 +9,18 @@ class CmdSysChannel(default_cmds.MuxPlayerCommand):
     Usage:
        @channel
        @channel/list
-           Outputs a list of available channels.
+         Outputs a list of available channels.
 
        @channel/who
        @channel/who <channel>
-           Displays everyone who's currently listening to a channel.  By default it
-           displays all channels you're currently subscribed to.
+         Displays everyone who's currently listening to a channel.  By default it
+         displays all channels you're currently subscribed to.
 
        @channel/sub <channel>
-           Subscribes to a channel.
+         Subscribes to a channel.
 
        @channel/unsub <channel>
-           Unsubscribes from a channel.
+         Unsubscribes from a channel.
     """
 
     key = "@channel"

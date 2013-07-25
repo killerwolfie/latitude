@@ -3,15 +3,16 @@ import re
 
 class CmdUse(Command):
     """
-    Utilize an object, or objects.
+    use - Utilize an object, or objects.
 
     Usage:
-      use
       use <obj>
       use <obj> on <obj1, obj2, ... objn>
       use <obj1, obj2, ... objn> on <obj>
-
-    
+        This is the swiss army knife of action commands.  What it does will depend
+        on the objects involved and the configuration of your use command.  You
+        can use objects on other objects (even on multiple objects at once), or
+        just use an object, in general, with no other objects isvolved.
     """
     key = "use"
     locks = "cmd:all()"

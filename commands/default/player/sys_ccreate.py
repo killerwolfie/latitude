@@ -2,12 +2,12 @@ from ev import default_cmds
 
 class CmdSysChannelCreate(default_cmds.CmdChannelCreate):
     """
-    @ccreate
-    channelcreate
-    Usage:
-     @ccreate <new channel>[;alias;alias...] = description
+    @ccreate - Create a new channel
 
-    Creates a new channel owned by you.
+    Usage:
+      channelcreate
+      @ccreate <new channel>[;alias;alias...] = description
+        Creates a new channel owned by you.
     """
 
     key = "@ccreate"

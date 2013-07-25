@@ -8,8 +8,8 @@ class CmdSysChar(default_cmds.MuxPlayerCommand):
 
     Usage:
       look (Only when OOC)
-          Displays a welcome message, along with your character listing, and
-          instructions on how to go IC and play.
+        Displays a welcome message, along with your character listing, and
+        instructions on how to go IC and play.
 
       @char
       @char/list
@@ -18,12 +18,13 @@ class CmdSysChar(default_cmds.MuxPlayerCommand):
       @ic
       @ic <character name>
       @char/ic <character name>
-          Use this to 'become' a character.  Your current session (but none of your
-          other sessions, if you happen to be connected multiple times) will assume
-          the identity of the selected character, and you'll be able to percieve the
-          game world and play.
-          If you don't supply a character name, it attempt to will pick one for you
-          automatically (Such as the last character you used)
+        Use this to 'become' a character.  Your current session (but none of your
+        other sessions, if you happen to be connected multiple times) will assume
+        the identity of the selected character, and you'll be able to percieve the
+        game world and play.
+
+        If you don't supply a character name, it attempt to will pick one for you
+        automatically (Such as the last character you used)
 
       @ooc
       @char/ooc

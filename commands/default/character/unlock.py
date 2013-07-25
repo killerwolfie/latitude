@@ -2,9 +2,11 @@ from ev import default_cmds
 
 class CmdUnlock(default_cmds.MuxPlayerCommand):
     """
+    unlock - Unlock things
+   
+    Usage:
       unlock <object>
-
-        Attempt to lock <object> so it can be opened or used.
+        Attempt to unlock <object>, so it can be opened or used.
     """
     key = "unlock"
     locks = "cmd:all()"

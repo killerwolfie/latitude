@@ -4,11 +4,14 @@ import re
 
 class CmdFollow(default_cmds.MuxPlayerCommand):
     """
-    follow - Start following a character or object.
+    follow - Start following a character or object
+
     Usage:
       follow <character/object>
+        Starts automatically following another character or object.
 
-    To stop following, use 'stop', or move away from your leader.  See 'help stop' for more information.
+    To stop following, use 'stop', or move away from your leader.
+    See {whelp stop{n for more information.
     """
     key = "follow"
     locks = "cmd:all()"

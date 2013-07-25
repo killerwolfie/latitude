@@ -2,13 +2,12 @@ from ev import default_cmds
 
 class CmdLook(default_cmds.MuxPlayerCommand):
     """
-    look
+    look - Use your sense of sight
 
     Usage:
       look
       look ['at'] <obj>
-
-    Visually observes your location or objects in your vicinity.
+        Visually observes your location or objects in your vicinity.
     """
     key = "look"
     aliases = ['l']

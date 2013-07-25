@@ -8,12 +8,12 @@ class CmdWhisper(default_cmds.MuxPlayerCommand):
 
     Usage:
       whisper <text>
-          Speak softly to nobody in particular.  The other people in the room
-          may or may not hear you.
+        Speak softly to nobody in particular.  The other people in the room may or
+        may not hear you.
 
       whisper <text> to <object> (or whisper <object>=<text>)
-          Whisper a message to a specific object (which could be a character)
-          in the room.  Only that character or object will hear your message.
+        Whisper a message to a specific object (which could be a character) in the
+        room.  Only that character or object will hear your message.
     """
 
     key = "whisper"

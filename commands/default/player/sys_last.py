@@ -4,12 +4,11 @@ import time
 
 class CmdSysLast(default_cmds.MuxPlayerCommand):
     """
-    @last
-
-    Show a player's last login time, or the time a character was last used.
+    @last - Display player/character last login time
 
     Usage:
       @last <player/character>
+        Show a player's last login time, or the time a character was last used.
     """
 
     key = "@last"

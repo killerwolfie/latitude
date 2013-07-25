@@ -5,11 +5,11 @@ _AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit
 
 class CmdGet(default_cmds.MuxPlayerCommand):
     """
-    get - Pick up an item in your current location
+    get - Pick up an item 
 
     Usage:
       get <obj>
-        Picks up an object (or stack of objects)
+        Picks up an object (or stack of objects) from your current location.
 
       get <number> of <obj>
         Picks up a specific number of an object stack at your current location

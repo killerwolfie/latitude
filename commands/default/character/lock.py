@@ -2,9 +2,11 @@ from ev import default_cmds
 
 class CmdLock(default_cmds.MuxPlayerCommand):
     """
-    lock <object>
-    
-      Attempt to lock <object>, so it can't be opened or used.
+    lock - Lock things
+   
+    Usage:
+      lock <object>
+        Attempt to lock <object>, so it can't be opened or used.
     """
 
     key = "lock"

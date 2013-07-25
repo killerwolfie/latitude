@@ -2,20 +2,23 @@ from ev import default_cmds
 
 class CmdSysFind(default_cmds.CmdFind):
     """
-    find objects
+    find objects - Search for an object by name or dbref
 
     Usage:
-      @find[/switches] <name or dbref or *player> [= dbrefmin[-dbrefmax]]
+      @find <name or dbref> [= dbrefmin[-dbrefmax]]
+        Search for an Object
 
-    Switches:
-      room - only look for rooms (location=None)
-      exit - only look for exits (destination!=None)
-      char - only look for characters (BASE_CHARACTER_TYPECLASS)
+      @find/room <*player> [= dbrefmin[-dbrefmax]]
+        Search for a Player
 
-    Searches the database for an object of a particular name or dbref.
-    Use *playername to search for a player. The switches allows for
-    limiting object matches to certain game entities. Dbrefmin and dbrefmax
-    limits matches to within the given dbrefs, or above/below if only one is given.
+      @find/room <name or dbref> [= dbrefmin[-dbrefmax]]
+        Search for a room Object
+
+      @find/exit <name or dbref> [= dbrefmin[-dbrefmax]]
+        Search for an exit Object
+
+      @find/char <name or dbref> [= dbrefmin[-dbrefmax]]
+        Search for a character Object
     """
 
     key = "@find"

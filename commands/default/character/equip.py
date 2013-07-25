@@ -2,9 +2,11 @@ from ev import default_cmds
 
 class CmdEquip(default_cmds.MuxPlayerCommand):
     """
-    equip <object>
+    equip - Equip object
     
-      Attempt to wear <object>
+    Usage:
+      equip <object>
+        Attempt to wear a given object
     """
 
     key = "equip"

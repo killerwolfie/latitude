@@ -2,13 +2,12 @@ from game.gamesrc.latitude.commands.default.character import look
 
 class CmdSmell(look.CmdLook):
     """
-    smell
+    smell - Use your sense of smell
 
     Usage:
       smell
       smell <obj>
-
-    Used to examine the scent of your location or objects in your vicinity.
+        Examine the scent of your location or objects in your vicinity.
     """
     key = "smell"
     aliases = ["sniff"]

@@ -4,13 +4,12 @@ import shlex
 
 class CmdSysMerge(default_cmds.MuxPlayerCommand):
     """
-    @merge
+    @merge - Merge player accounts
 
-    Merge one or more accounts into another account, transfering in all characters, special bonuses, friends, etc.
 
     Usage:
       @merge <to account> <from account> [<from account> ...]
-
+        Merge one or more accounts into another account, transfering in all characters, special bonuses, friends, etc.
     """
     key = "@merge"
     locks = "cmd:perm(command_@merge) or perm(Janitors)"

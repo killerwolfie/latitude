@@ -2,16 +2,15 @@ from ev import default_cmds
 
 class CmdSysUnban(default_cmds.CmdUnban):
     """
-    remove a ban
+    @unban - Remove a ban
 
     Usage:
+      @unban
+        View a numbered list of bans.
+
       @unban <banid>
-
-    This will clear a player name/ip ban previously set with the @ban
-    command.  Use this command without an argument to view a numbered
-    list of bans. Use the numbers in this list to select which one to
-    unban.
-
+        Using a number from the list of bans, clear the ban of the given player
+        name/ip ban previously set with the @ban command.
     """
     key = "@unban"
     locks = "cmd:perm(command_@unban) or perm(Janitors)"

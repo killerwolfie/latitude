@@ -16,8 +16,8 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
         opt-outs you may have in place.
 
       @friends/whereis <character>
-        Shows you some details on the whereabouts of another character, if
-        they're on your friend list.
+        Shows you some details on the whereabouts of another character, if they're
+        on your friend list.
 
       @friends/add <player/character>
         Add a player to your friend list.
@@ -31,9 +31,9 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
 
       @friends/optout [!]<character>
         Specify one of your own characters to opt out of the friend system.
-        Opting out a character will make that character invisible to your
-        friends.  The system will try its best to conseal the fact that this
-        character belongs to you.
+        Opting out a character will make that character invisible to your friends.
+        The system will try its best to conceal the fact that this character
+        belongs to you.
         Use ! to remove the opt-out flag from one of your characters.
     """
 

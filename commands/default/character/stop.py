@@ -4,19 +4,18 @@ import re
 
 class CmdStop(default_cmds.MuxPlayerCommand):
     """
-    stop
-       Stop following or leading.
+    stop - Stop things
 
     Usage:
       stop
-          Stop following your current leader. (Remaining where you are if the
-          leader leaves.)
+        Stop yourself.  This includes no longer following your current leader.
+        (Remaining where you are if the leader leaves.)
 
       stop leading
-          Stop leading everyone who is currently following you.
+        Stop leading everyone who is currently following you.
 
       stop <name>
-          Stop a specific character or object.
+        Stop a specific character or object.
 
     See 'help follow' and 'help lead' for more details.
     """

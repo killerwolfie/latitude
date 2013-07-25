@@ -2,20 +2,20 @@ from ev import default_cmds
 
 class CmdPose(default_cmds.MuxPlayerCommand):
     """
-    pose - strike a pose
+    pose - Strike a pose
 
     Usage:
       pose <pose text>
-      pose's <pose text>
       :<pose text>
+        Describe an action being taken. The pose text will automatically begin
+        with your name.  This is used to communicate an 'action' to other players,
+        and you can use it in roleplaying!
 
     Example:
       pose is standing by the wall, smiling.
-       -> others will see:
-      Tom is standing by the wall, smiling.
+        (Others will see:) <Your name> is standing by the wall, smiling.
 
-    Describe an action being taken. The pose text will
-    automatically begin with your name.
+    See {whelp Roleplaying{n for more information.
     """
 
     key = "pose"

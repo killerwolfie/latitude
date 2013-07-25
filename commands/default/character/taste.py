@@ -2,13 +2,12 @@ from game.gamesrc.latitude.commands.default.character import look
 
 class CmdTaste(look.CmdLook):
     """
-    taste
+    taste - Use your sense of taste
 
     Usage:
       taste
       taste <obj>
-
-    Licks your general environment, or objects in your vicinity to get examine your flavor.
+        Licks your general environment, or objects in your vicinity to examine flavors.
     """
     key = "taste"
     aliases = ["lick"]

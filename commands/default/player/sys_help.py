@@ -2,15 +2,19 @@ from ev import default_cmds
 
 class CmdSysHelp(default_cmds.CmdHelp):
     """
-    The main help command
+    @help - Get documentation on topics or commands
 
     Usage:
-      @help <topic or command>
+      @help
       @help list
       @help all
+        List all available commands, and help topics.
 
-    This will search for help on commands and other
-    topics related to the game.
+      @help <command>
+        Get help information associated with a command.
+
+      @help <topic>
+        Display specific help topic information.
     """
     key = '@help'
     aliases = [ 'help' ]

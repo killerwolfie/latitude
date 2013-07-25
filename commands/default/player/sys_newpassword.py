@@ -2,12 +2,11 @@ from ev import default_cmds
 
 class CmdSysNewPassword(default_cmds.CmdNewPassword):
     """
-    @newpassword
+    @newpassword - Set player password
 
     Usage:
-      @newpassword <user obj> = <new password>
-
-    Set a player's password.
+      @newpassword <player> = <new password>
+        Set a player's password.
     """
 
     key = "@newpassword"
