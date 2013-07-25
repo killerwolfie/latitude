@@ -1,11 +1,12 @@
-from ev import default_cmds, create_message, utils
+from ev import create_message, utils
 from src.comms.models import Msg
 from game.gamesrc.latitude.utils.search import match, match_character
 from game.gamesrc.latitude.utils.stringmanip import conj_join
 import pickle
 from datetime import datetime, timedelta
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdSysPage(default_cmds.MuxPlayerCommand):
+class CmdSysPage(LatitudeCommand):
     """
     @page - Send a private message
 
@@ -45,7 +46,7 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
 
     def cmd_last(self, num=None):
         now = datetime.now()
-        player = self.caller
+        player = self.player
         if num:
             # Get the messages we've sent (not to channels)
             pages = set(Msg.objects.get_messages_by_sender(player, exclude_channel_messages=True))
@@ -82,7 +83,7 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
         self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")
 
     def cmd_page(self, targetstr, message, mail=False):
-        player = self.caller
+        player = self.player
         sender = player.get_puppet(self.sessid) or player
         # Identify the recipients
         if not targetstr:
@@ -190,7 +191,7 @@ class CmdSysPage(default_cmds.MuxPlayerCommand):
         Produces a pretty version of the message string requested by the user, handling page poses, etc.
         """
         character = self.character
-        player = self.caller
+        player = self.player
         message = raw_message
         if character:
             # If we have a character, then we can use the 'say' routines to format the message.

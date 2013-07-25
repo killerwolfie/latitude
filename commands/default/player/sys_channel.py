@@ -1,8 +1,9 @@
-from ev import default_cmds, utils
+from ev import utils
 from src.utils import prettytable
 from src.comms.models import Channel, PlayerChannelConnection
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdSysChannel(default_cmds.MuxPlayerCommand):
+class CmdSysChannel(LatitudeCommand):
     """
     @channel - manage your channel subscriptions
 
@@ -46,24 +47,24 @@ class CmdSysChannel(default_cmds.MuxPlayerCommand):
         self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")
 
     def cmd_list(self):
-        caller = self.caller
+        player = self.player
         # Get all channels we have available to listen to
-        channels = [chan for chan in Channel.objects.get_all_channels() if chan.access(caller, 'listen')]
+        channels = [chan for chan in Channel.objects.get_all_channels() if chan.access(player, 'listen')]
         if not channels:
             self.msg("No channels available.")
             return
         # Get all channel we are already subscribed to
-        subs = [conn.channel for conn in PlayerChannelConnection.objects.get_all_player_connections(caller)]
+        subs = [conn.channel for conn in PlayerChannelConnection.objects.get_all_player_connections(player)]
         # Show the user a table
         comtable = prettytable.PrettyTable(["{CSub", "{CChannel", "{CDescription"], border=False)
         comtable.add_row(['', '', ''])
         for chan in channels:
-            nicks = [nick for nick in caller.nicks.get(nick_type="channel")]
+            nicks = [nick for nick in player.nicks.get(nick_type="channel")]
             comtable.add_row([chan in subs and "{GYes{n" or "{RNo{n", "%s%s" % (chan.key, chan.aliases and " (%s)" % ",".join(chan.aliases) or ""), chan.desc])
         self.msg(comtable)
 
     def cmd_who(self, channelname):
-        caller = self.caller
+        player = self.player
         # Find the requested channel(s)
         if channelname:
             channels = Channel.objects.channel_search(channelname) or [chan for chan in Channel.objects.all() if channelname in chan.aliases]
@@ -74,21 +75,21 @@ class CmdSysChannel(default_cmds.MuxPlayerCommand):
                 self.msg('Multiple channels match (be more specific):\n%s' % (', '.join([["%s(%s)" % (chan.key, chan.id) for chan in channels]])))
                 return
         else:
-            channels = [conn.channel for conn in PlayerChannelConnection.objects.get_all_player_connections(caller)]
+            channels = [conn.channel for conn in PlayerChannelConnection.objects.get_all_player_connections(player)]
         # Check permissions
         for channel in channels:
-            if not channel.access(self.caller, "listen"):
+            if not channel.access(player, "listen"):
                 self.msg("You can't access this channel.")
                 return
             self.msg('{C%s:' % channel.key)
-            players = [conn.player for conn in PlayerChannelConnection.objects.get_all_connections(channel) if conn.player.status_online()]
-            if players:
-                self.msg('  ' + ', '.join([player.get_desc_styled_name(caller) for player in players]))
+            channel_players = [conn.player for conn in PlayerChannelConnection.objects.get_all_connections(channel) if conn.player.status_online()]
+            if channel_players:
+                self.msg('  ' + ', '.join([channel_player.get_desc_styled_name(player) for channel_player in players]))
             else:
                 self.msg('  <None>')
 
     def cmd_sub(self, channelname):
-        player = self.caller
+        player = self.player
         # Find the requested channel
         channels = Channel.objects.channel_search(channelname) or [chan for chan in Channel.objects.all() if channelname in chan.aliases]
         if not channels:
@@ -112,7 +113,7 @@ class CmdSysChannel(default_cmds.MuxPlayerCommand):
             self.msg("%s: You are not allowed to join this channel." % channel.key)
 
     def cmd_unsub(self, channelname):
-        player = self.caller
+        player = self.player
         # Find the requested channel
         channels = Channel.objects.channel_search(channelname) or [chan for chan in Channel.objects.all() if channelname in chan.aliases]
         if not channels:

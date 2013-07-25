@@ -1,6 +1,6 @@
-from ev import default_cmds
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdLook(default_cmds.MuxPlayerCommand):
+class CmdLook(LatitudeCommand):
     """
     look - Use your sense of sight
 

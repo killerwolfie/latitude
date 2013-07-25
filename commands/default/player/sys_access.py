@@ -1,6 +1,7 @@
-from ev import default_cmds, settings
+from ev import settings
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdSysAccess(default_cmds.MuxPlayerCommand):
+class CmdSysAccess(LatitudeCommand):
     """
     access - Show access groups
 
@@ -19,11 +20,11 @@ class CmdSysAccess(default_cmds.MuxPlayerCommand):
         self.msg('{CPermission Hierarchy (climbing): {n%s' % ', '.join(settings.PERMISSION_HIERARCHY))
         self.msg('{CYour access:')
         # Player
-        if self.caller.is_superuser:
+        if self.player.is_superuser:
             pperms = "<Superuser>"
         else:
-            pperms = ", ".join(self.caller.permissions)
-        self.msg('  Player %s{n: %s' % (self.caller.get_desc_styled_name(self.caller), pperms))
+            pperms = ", ".join(self.player.permissions)
+        self.msg('  Player %s{n: %s' % (self.player.get_desc_styled_name(self.player), pperms))
         # Character
         if not self.character:
             cperms = None
@@ -32,5 +33,5 @@ class CmdSysAccess(default_cmds.MuxPlayerCommand):
         else:
             cperms = ", ".join(self.character.permissions)
         if cperms:
-            self.msg('  Character %s{n: %s' % (self.character.get_desc_styled_name(self.caller), cperms))
+            self.msg('  Character %s{n: %s' % (self.character.get_desc_styled_name(self.player), cperms))
         self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")

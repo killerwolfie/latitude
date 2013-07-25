@@ -1,7 +1,8 @@
-from ev import default_cmds, CmdSet, syscmdkeys, search_help_entry, create_help_entry
+from ev import CmdSet, syscmdkeys, search_help_entry, create_help_entry
 from game.gamesrc.latitude.utils import lineeditor
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdSysSetHelp(default_cmds.MuxCommand):
+class CmdSysSetHelp(LatitudeCommand):
     """
     @sethelp - edit the help database
 
@@ -23,6 +24,7 @@ class CmdSysSetHelp(default_cmds.MuxCommand):
     locks = "cmd:perm(command_@sethelp) or perm(Janitors)"
     help_category = "=== Admin ==="
     arg_regex = r"(/\w+?(\s|$))|\s|$"
+    logged = True
 
     def func(self):
         if not self.switches and self.args:

@@ -1,10 +1,11 @@
 from game.gamesrc.latitude.utils.stringmanip import conj_join
-from ev import default_cmds, settings, search_object, create_script, utils
+from ev import settings, search_object, create_script, utils
 from game.gamesrc.latitude.utils.evennia_color import *
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
 _AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 
-class CmdVisit(default_cmds.MuxPlayerCommand):
+class CmdVisit(LatitudeCommand):
     """
     visit - visit another area
 

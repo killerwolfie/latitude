@@ -1,7 +1,7 @@
 from game.gamesrc.latitude.utils.search import match_character
-from ev import default_cmds
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdSysKick(default_cmds.MuxPlayerCommand):
+class CmdSysKick(LatitudeCommand):
     """
     @kick - Kick a character out to the region menu
 

@@ -1,8 +1,9 @@
 from game.gamesrc.latitude.utils.stringmanip import conj_join
-from ev import Object, Character, search_object, default_cmds
+from ev import Object, Character, search_object
 import re
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdFollow(default_cmds.MuxPlayerCommand):
+class CmdFollow(LatitudeCommand):
     """
     follow - Start following a character or object
 

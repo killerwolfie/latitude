@@ -1,8 +1,9 @@
-from ev import default_cmds, syscmdkeys, CmdSet, create_message, utils, managers
+from ev import syscmdkeys, CmdSet, create_message, utils, managers
 from game.gamesrc.latitude.utils import lineeditor
 import pickle
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdSysAnnounce(default_cmds.MuxCommand):
+class CmdSysAnnounce(LatitudeCommand):
     """
     @announce - Send a system-wide @page mail
 
@@ -17,6 +18,7 @@ class CmdSysAnnounce(default_cmds.MuxCommand):
     locks = "cmd:perm(commands_@announce) or perm(Janitors)"
     help_category = "=== Admin ==="
     arg_regex = r"(/\w+?(\s|$))|\s|$"
+    logged = True
 
     def func(self):
         if self.args:

@@ -1,6 +1,7 @@
-from ev import default_cmds, syscmdkeys, Channel, create_message
+from ev import syscmdkeys, Channel, create_message
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdChannel(default_cmds.MuxPlayerCommand):
+class CmdChannel(LatitudeCommand):
     key = syscmdkeys.CMD_CHANNEL
     aliases = []
     locks = "cmd:all()"
@@ -15,7 +16,7 @@ class CmdChannel(default_cmds.MuxPlayerCommand):
         """
         Create a new message and send it to the channel
         """
-        player = self.caller
+        player = self.player
         # Check arguments
         channelkey, message = self.args
         if not message:

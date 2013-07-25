@@ -1,8 +1,9 @@
-from ev import default_cmds, utils, create_message
+from ev import utils, create_message
 from game.gamesrc.latitude.utils.search import match, match_character
 import pickle
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdSysFriends(default_cmds.MuxPlayerCommand):
+class CmdSysFriends(LatitudeCommand):
     """
     @friends - Manage your friend list.
 
@@ -74,9 +75,9 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
         if not self.check_optout():
             return
         online_friends = []
-        for friend_char in sorted(self.caller.get_friend_characters(online_only=True), key=lambda char: char.key.lower()):
-            online_friends.append('{Y%s{Y (%s{Y)' % (friend_char.get_desc_styled_name(self.caller), friend_char.get_owner().get_desc_styled_name(self.caller)))
-        for friend in self.caller.get_friend_players(online_only=True):
+        for friend_char in sorted(self.player.get_friend_characters(online_only=True), key=lambda char: char.key.lower()):
+            online_friends.append('{Y%s{Y (%s{Y)' % (friend_char.get_desc_styled_name(self.player), friend_char.get_owner().get_desc_styled_name(self.player)))
+        for friend in self.player.get_friend_players(online_only=True):
             if not friend.get_all_puppets(): # @ooc friend
                 online_friends.append('{c%s{n' % (friend.key))
         if online_friends:
@@ -88,7 +89,7 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
         if not self.check_optout():
             return
         self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")
-        friends = self.caller.get_friend_players()
+        friends = self.player.get_friend_players()
         if not friends:
             self.msg('You have no friends :(')
         else:
@@ -101,7 +102,7 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
                     friend_char = list(friend_characters)[0]
                     if friend_char.db.friends_optout:
                         continue
-                    self.msg('+ ' + friend_char.get_desc_styled_name(self.caller))
+                    self.msg('+ ' + friend_char.get_desc_styled_name(self.player))
                 else:
                     # List the characters, unless there is only one character, and it has the same name as the player.
                     friend_chars_online = []
@@ -110,20 +111,20 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
                         # Don't include characters if they have 'opted out' from the friend system
                         if char.db.friends_optout:
                             continue
-                        friend_chars_online.append('{n  - ' + char.get_desc_styled_name(self.caller))
+                        friend_chars_online.append('{n  - ' + char.get_desc_styled_name(self.player))
                     friend_chars_online.sort()
                     friend_chars_offline.sort()
                     # Output the resulting entry
-                    self.msg('+ ' + friend.get_desc_styled_name(self.caller))
+                    self.msg('+ ' + friend.get_desc_styled_name(self.player))
                     if friend_chars_online or friend_chars_offline:
                         self.msg("\n".join(friend_chars_online + friend_chars_offline))
-        for character in self.caller.get_characters():
+        for character in self.player.get_characters():
             if character.db.friends_optout:
                 self.msg('{ROpt-out: %s' % character.key)
         self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")
    
     def cmd_add(self, targetname):
-        player = self.caller
+        player = self.player
         target = match(targetname, exact=True)
         if hasattr(target, 'get_owner'):
             target = target.get_owner()
@@ -174,7 +175,7 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
             self.msg('{Y[Friend request sent.  In order for this player to appear in your friend list, they will have to add you as well.  Use {y%s/del %s{Y to cancel the request if needed.]' % (self.key, targetname))
 
     def cmd_del(self, targetname):
-        player = self.caller
+        player = self.player
         target = match(targetname, exact=True)
         if hasattr(target, 'get_owner'):
             target = target.get_owner()
@@ -202,7 +203,7 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
         if not target:
             self.msg('{R[Player not found]')
             return
-        if target.get_owner() != self.caller:
+        if target.get_owner() != self.player:
             self.msg('{R["%s" is not one of your characters]' % (target.key))
             return
         target.db.friends_optout = optout
@@ -216,7 +217,7 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
         if not friend:
             self.msg('{R[Character not found]')
             return
-#        if not friend in self.caller.get_friend_characters(online_only=False):
+#        if not friend in self.player.get_friend_characters(online_only=False):
 #            self.msg('{R%s is not on your friend list.' % (friend.key))
 #            return
         friend_location = friend.location
@@ -229,7 +230,7 @@ class CmdSysFriends(default_cmds.MuxPlayerCommand):
             self.msg('%s is %s.' % (friend.key, ", ".join([inside.objsub('&0w') for inside in friend_location.trace()])))
 
     def check_optout(self):
-        if not self.caller.status_online():
+        if not self.player.status_online():
             self.msg('{R[Sorry.  All of your currently connected characters are opting out of the friend system.]')
             self.msg('{R[To continue using the friend system, you need to connect at least one character without the "opt out" flag, or you can remove it with: {r@friends optout=!<character>{R]')
             return False

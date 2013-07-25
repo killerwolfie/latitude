@@ -1,6 +1,7 @@
 from ev import default_cmds
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdSysEmit(default_cmds.CmdEmit):
+class CmdSysEmit(LatitudeCommand):
     """
     @emit - Emit a message
 
@@ -25,11 +26,12 @@ class CmdSysEmit(default_cmds.CmdEmit):
     locks = "cmd:perm(command_@emit) or perm(Janitors)"
     help_category = "=== Admin ==="
     arg_regex = r"(/\w+?(\s|$))|\s|$"
+    logged = True
 
     def func(self):
         "Implement the command"
 
-        caller = self.caller
+        caller = self.player
         args = self.args
 
         if not args:

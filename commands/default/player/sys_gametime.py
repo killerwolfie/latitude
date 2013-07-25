@@ -1,6 +1,7 @@
-from ev import default_cmds, search_script
+from ev import search_script
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdSysGameTime(default_cmds.MuxPlayerCommand):
+class CmdSysGameTime(LatitudeCommand):
     """
     @gametime - Display the current game world time.
 

@@ -1,7 +1,8 @@
 from src.server.sessionhandler import SESSIONS
-from ev import default_cmds, utils
+from ev import utils
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdSys3Who(default_cmds.MuxPlayerCommand):
+class CmdSys3Who(LatitudeCommand):
     """
     @3who - Display a list of online characters
 
@@ -10,7 +11,6 @@ class CmdSys3Who(default_cmds.MuxPlayerCommand):
         Displays a list of players, with idle time and online time, in three
         columns.
     """
-
     key = "@3who"
     locks = "cmd:all()"
     aliases = ['3w', '3who']

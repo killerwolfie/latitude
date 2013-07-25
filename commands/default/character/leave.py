@@ -1,7 +1,8 @@
-from ev import default_cmds, settings, create_script
+from ev import settings, create_script
 from src.objects.models import ObjectDB
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdLeave(default_cmds.MuxPlayerCommand):
+class CmdLeave(LatitudeCommand):
     """
     leave - Leave your current area.
 

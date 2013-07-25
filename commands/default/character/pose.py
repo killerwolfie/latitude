@@ -1,6 +1,6 @@
-from ev import default_cmds
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdPose(default_cmds.MuxPlayerCommand):
+class CmdPose(LatitudeCommand):
     """
     pose - Strike a pose
 

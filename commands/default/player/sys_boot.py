@@ -1,7 +1,8 @@
 from ev import default_cmds, search_player
 from src.server.sessionhandler import SESSIONS
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdSysBoot(default_cmds.CmdBoot):
+class CmdSysBoot(LatitudeCommand):
     """
     @boot - Boot a player from the server
 
@@ -16,20 +17,19 @@ class CmdSysBoot(default_cmds.CmdBoot):
       port
         Boot by port number instead of name or dbref
     """
-
     key = "@boot"
     aliases = []
     locks = "cmd:perm(commands_@boot) or perm(Janitors)"
     help_category = "=== Admin ==="
     arg_regex = r"(/\w+?(\s|$))|\s|$"
+    logged = True
 
     def func(self):
-        "Implementing the function"
-        caller = self.caller
+        player = self.player
         args = self.args
 
         if not args:
-            caller.msg("Usage: @boot[/switches] <player> [:reason]")
+            self.msg("Usage: @boot[/switches] <player> [:reason]")
             return
 
         if ':' in args:
@@ -51,7 +51,7 @@ class CmdSysBoot(default_cmds.CmdBoot):
             # Boot by player object
             pobj = search_player(args)
             if not pobj:
-                self.caller("Player %s was not found." % pobj.key)
+                self.msg("Player %s was not found." % pobj.key)
                 return
             # we have a bootable object with a connected user
             matches = SESSIONS.sessions_from_player(pobj)
@@ -59,14 +59,14 @@ class CmdSysBoot(default_cmds.CmdBoot):
                 boot_list.append(match)
 
         if not boot_list:
-            caller.msg("No matching sessions found. The Player does not seem to be online.")
+            self.msg("No matching sessions found. The Player does not seem to be online.")
             return
 
         # Carry out the booting of the sessions in the boot list.
 
         feedback = None
         if not 'quiet' in self.switches:
-            feedback = "You have been disconnected by %s.\n" % caller.name
+            feedback = "You have been disconnected by %s.\n" % player.name
             if reason:
                 feedback += "\nReason given: %s" % reason
 

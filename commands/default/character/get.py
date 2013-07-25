@@ -1,9 +1,10 @@
-from ev import default_cmds, utils, settings, search_object
+from ev import utils, settings, search_object
 import re
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
 _AT_SEARCH_RESULT = utils.variable_from_module(*settings.SEARCH_AT_RESULT.rsplit('.', 1))
 
-class CmdGet(default_cmds.MuxPlayerCommand):
+class CmdGet(LatitudeCommand):
     """
     get - Pick up an item 
 

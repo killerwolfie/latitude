@@ -1,12 +1,7 @@
-"""
-This module contains commands that are used for player communication.
-
-"""
-
 import re
-from ev import default_cmds
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdSay(default_cmds.MuxPlayerCommand):
+class CmdSay(LatitudeCommand):
     """
     say - Speak
 

@@ -1,6 +1,6 @@
-from ev import default_cmds
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdSpoof(default_cmds.MuxPlayerCommand):
+class CmdSpoof(LatitudeCommand):
     """
     spoof - Make a freeform pose to the room
     

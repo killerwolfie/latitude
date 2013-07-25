@@ -1,7 +1,7 @@
-from ev import default_cmds
 from ev import utils
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdMap(default_cmds.MuxPlayerCommand):
+class CmdMap(LatitudeCommand):
     """
     map - Examine your surroundings topographically
 

@@ -1,8 +1,9 @@
 from game.gamesrc.latitude.utils.stringmanip import conj_join
-from ev import default_cmds, search_object
+from ev import search_object
 import re
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdStart(default_cmds.MuxPlayerCommand):
+class CmdStart(LatitudeCommand):
     """
     start - Start things
 

@@ -1,8 +1,8 @@
-from ev import default_cmds
 import random
 import re
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdWhisper(default_cmds.MuxPlayerCommand):
+class CmdWhisper(LatitudeCommand):
     """
     whisper - speak quietly
 

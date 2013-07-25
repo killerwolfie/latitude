@@ -1,8 +1,9 @@
-from ev import default_cmds, utils
+from ev import utils
 from game.gamesrc.latitude.utils.search import match, match_character
 import time
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdSysLast(default_cmds.MuxPlayerCommand):
+class CmdSysLast(LatitudeCommand):
     """
     @last - Display player/character last login time
 

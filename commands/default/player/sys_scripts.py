@@ -2,8 +2,9 @@ from ev import default_cmds
 from src.utils import prettytable
 from src.scripts.models import ScriptDB
 from src.objects.models import ObjectDB
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdSysScripts(default_cmds.CmdScripts):
+class CmdSysScripts(LatitudeCommand):
     """
     @scripts - Manage and list scripts
 
@@ -35,9 +36,6 @@ class CmdSysScripts(default_cmds.CmdScripts):
     arg_regex = r"(/\w+?(\s|$))|\s|$"
 
     def func(self):
-        "implement method"
-
-        caller = self.caller
         args = self.args
 
         string = ""
@@ -46,9 +44,9 @@ class CmdSysScripts(default_cmds.CmdScripts):
                 # global script-start mode
                 new_script = create.create_script(args)
                 if new_script:
-                    caller.msg("Global script %s was started successfully." % args)
+                    self.msg("Global script %s was started successfully." % args)
                 else:
-                    caller.msg("Global script %s could not start correctly. See logs." % args)
+                    self.msg("Global script %s could not start correctly. See logs." % args)
                 return
 
             # test first if this is a script match
@@ -65,12 +63,12 @@ class CmdSysScripts(default_cmds.CmdScripts):
             # we want all scripts.
             scripts = ScriptDB.objects.get_all_scripts()
             if not scripts:
-                caller.msg("No scripts are running.")
+                self.msg("No scripts are running.")
                 return
 
         if not scripts:
             string = "No scripts found with a key '%s', or on an object named '%s'." % (args, args)
-            caller.msg(string)
+            self.msg(string)
             return
 
         if self.switches and self.switches[0] in ('stop', 'del', 'delete', 'kill'):
@@ -101,7 +99,7 @@ class CmdSysScripts(default_cmds.CmdScripts):
         else:
             # No stopping or validation. We just want to view things.
             string = format_script_list(scripts)
-        caller.msg(string)
+        self.msg(string)
 
 def format_script_list(scripts):
     "Takes a list of scripts and formats the output."

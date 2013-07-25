@@ -1,7 +1,7 @@
-from ev import default_cmds
 from src.server.sessionhandler import SESSIONS
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdSysWall(default_cmds.MuxPlayerCommand):
+class CmdSysWall(LatitudeCommand):
     """
     @wall - Send a message to all connected players
 
@@ -13,9 +13,10 @@ class CmdSysWall(default_cmds.MuxPlayerCommand):
     locks = "cmd:perm(command_@wall) or perm(Janitors)"
     help_category = "=== Admin ==="
     arg_regex = r"(/\w+?(\s|$))|\s|$"
+    logged = True
 
     def func(self):
-        player = self.caller
+        player = self.player
         character = self.character
         # Check arguments
         message = self.args

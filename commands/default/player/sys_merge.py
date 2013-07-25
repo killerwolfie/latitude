@@ -1,8 +1,9 @@
-from ev import default_cmds, search_player
+from ev import search_player
 from src.server.sessionhandler import SESSIONS
 import shlex
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdSysMerge(default_cmds.MuxPlayerCommand):
+class CmdSysMerge(LatitudeCommand):
     """
     @merge - Merge player accounts
 
@@ -16,6 +17,7 @@ class CmdSysMerge(default_cmds.MuxPlayerCommand):
     aliases = []
     help_category = "=== Admin ==="
     arg_regex = r"(/\w+?(\s|$))|\s|$"
+    logged = True
 
     def func(self):
         player_names = shlex.split(self.args)

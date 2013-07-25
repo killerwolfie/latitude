@@ -1,8 +1,9 @@
 from game.gamesrc.latitude.utils.evennia_color import *
 from game.gamesrc.latitude.utils.search import match_character
-from ev import settings, default_cmds, utils, search_object, search_player, create_object
+from ev import settings, utils, search_object, search_player, create_object
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdSysChar(default_cmds.MuxPlayerCommand):
+class CmdSysChar(LatitudeCommand):
     """
     @char - Manage your characters
 
@@ -77,7 +78,7 @@ class CmdSysChar(default_cmds.MuxPlayerCommand):
         self.msg("{R[Invalid '{r%s{R' command.  See '{rhelp %s{R' for usage]" % (self.cmdstring, self.key))
 
     def cmd_list(self):
-        player = self.caller
+        player = self.player
         characters = sorted(player.get_characters(), cmp=lambda a, b: cmp(a.key,b.key))
         self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")
         self.msg('{CYour characters:')
@@ -89,7 +90,7 @@ class CmdSysChar(default_cmds.MuxPlayerCommand):
         self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")
 
     def cmd_new(self):
-        player = self.caller
+        player = self.player
         key = self.args
         # Verify that the account has a free character slot
         max_characters = player.max_characters()
@@ -127,7 +128,7 @@ class CmdSysChar(default_cmds.MuxPlayerCommand):
         self.msg("{G[Created new character %s. Use {g%s/ic %s{G to enter the game as this character]" % (new_character.key, self.key, new_character.key))
 
     def cmd_ic(self):
-        player = self.caller
+        player = self.player
         characters = player.get_characters()
         # Determine which character to occupy
         if self.args:
@@ -146,10 +147,10 @@ class CmdSysChar(default_cmds.MuxPlayerCommand):
 
     def cmd_ooc(self):
         # Unpuppet the character (and output success/failure messages)
-        self.caller.do_unpuppet(self.sessid)
+        self.player.do_unpuppet(self.sessid)
 
     def cmd_del(self):
-        player = self.caller
+        player = self.player
         characters = player.get_characters()
         # Find the character to nuke
         target = match_character(self.lhs)

@@ -1,10 +1,11 @@
-from ev import default_cmds, settings
+from ev import settings
 import inspect
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
 class PrefValueException(Exception):
     pass
 
-class CmdSysPref(default_cmds.MuxPlayerCommand):
+class CmdSysPref(LatitudeCommand):
     """
     @pref - Manage your player preferences
 
@@ -85,7 +86,7 @@ class CmdSysPref(default_cmds.MuxPlayerCommand):
         return [name[5:] for name, val in inspect.getmembers(self) if name.startswith('pref_')]
 
     def pref_auto_ic(self, newval = None):
-        player = self.caller
+        player = self.player
         if newval:
             if not newval in ['yes', 'no']:
                 raise PrefValueException('Value must be "yes", or "no"')
@@ -95,7 +96,7 @@ class CmdSysPref(default_cmds.MuxPlayerCommand):
             return player.db.pref_auto_ic and 'yes' or 'no'
 
     def pref_autofollow(self, newval = None):
-        player = self.caller
+        player = self.player
         if newval:
             newval = newval.lower()
             lock_map = {
@@ -121,7 +122,7 @@ class CmdSysPref(default_cmds.MuxPlayerCommand):
                 return 'unknown'
 
     def pref_autolead(self, newval = None):
-        player = self.caller
+        player = self.player
         if newval:
             newval = newval.lower()
             lock_map = {
@@ -147,7 +148,7 @@ class CmdSysPref(default_cmds.MuxPlayerCommand):
                 return 'unknown'
 
     def pref_automap(self, newval = None):
-        player = self.caller
+        player = self.player
         if newval:
             if not newval in ['yes', 'no']:
                 raise PrefValueException('Value must be "yes", or "no"')
@@ -157,7 +158,7 @@ class CmdSysPref(default_cmds.MuxPlayerCommand):
             return (player.db.pref_automap == None or player.db.pref_automap) and 'yes' or 'no'
 
     def pref_color(self, newval = None):
-        player = self.caller
+        player = self.player
         if newval:
             if not newval in ['yes', 'no']:
                 raise PrefValueException('Value must be "yes", or "no"')
@@ -167,7 +168,7 @@ class CmdSysPref(default_cmds.MuxPlayerCommand):
             return (player.db.pref_color == None or player.db.pref_color) and 'yes' or 'no'
 
     def pref_encoding(self, newval = None):
-        player = self.caller
+        player = self.player
         if newval:
             if newval not in settings.ENCODINGS:
                 raise PrefValueException('Encoding "%s" not supported on this server.  (Valid values: %s)' % (newval, ', '.join(settings.ENCODINGS)))

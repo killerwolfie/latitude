@@ -1,9 +1,10 @@
 from src.server.sessionhandler import SESSIONS
-from ev import default_cmds, utils
+from ev import utils
 from game.gamesrc.latitude.utils.evennia_color import *
 import string
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdSysWhereare(default_cmds.MuxPlayerCommand):
+class CmdSysWhereare(LatitudeCommand):
     """
     @whereare - View popular locations
 
@@ -70,8 +71,8 @@ class CmdSysWhereare(default_cmds.MuxPlayerCommand):
             if not locations[region]:
                 del locations[region]
         # Cache a list of friends
-        my_friends = self.caller.get_friend_characters(online_only=False)
-        my_friends |= self.caller.get_characters(online_only=False)
+        my_friends = self.player.get_friend_characters(online_only=False)
+        my_friends |= self.player.get_characters(online_only=False)
         # Output the results
         self.msg("{x________________{W_______________{w_______________{W_______________{x_________________")
         if not locations:
@@ -91,7 +92,7 @@ class CmdSysWhereare(default_cmds.MuxPlayerCommand):
                         # Display character lists
                         charline = '       {x: Characters :{n '
                         if friends_here:
-                            charline += '{n, '.join([friend.get_desc_styled_name(self.caller) for friend in friends_here])
+                            charline += '{n, '.join([friend.get_desc_styled_name(self.player) for friend in friends_here])
                             if strangers_here:
                                 charline += '{n, plus '
                             else:

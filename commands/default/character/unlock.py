@@ -1,6 +1,6 @@
-from ev import default_cmds
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdUnlock(default_cmds.MuxPlayerCommand):
+class CmdUnlock(LatitudeCommand):
     """
     unlock - Unlock things
    

@@ -1,10 +1,10 @@
 from src.server.sessionhandler import SESSIONS
-from ev import default_cmds
 from ev import utils
 from game.gamesrc.latitude.utils.evennia_color import *
 from game.gamesrc.latitude.utils.search import match, match_character
+from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdSysWho(default_cmds.MuxPlayerCommand):
+class CmdSysWho(LatitudeCommand):
     """
     @who - Display a table of basic information on other characters
 
