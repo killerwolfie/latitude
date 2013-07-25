@@ -84,7 +84,7 @@ class CmdSysChannel(LatitudeCommand):
             self.msg('{C%s:' % channel.key)
             channel_players = [conn.player for conn in PlayerChannelConnection.objects.get_all_connections(channel) if conn.player.status_online()]
             if channel_players:
-                self.msg('  ' + ', '.join([channel_player.get_desc_styled_name(player) for channel_player in players]))
+                self.msg('  ' + ', '.join([channel_player.get_desc_styled_name(player) for channel_player in channel_players]))
             else:
                 self.msg('  <None>')
 
