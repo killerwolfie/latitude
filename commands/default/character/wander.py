@@ -33,7 +33,11 @@ class CmdWander(LatitudeCommand):
         wander_cost = region.db.region_wander_cost
         if wander_cost:
             for attr, cost in wander_cost.iteritems():
-                if character.game_attribute_current(attr) < cost:
+                if character.game_attribute(attr) < cost:
+                    region.at_wander_incapable(character)
+                    self.msg("Navigating this area is beyond your abilities.")
+                    return
+                elif character.game_attribute_current(attr) < cost:
                     region.at_wander_insufficient(character)
                     self.msg("You're too tired.")
                     return

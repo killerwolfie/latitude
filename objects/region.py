@@ -22,8 +22,14 @@ class Region(Object):
     def at_wander_insufficient(self, wanderer):
         wanderer.msg("{R[You require %s to explore this region]" % (conj_join([str(cost) + ' ' + attr for attr, cost in self.db.region_wander_cost.iteritems()], 'and')))
 
+    def at_wander_incapable(self, wanderer):
+        wanderer.msg("{R[You require %s to explore this region]" % (conj_join([str(cost) + ' ' + attr for attr, cost in self.db.region_wander_cost.iteritems()], 'and')))
+
     def at_visit_insufficient(self, wanderer):
         wanderer.msg("{R[You require %s to visit an area in this region]" % (conj_join([str(cost) + ' ' + attr for attr, cost in self.db.region_visit_cost.iteritems()], 'and')))
+
+    def at_visit_incapable(self, wanderer):
+        pass
 
     def get_desc_styled_name(self, looker=None):
         return '{m[' + self.key + ']'

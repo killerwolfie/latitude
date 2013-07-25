@@ -102,15 +102,25 @@ class CmdVisit(LatitudeCommand):
         if area == destination:
             self.msg("{Y[You're already in that area]")
             return
-        # Ensure the user has enough points to travel
+        # Ensure the user has enough points to travel  (If their maximum is too low to travel here, let them go into negatives.)
         visit_cost = region.db.region_visit_cost
-        if not self.satisfies_cost(visit_cost):
-            region.at_visit_insufficient(character)
-            self.msg("You're too tired.")
-            return
+        may_go_negative = False
+        if self.capable_cost(visit_cost):
+            if not self.satisfies_cost(visit_cost):
+                region.at_visit_insufficient(character)
+                self.msg("You're too tired.")
+                return
+        else:
+            if not self.maxed_cost(visit_cost):
+                region.at_visit_incapable(character)
+                self.msg("This region looks very difficult to navigate.  If you're going to attempt it, you should rest as much as possible first.")
+                return
+            may_go_negative = True
         # Move the character
-        if character.get_room():
+        if character.get_room() or may_go_negative:
             prompt_script = create_script('game.gamesrc.latitude.scripts.prompt_leave.PromptLeave', obj=character, autostart=False)
+            if may_go_negative:
+                prompt_script.db.question = 'This region seems to be beyond your capabilities.  If you try to navigate here, you may be very drained.  Are you sure you want to leave the area?'
             prompt_script.db.destination = destination
             prompt_script.db.cost = visit_cost
             prompt_script.db.followers = True
@@ -123,6 +133,22 @@ class CmdVisit(LatitudeCommand):
                 message = [character.game_attribute_offset(attr, -cost) for attr, cost in visit_cost.iteritems()]
             self.msg(' '.join(message))
             character.move_to(destination, redirectable=True, followers=False) # If you're in the region object, then you shouldn't have followers.  If you somehow do, then it's best you lose them now rather than drag them off.
+
+    def capable_cost(self, attr_cost):
+        character = self.character
+        if attr_cost:
+            for attr, cost in attr_cost.iteritems():
+                if character.game_attribute(attr) < cost:
+                    return False
+        return True 
+
+    def maxed_cost(self, attr_cost):
+        character = self.character
+        if attr_cost:
+            for attr, cost in attr_cost.iteritems():
+                if character.game_attribute_current(attr) < character.game_attribute(attr):
+                    return False
+        return True 
 
     def satisfies_cost(self, attr_cost):
         character = self.character

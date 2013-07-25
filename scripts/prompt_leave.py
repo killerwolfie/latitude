@@ -13,7 +13,7 @@ class PromptLeave(PromptState):
         no_message - A message to display to the user if they choose to not leave.
     """
     def prompt_options(self):
-        self.obj.msg('Are you sure you want to leave the area? (y/n)')
+        self.obj.msg((self.db.question or 'Are you sure you want to leave the area?') + ' (y/n)')
 
     def prompt_option_y(self):
         self.ndb.user_picked_yes = True
