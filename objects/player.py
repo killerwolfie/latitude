@@ -34,7 +34,7 @@ class Player(EvenniaPlayer):
         """
         self.execute_cmd("@friends", sessid=sessid)
         if self.db.msg_unseen:
-            self.msg('{Y[You have unread messages.  Type "@page" to read them.  See "help @page" for more information]')
+            self.msg('{Y[You have unread messages.  Type "@page" to read them.  See "help @page" for more information]', sessid=sessid)
 
     def at_display_context(self, sessid):
         """

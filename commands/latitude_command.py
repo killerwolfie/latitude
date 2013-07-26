@@ -7,7 +7,7 @@ class LatitudeCommand(default_cmds.MuxCommand):
         if utils.inherits_from(self.caller, "src.objects.objects.Object"):
             self.character = self.caller
             self.player = self.caller.player
-        elif utils.inherits_from(self.caller, "src.players.players.Player"):
+        elif utils.inherits_from(self.caller, "src.players.player.Player"):
             self.character = self.caller.get_puppet(self.sessid)
             self.player = self.caller
         else:
