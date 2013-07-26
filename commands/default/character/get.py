@@ -9,11 +9,10 @@ class CmdGet(LatitudeCommand):
     get - Pick up an item 
 
     Usage:
-      get <obj>
+      get [<number>] <obj> [from <container>]
         Picks up an object (or stack of objects) from your current location.
-
-      get <number> of <obj>
-        Picks up a specific number of an object stack at your current location
+        Specify <number> to split a stack in your location into your inventory.
+        Specify from <container> to try to withdraw an item from a container.
     """
     key = "get"
     aliases = ['take']
@@ -34,14 +33,27 @@ class CmdGet(LatitudeCommand):
         if match:
             target_name = match.group(2)
             quantity = int(match.group(1))
+        container_name = None
+        # Call a special action hook if we're dealing with a withdrawl
+        match = re.search(r'(^|.*)\s*from\s+(.+)$', target_name)
+        if match:
+            target_name = match.group(1).strip() or None
+            container_name = match.group(2)
+            results = search_object(container_name, exact=False, candidates=[con for con in character.location.contents if con != character])
+            container = _AT_SEARCH_RESULT(character, container_name, results, global_search=False)
+            if not container:
+                return # User is alerted by search hook
+            container.action_withdraw(character, target_name)
+            return
+        # Find object
         if not target_name:
             self.msg('Get what?')
             return
-        # Find object
         results = search_object(target_name, exact=False, candidates=[con for con in character.location.contents if con != character])
         target = _AT_SEARCH_RESULT(character, target_name, results, global_search=False)
         if not target:
             return # Search result hook should handle informing the user
+        # Check access
         if not target.access(character, 'get'):
             return # Access failure hook should inform the user
         # Do some safety checks to make sure users can't pick up rooms or characters or other silly shit like that

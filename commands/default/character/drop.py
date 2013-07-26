@@ -34,16 +34,31 @@ class CmdDrop(LatitudeCommand):
         if match:
             target_name = match.group(2)
             quantity = int(match.group(1))
+        # Call a special action hook if we're dealing with a deposit
+        container = None
+        match = re.search(r'(^|.*)\s*into\s+(.+)$', target_name)
+        if match:
+            target_name = match.group(1).strip() or None
+            container_name = match.group(2)
+            results = search_object(container_name, exact=False, candidates=[con for con in character.location.contents if con != character])
+            container = _AT_SEARCH_RESULT(character, container_name, results, global_search=False)
+            if not container:
+                return # User is alerted by search hook
+        # Find object
         if not target_name:
             self.msg('Get what?')
             return
-        # Find object
         results = search_object(target_name, exact=False, candidates=character.contents)
         target = _AT_SEARCH_RESULT(character, target_name, results, global_search=False)
         if not target:
             return # Search result hook should handle informing the user
-        if not target.access(character, 'get'):
+        # Verify permissions
+        if not target.access(character, 'drop'):
             return # Access failure hook should inform the user
+        # If a container is specified, then call a special deposit hook instead
+        if container:
+            container.action_deposit(character, target)
+            return
         # Do some safety checks in case somehow a user manages to target some room or character or something bizzare
         if not utils.inherits_from(target, 'game.gamesrc.latitude.objects.item.Item'):
             raise Exception('"drop" on non-item object')

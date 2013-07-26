@@ -465,7 +465,7 @@ class Object(EvenniaObject):
         """
         This action is called when the player attempts to 'drop <obj> in' the object.
         """
-        withdrawer.msg("You can't put anything in that.")
+        depositer.msg("You can't put anything in that.")
 
     # ----- Movement -----
     def move_to(self, destination, quiet=False, emit_to_obj=None, use_destination=True, to_none=False, followers=None, redirectable=True, look=True):
