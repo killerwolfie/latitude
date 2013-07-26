@@ -9,10 +9,10 @@ class CmdGet(LatitudeCommand):
     get - Pick up an item 
 
     Usage:
-      get [<number>] <obj> [from <container>]
+      get [<number> of] <obj> [from <container>]
         Picks up an object (or stack of objects) from your current location.
         Specify <number> to split a stack in your location into your inventory.
-        Specify from <container> to try to withdraw an item from a container.
+        Specify <container> to try to withdraw an item from a container.
     """
     key = "get"
     aliases = ['take']

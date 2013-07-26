@@ -9,11 +9,10 @@ class CmdDrop(LatitudeCommand):
     drop - Leave an item at your current location
 
     Usage:
-      drop <obj>
-        Drop an object from your inventory
-
-      drop <num> of <obj>
-        Drops a specific number from a stack of objects in your inventory.
+      drop [<number> of] <obj> [into <container>]
+        Drop an object from your inventory.  Specify <number> to break a stack of
+        items by dropping only some of them.  Specify <container> to attempt to
+        deposit the item into a container.
     """
 
     key = "drop"
