@@ -20,8 +20,15 @@ class Area(Object):
         self.db.area_visit_self = True
 
     def bad(self):
-        if not utils.inherits_from(self.location, 'game.gamesrc.latitude.objects.region.Region'):
+        if not self.location or not utils.inherits_from(self.location, 'game.gamesrc.latitude.objects.region.Region'):
             return 'area has no region'
+        area_spawn = self.db.area_spawn
+        if area_spawn:
+            for spawn_point in area_spawn:
+                if not spawn_point in self.contents:
+                    return 'area has spawn point outside area'
+                if not utils.inherits_from(spawn_point, 'src.objects.objects.Room'):
+                    return 'area spawn point is not a room'
         return super(Area, self).bad()
 
     def get_desc_styled_name(self, looker=None):

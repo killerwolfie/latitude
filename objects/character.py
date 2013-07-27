@@ -2,9 +2,10 @@ from ev import search_player, search_object, utils
 from ev import Character as EvenniaCharacter
 from src.scripts.models import ScriptDB
 from game.gamesrc.latitude.objects.actor import Actor
+from game.gamesrc.latitude.objects.container import Container
 import time
 
-class Character(Actor, EvenniaCharacter):
+class Character(Actor, Container, EvenniaCharacter):
     def basetype_setup(self):
         super(Character, self).basetype_setup()
         self.permissions = ['Player'] # This is the default permissions that a quelled administrator will want

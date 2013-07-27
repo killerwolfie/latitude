@@ -17,7 +17,7 @@ class Region(Object):
     def bad(self):
         if self.location:
             return 'region has a location'
-        return super(Area, self).bad()
+        return super(Region, self).bad()
 
     def at_wander_insufficient(self, wanderer):
         wanderer.msg("{R[You require %s to explore this region]" % (conj_join([str(cost) + ' ' + attr for attr, cost in self.db.region_wander_cost.iteritems()], 'and')))

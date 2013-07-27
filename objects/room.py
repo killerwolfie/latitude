@@ -9,9 +9,10 @@ from ev import Room as EvenniaRoom
 from ev import Exit as EvenniaExit
 from ev import utils
 from game.gamesrc.latitude.objects.object import Object
+from game.gamesrc.latitude.objects.container import Container
 from game.gamesrc.latitude.utils.evennia_color import *
 
-class Room(Object, EvenniaRoom):
+class Room(Container, EvenniaRoom):
     def basetype_setup(self):
         """
         This sets up the default properties of an Object,

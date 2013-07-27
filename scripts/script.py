@@ -13,6 +13,18 @@ class Script(EvenniaScript):
             return False
         return True
 
+    def bad(self):
+        """
+        Audits whether the script is corrupted in some way, and should be flagged for
+        auditing.
+
+        If the script is valid, then None is returned.  If it's broken, then a string
+        is returned containing a reason why.
+        """
+        if type(self) is Script:
+            return "script is a base 'Script' class"
+        return None
+
     def desc_script(self):
         # If a traditional desc has been specified, use that by default
         if self.desc:
