@@ -217,9 +217,9 @@ class CmdSysFriends(LatitudeCommand):
         if not friend:
             self.msg('{R[Character not found]')
             return
-#        if not friend in self.player.get_friend_characters(online_only=False):
-#            self.msg('{R%s is not on your friend list.' % (friend.key))
-#            return
+        if not friend in self.player.get_friend_characters(online_only=False):
+            self.msg('{R%s is not on your friend list.' % (friend.key))
+            return
         friend_location = friend.location
         if not friend_location:
             self.msg("Your friend doesn't appear to be anywhere in particular.")
