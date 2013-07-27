@@ -1,6 +1,7 @@
 from game.gamesrc.latitude.scripts.script import Script
 from game.gamesrc.latitude.utils.log import *
 from ev import managers
+from django.db.models import Max
 
 class Audit(Script):
     def at_script_creation(self):
@@ -23,13 +24,14 @@ class Audit(Script):
             obj_start = None
             obj_end = None
         objs = managers.objects.get_dbref_range(obj_start, obj_end)
-        if not objs:
-            # Empty set.  Probably means we've gone through the entire database.  Restart at the beginning next run.
-            del self.db.audit_last_object
-        # Perform audit
         for obj in sorted(objs, key=lambda obj: obj.id):
             self.audit(obj)
-            self.db.audit_last_object = obj.id
+        if obj_end:
+            if obj_end <= managers.objects.aggregate(Max('id'))['id__max']:
+                self.db.audit_last_object = obj_end
+            else:
+                # We cycled through.  Restart next time
+                del self.db.audit_last_object
         # Players
         if num_objs:
             player_start = (self.db.audit_last_player or 0) + 1
@@ -38,12 +40,14 @@ class Audit(Script):
             player_start = None
             player_end = None
         players = managers.players.get_dbref_range(player_start, player_end)
-        if not players:
-            # Empty set.  Probably means we've gone through the entire database.  Restart at the beginning next run.
-            del self.db.audit_last_player
         for player in sorted(players, key=lambda player: player.id):
             self.audit(player)
-            self.db.audit_last_player = player.id
+        if player_end:
+            if player_end <= managers.players.aggregate(Max('id'))['id__max']:
+                self.db.audit_last_player = player_end
+            else:
+                # We cycled through.  Restart next time
+                del self.db.audit_last_player
         # Scripts
         if num_objs:
             script_start = (self.db.audit_last_script or 0) + 1
@@ -52,12 +56,14 @@ class Audit(Script):
             script_start = None
             script_end = None
         scripts = managers.scripts.get_dbref_range(script_start, script_end)
-        if not scripts:
-            # Empty set.  Probably means we've gone through the entire database.  Restart at the beginning next run.
-            del self.db.audit_last_script
         for script in sorted(scripts, key=lambda script: script.id):
             self.audit(script)
-            self.db.audit_last_script = script.id
+        if script_end:
+            if script_end <= managers.scripts.aggregate(Max('id'))['id__max']:
+                self.db.audit_last_script = script_end
+            else:
+                # We cycled through.  Restart next time
+                del self.db.audit_last_script
 
     def audit(self, obj):
         if hasattr(obj, 'bad'):
