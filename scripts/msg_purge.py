@@ -1,4 +1,5 @@
 from game.gamesrc.latitude.scripts.script import Script
+from game.gamesrc.latitude.utils.log import *
 from ev import managers
 from datetime import datetime, timedelta
 
@@ -16,7 +17,7 @@ class MsgPurge(Script):
         for old_msg in old_msgs:
             if datetime.now() - start_time >= timedelta(seconds=3):
                 # We're taking too long.  Wait until the next run to finish up.
-                # FIXME: LOGME
+                log_info('MsgPurge too more than 3 seconds.')
                 return
             for channel in old_msg.channels:
                 if channel.key in ['MUDconnections', 'MUDinfo']:
