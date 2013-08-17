@@ -3,9 +3,11 @@ from ev import Character as EvenniaCharacter
 from src.scripts.models import ScriptDB
 from game.gamesrc.latitude.objects.actor import Actor
 from game.gamesrc.latitude.objects.container import Container
+from game.gamesrc.latitude.objects.protected import Protected
 import time
+from game.gamesrc.latitude.utils.log import *
 
-class Character(Actor, Container, EvenniaCharacter):
+class Character(Actor, Container, Protected, EvenniaCharacter):
     def basetype_setup(self):
         super(Character, self).basetype_setup()
         self.permissions = ['Player'] # This is the default permissions that a quelled administrator will want
@@ -51,6 +53,9 @@ class Character(Actor, Container, EvenniaCharacter):
         super(Character, self).at_post_login() # For now call the default handler which unstows the character
 
     def at_pre_puppet(self, player, sessid):
+        if not self.has_attribute('stats_last_puppet_time'):
+            # First login, oo!
+            log_news('{G[%s has joined the game for the first time!  Please give the new character a warm welcome!]' % self.key)
         # Update puppet statistics
         self.db.stats_last_puppet_time = time.time()
         self.db.stats_last_puppet_player = player

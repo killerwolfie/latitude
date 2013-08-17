@@ -1,8 +1,7 @@
-from ev import Command
 import re
 from game.gamesrc.latitude.commands.latitude_command import LatitudeCommand
 
-class CmdUse(Command):
+class CmdUse(LatitudeCommand):
     """
     use - Utilize an object, or objects.
 

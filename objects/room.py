@@ -130,7 +130,7 @@ class Room(Container, EvenniaRoom):
         characters.sort(key=lambda character: (not character.sessions, character.key))
         exits.sort(key=lambda exit: exit.key)
         items.sort(key=lambda item: item.key)
-        desc.append('{x[Exits: ' + ', '.join([exit.alias_highlight_name() for exit in exits]) + ']{n')
+        desc.append('{C[Exits: ' + ', '.join([exit.alias_highlight_name() for exit in exits]) + ']{n')
         if characters or items:
             desc.append('')
             desc.append('{nYou see:')

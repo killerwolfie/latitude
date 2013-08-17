@@ -1,9 +1,9 @@
 from ev import utils
-from game.gamesrc.latitude.objects.object import Object
 from game.gamesrc.latitude.commands.area.cmdset import AreaCmdSet
+from game.gamesrc.latitude.objects.protected import Protected
 from random import choice
 
-class Area(Object):
+class Area(Protected):
     """
     This object is a container for rooms, and it handles various functions relating to a localized vacinity in the game world, such as map data.
     """

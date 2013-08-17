@@ -1,9 +1,9 @@
-from game.gamesrc.latitude.objects.object import Object
 from game.gamesrc.latitude.commands.region.cmdset import RegionCmdSet
 from random import choice
 from game.gamesrc.latitude.utils.stringmanip import conj_join
+from game.gamesrc.latitude.objects.protected import Protected
 
-class Region(Object):
+class Region(Protected):
     """
     This object is a container for areas, and it handles various functions to related to large regions in the game world, such as generating new areas on demand, weather, etc.
     """

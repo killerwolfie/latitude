@@ -68,6 +68,9 @@ class CmdSysChar(LatitudeCommand):
             elif self.switches == [ 'ooc' ] and not self.args:
                 self.cmd_ooc()
                 return
+            elif self.switches == [ 'new' ] and not self.args:
+                self.msg("{R[Please specify a character name like '{r%s/new name{R'.  See '{rhelp %s{R' for more information]" % (self.key, self.key))
+                return
             elif self.switches == [ 'new' ] and self.args:
                 self.cmd_new()
                 return
@@ -99,8 +102,8 @@ class CmdSysChar(LatitudeCommand):
             self.msg("{RYou may only create a maximum of %i characters." % max_characters)
             return
         # Check the character name
-        if re.search('[^a-zA-Z0-9._-]', key) or not (3 <= len(key) <= 20):
-            self.msg('{R[Character names must be between 3 and 20 characters, and only contain english letters, numbers, dot (.), underscore (_), or dash(-)]')
+        if re.search('[^a-zA-Z0-9._ -]', key) or not (3 <= len(key) <= 20):
+            self.msg('{R[Character names must be between 3 and 20 characters, and only contain english letters, numbers, dot (.), underscore (_), or dash(-), or space ( )]')
             return
         # Verify that the character name is not already taken
         for existing_object in search_object(key, attribute_name='key'):

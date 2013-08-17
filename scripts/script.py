@@ -30,8 +30,8 @@ class Script(EvenniaScript):
         if self.desc:
             return self.desc
         # Second choice default: A description of the mod that this script provides
-        mod_source = self.desc_mod_source()
-        mod_type = self.desc_mod_type()
-        if mod_source and mod_type:
-            return '{C%s{C: %s' % (mod_source, mod_type)
-        return None
+#        mod_source = self.desc_mod_source()
+#        mod_type = self.desc_mod_type()
+#        if mod_source and mod_type:
+#            return '{C%s{C: %s' % (mod_source, mod_type)
+        return ''
