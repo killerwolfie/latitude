@@ -24,6 +24,7 @@ from game.gamesrc.latitude.commands.default.character import smell
 from game.gamesrc.latitude.commands.default.character import start
 from game.gamesrc.latitude.commands.default.character import stop
 from game.gamesrc.latitude.commands.default.character import spoof
+from game.gamesrc.latitude.commands.default.character import sys_areadump
 from game.gamesrc.latitude.commands.default.character import sys_kick
 from game.gamesrc.latitude.commands.default.character import sys_say
 from game.gamesrc.latitude.commands.default.character import taste
@@ -65,6 +66,7 @@ class LatitudeCmdsetCharacter(CmdSet):
 	self.add(start.CmdStart)
 	self.add(stop.CmdStop)
 	self.add(spoof.CmdSpoof)
+	self.add(sys_areadump.CmdSysAreaDump)
 	self.add(sys_kick.CmdSysKick)
 	self.add(sys_say.CmdSysSay)
 	self.add(taste.CmdTaste)

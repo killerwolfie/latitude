@@ -1,14 +1,15 @@
-from ev import create_object, search_object
+from ev import create_object, search_object, utils
 from collections import defaultdict, MutableSequence, MutableSet, MutableMapping
 
 class UndumpableError(Exception):
     pass
 
-def dump_objects(objects, with_children=True):
+def dump_objects(objects, with_children=True, exclude=[]):
+    # Flesh out the list of objects, if with_children is specified
     if with_children:
         all_children = []
         for obj in objects:
-            all_children.extend(_get_all_children(obj))
+            all_children.extend(_get_all_children(obj, exclude=exclude))
         objects = all_children
     objspec = {}
     for obj in objects:
@@ -48,10 +49,12 @@ def dump_objects(objects, with_children=True):
         objspec['obj_%d' % obj.id] = spec
     return objspec
 
-def _get_all_children(obj):
+def _get_all_children(obj, exclude):
+    if obj in exclude:
+        return []
     retval = [obj]
     for con in obj.contents:
-        retval.extend(_get_all_children(con))
+        retval.extend(_get_all_children(con, exclude=exclude))
     return retval
 
 def _clean_attribute(attrval):
@@ -60,7 +63,7 @@ def _clean_attribute(attrval):
     elif isinstance(attrval, MutableSet):
         return set(_clean_attribute(val) for val in attrval)
     elif isinstance(attrval, MutableMapping):
-        return dict((_clean_attribute(key), _clean_attribute(val)) for key, val in attrval)
+        return dict((_clean_attribute(key), _clean_attribute(val)) for key, val in attrval.iteritems())
     elif isinstance(attrval, (basestring, int, float, long, complex)):
         return attrval
     else:
