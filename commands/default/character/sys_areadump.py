@@ -72,6 +72,16 @@ class CmdSysAreaDump(LatitudeCommand):
             for ent in sorted(obj):
                 retval += ' ' * ((indent + 1) * 4) + self._pformat(ent, indent + 1) + ',\n'
             retval += ' ' * (indent * 4) + '])'
+        elif ((issubclass(typ, unicode) and r is unicode.__repr__) or
+              (issubclass(typ, str) and r is str.__repr__)):
+            lines = obj.split('\n')
+            if len(lines) > 1:
+                lines = [line + '\n' for line in lines[0:-1]] + [lines[-1]]
+                lines = [repr(line) for line in lines]
+                lines.insert(0, '# Multi-line (implicitly joined)')
+                retval += ('\n' + ' ' * ((indent + 1) * 4)).join(lines)
+            else:
+                retval += repr(obj)
         else:
             retval = repr(obj)
         return retval
